@@ -37,6 +37,13 @@
           <div class="toggle-row">
             <div class="status-pill" id="locationStatus">Lokasi belum dipilih</div>
             <label class="toggle">
+              <span id="langLabel">Bahasa</span>
+              <select id="langSelect" class="inline-select">
+                <option value="ms">BM</option>
+                <option value="en">EN</option>
+              </select>
+            </label>
+            <label class="toggle">
               <input id="themeToggle" type="checkbox" />
               <span>Mode Gelap</span>
             </label>
@@ -54,6 +61,7 @@
           <div class="button-row">
             <button id="detectBtn" class="primary">Detect Lokasi Saya</button>
             <button id="manualToggle" class="ghost">Pilih Lokasi Secara Manual</button>
+            <button id="notifyBtn" class="ghost">Aktifkan Notifikasi Azan</button>
           </div>
         </div>
 

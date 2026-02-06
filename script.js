@@ -1,6 +1,59 @@
-const PRAYER_LABELS = ["Subuh", "Syuruk", "Zohor", "Asar", "Maghrib", "Isyak"];
 const PRAYER_KEYS = ["subuh", "syuruk", "zohor", "asar", "maghrib", "isyak"];
 const KAABA = { lat: 21.4225, lon: 39.8262 };
+const I18N = {
+  ms: {
+    title: "Waktu Solat Malaysia",
+    detect: "Detect Lokasi Saya",
+    manual: "Pilih Lokasi Secara Manual",
+    notify: "Aktifkan Notifikasi Azan",
+    notifyOn: "Notifikasi Aktif",
+    notifyOff: "Aktifkan Notifikasi Azan",
+    locationUnset: "Belum ditetapkan",
+    locationHint: "Sila kesan lokasi atau pilih manual.",
+    locationDetected: "Lokasi dikesan",
+    locationManual: "Lokasi dipilih manual",
+    locationDenied: "Lokasi tidak dibenarkan – sila pilih manual",
+    statusUnset: "Lokasi belum dipilih",
+    statusUnsupported: "Lokasi tidak disokong",
+    statusDetecting: "Mengesan lokasi…",
+    statusFail: "Gagal menentukan zon. Sila pilih manual.",
+    nextPrayer: "Waktu Solat Seterusnya",
+    countdown: "Kiraan Masa",
+    currentTime: "Masa Semasa",
+    qiblaTitle: "Kompas Kiblat",
+    qiblaHint: "Aktifkan kompas dan benarkan lokasi untuk ketepatan terbaik.",
+    qiblaNeedLocation: "Lokasi diperlukan untuk kiraan kiblat.",
+    qiblaActive: "Kompas aktif. Halakan anak panah ke Kaabah.",
+    qiblaStatic: "Arah kiblat dikira daripada lokasi semasa.",
+    prayerLabels: ["Subuh", "Syuruk", "Zohor", "Asar", "Maghrib", "Isyak"],
+  },
+  en: {
+    title: "Malaysia Prayer Times",
+    detect: "Detect My Location",
+    manual: "Choose Manual Location",
+    notify: "Enable Adhan Alerts",
+    notifyOn: "Alerts Enabled",
+    notifyOff: "Enable Adhan Alerts",
+    locationUnset: "Not set yet",
+    locationHint: "Please detect location or select manually.",
+    locationDetected: "Location detected",
+    locationManual: "Manual location selected",
+    locationDenied: "Location blocked — select manually",
+    statusUnset: "Location not set",
+    statusUnsupported: "Location not supported",
+    statusDetecting: "Detecting location…",
+    statusFail: "Unable to determine zone. Please select manually.",
+    nextPrayer: "Next Prayer",
+    countdown: "Countdown",
+    currentTime: "Current Time",
+    qiblaTitle: "Qibla Compass",
+    qiblaHint: "Enable compass and allow location for best accuracy.",
+    qiblaNeedLocation: "Location needed to calculate Qibla.",
+    qiblaActive: "Compass active. Point the arrow to Kaaba.",
+    qiblaStatic: "Qibla direction calculated from your location.",
+    prayerLabels: ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"],
+  },
+};
 
 const ZONE_DATA = [
   {
@@ -148,6 +201,9 @@ const els = {
   countdownValue: document.getElementById("countdownValue"),
   currentTime: document.getElementById("currentTime"),
   themeToggle: document.getElementById("themeToggle"),
+  langSelect: document.getElementById("langSelect"),
+  langLabel: document.getElementById("langLabel"),
+  notifyBtn: document.getElementById("notifyBtn"),
   compassBtn: document.getElementById("compassBtn"),
   qiblaNeedle: document.getElementById("qiblaNeedle"),
   qiblaAngle: document.getElementById("qiblaAngle"),
@@ -166,6 +222,9 @@ const state = {
   clockTimer: null,
   compassActive: false,
   qiblaBearing: null,
+  lang: "ms",
+  notifyEnabled: false,
+  lastNotified: null,
 };
 
 function todayKey() {
@@ -203,7 +262,8 @@ function setStatus(text, type = "info") {
 
 function buildPrayerCards() {
   els.prayerGrid.innerHTML = "";
-  PRAYER_LABELS.forEach((label, index) => {
+  const labels = I18N[state.lang].prayerLabels;
+  labels.forEach((label, index) => {
     const card = document.createElement("div");
     card.className = "prayer-card";
     card.dataset.key = PRAYER_KEYS[index];
@@ -220,8 +280,8 @@ function buildPrayerCards() {
 
 function setLocationDisplay() {
   if (!state.zoneCode) {
-    els.locationName.textContent = "Belum ditetapkan";
-    els.locationMeta.textContent = "Sila kesan lokasi atau pilih manual.";
+    els.locationName.textContent = I18N[state.lang].locationUnset;
+    els.locationMeta.textContent = I18N[state.lang].locationHint;
     return;
   }
   els.locationName.textContent = state.zoneName || state.zoneCode;
@@ -329,9 +389,10 @@ function updateCurrentPrayer() {
   if (!state.todayTimes) return;
   const now = new Date();
   const key = todayKey();
+  const labels = I18N[state.lang].prayerLabels;
   const times = PRAYER_KEYS.map((k) => ({
     key: k,
-    label: PRAYER_LABELS[PRAYER_KEYS.indexOf(k)],
+    label: labels[PRAYER_KEYS.indexOf(k)],
     date: timeToDate(key, state.todayTimes[k]),
   })).filter((item) => item.date);
   let current = times[0];
@@ -350,9 +411,10 @@ function computeNextPrayer() {
   if (!state.todayTimes) return null;
   const now = new Date();
   const today = todayKey();
+  const labels = I18N[state.lang].prayerLabels;
   const times = PRAYER_KEYS.map((k) => ({
     key: k,
-    label: PRAYER_LABELS[PRAYER_KEYS.indexOf(k)],
+    label: labels[PRAYER_KEYS.indexOf(k)],
     date: timeToDate(today, state.todayTimes[k]),
   })).filter((item) => item.date);
 
@@ -369,7 +431,7 @@ function computeNextPrayer() {
       const timesTomorrow = normalizePrayerKeys(tomorrowItem);
       next = {
         key: "subuh",
-        label: "Subuh",
+        label: labels[0],
         date: timeToDate(parseApiDate(tomorrowItem.date), timesTomorrow.subuh),
       };
     }
@@ -400,6 +462,7 @@ function startCountdown() {
     }
     const diff = state.nextPrayer.date - new Date();
     if (diff <= 0) {
+      triggerPrayerAlert();
       renderNextPrayer();
       updateCurrentPrayer();
       return;
@@ -470,9 +533,9 @@ async function useZone(zoneCode, meta = {}) {
   state.stateName = meta.stateName || zoneMeta?.state || "Malaysia";
   setLocationDisplay();
   if (meta.source === "manual") {
-    setStatus("Lokasi dipilih manual", "ok");
+    setStatus(I18N[state.lang].locationManual, "ok");
   } else {
-    setStatus("Lokasi dikesan", "ok");
+    setStatus(I18N[state.lang].locationDetected, "ok");
   }
   localStorage.setItem("ws_lastZone", zoneCode);
   localStorage.setItem("ws_lastZoneName", state.zoneName);
@@ -489,17 +552,17 @@ async function useZone(zoneCode, meta = {}) {
       startCountdown();
     }
   } catch (error) {
-    els.locationMeta.textContent = "Gagal memuat waktu solat. Cuba lagi.";
+    els.locationMeta.textContent = I18N[state.lang].statusFail;
   }
 }
 
 async function handleDetectLocation() {
   if (!navigator.geolocation) {
-    setStatus("Lokasi tidak disokong", "error");
-    els.locationMeta.textContent = "Browser ini tidak menyokong GPS.";
+    setStatus(I18N[state.lang].statusUnsupported, "error");
+    els.locationMeta.textContent = I18N[state.lang].statusUnsupported;
     return;
   }
-  setStatus("Mengesan lokasi…", "info");
+  setStatus(I18N[state.lang].statusDetecting, "info");
   navigator.geolocation.getCurrentPosition(
     async (position) => {
       const { latitude, longitude } = position.coords;
@@ -520,16 +583,22 @@ async function handleDetectLocation() {
           stateName: meta?.state,
           source: "gps",
         });
-        els.locationMeta.textContent = "Lokasi dikesan menggunakan GPS.";
+        els.locationMeta.textContent = I18N[state.lang].locationDetected;
         updateQiblaBearing();
       } catch (error) {
-        setStatus("Lokasi tidak dibenarkan – sila pilih manual", "error");
-        els.locationMeta.textContent = "Gagal menentukan zon. Sila pilih manual.";
+        const cached = localStorage.getItem("ws_lastZone");
+        if (cached) {
+          useZone(cached, { source: "auto" });
+          els.locationMeta.textContent = I18N[state.lang].statusFail;
+          return;
+        }
+        setStatus(I18N[state.lang].locationDenied, "error");
+        els.locationMeta.textContent = I18N[state.lang].statusFail;
       }
     },
     () => {
-      setStatus("Lokasi tidak dibenarkan – sila pilih manual", "error");
-      els.locationMeta.textContent = "Lokasi tidak dibenarkan. Pilih manual.";
+      setStatus(I18N[state.lang].locationDenied, "error");
+      els.locationMeta.textContent = I18N[state.lang].locationDenied;
     },
     { enableHighAccuracy: true, timeout: 12000 }
   );
@@ -537,14 +606,14 @@ async function handleDetectLocation() {
 
 function updateQiblaBearing() {
   if (!state.coords) {
-    els.qiblaStatus.textContent = "Lokasi diperlukan untuk kiraan kiblat.";
+    els.qiblaStatus.textContent = I18N[state.lang].qiblaNeedLocation;
     return;
   }
   const { lat, lon } = state.coords;
   const bearing = getBearing(lat, lon, KAABA.lat, KAABA.lon);
   state.qiblaBearing = bearing;
   els.qiblaAngle.textContent = Math.round(bearing);
-  els.qiblaStatus.textContent = "Arah kiblat dikira daripada lokasi semasa.";
+  els.qiblaStatus.textContent = I18N[state.lang].qiblaStatic;
   rotateNeedle(bearing);
 }
 
@@ -577,7 +646,7 @@ function handleOrientation(event) {
 
 async function enableCompass() {
   if (!state.coords) {
-    els.qiblaStatus.textContent = "Aktifkan lokasi dahulu untuk kompas.";
+    els.qiblaStatus.textContent = I18N[state.lang].qiblaNeedLocation;
   }
   updateQiblaBearing();
   if (state.compassActive) return;
@@ -588,17 +657,17 @@ async function enableCompass() {
     try {
       const permission = await DeviceOrientationEvent.requestPermission();
       if (permission !== "granted") {
-        els.qiblaStatus.textContent = "Akses sensor ditolak. Guna arah statik.";
+        els.qiblaStatus.textContent = I18N[state.lang].qiblaStatic;
         return;
       }
     } catch (error) {
-      els.qiblaStatus.textContent = "Tidak dapat akses sensor. Guna arah statik.";
+      els.qiblaStatus.textContent = I18N[state.lang].qiblaStatic;
       return;
     }
   }
   window.addEventListener("deviceorientation", handleOrientation, true);
   state.compassActive = true;
-  els.qiblaStatus.textContent = "Kompas aktif. Halakan anak panah ke Kaabah.";
+  els.qiblaStatus.textContent = I18N[state.lang].qiblaActive;
 }
 
 function toggleManualPanel() {
@@ -642,6 +711,59 @@ function initTheme() {
   });
 }
 
+function applyLanguage(lang) {
+  state.lang = lang;
+  const dict = I18N[lang];
+  els.detectBtn.textContent = dict.detect;
+  els.manualToggle.textContent = dict.manual;
+  els.notifyBtn.textContent = state.notifyEnabled ? dict.notifyOn : dict.notifyOff;
+  els.langLabel.textContent = lang === "ms" ? "Bahasa" : "Language";
+  els.nextPrayerName.previousElementSibling.textContent = dict.nextPrayer;
+  els.countdownValue.previousElementSibling.textContent = dict.countdown;
+  els.qiblaStatus.textContent = dict.qiblaHint;
+  buildPrayerCards();
+  if (state.todayTimes) {
+    renderPrayerTimes(state.todayTimes);
+    updateCurrentPrayer();
+    renderNextPrayer();
+  }
+  setLocationDisplay();
+  if (!state.zoneCode) {
+    setStatus(dict.statusUnset);
+  }
+}
+
+async function toggleNotifications() {
+  if (!("Notification" in window)) {
+    els.notifyBtn.textContent = I18N[state.lang].notifyOff;
+    return;
+  }
+  if (Notification.permission === "granted") {
+    state.notifyEnabled = !state.notifyEnabled;
+  } else {
+    const permission = await Notification.requestPermission();
+    state.notifyEnabled = permission === "granted";
+  }
+  localStorage.setItem("ws_notify", state.notifyEnabled ? "1" : "0");
+  els.notifyBtn.textContent = state.notifyEnabled
+    ? I18N[state.lang].notifyOn
+    : I18N[state.lang].notifyOff;
+}
+
+function triggerPrayerAlert() {
+  if (!state.notifyEnabled || !state.nextPrayer?.date) return;
+  const key = `${state.nextPrayer.key}_${state.nextPrayer.date.toISOString()}`;
+  if (state.lastNotified === key) return;
+  state.lastNotified = key;
+  if ("Notification" in window && Notification.permission === "granted") {
+    const body =
+      state.lang === "ms"
+        ? `${state.nextPrayer.label} telah masuk.`
+        : `${state.nextPrayer.label} time has started.`;
+    new Notification(`${I18N[state.lang].title}`, { body });
+  }
+}
+
 function init() {
   formatGregorian();
   formatHijri();
@@ -654,8 +776,24 @@ function init() {
   els.stateSelect.addEventListener("change", (event) => populateZones(event.target.value));
   els.applyZone.addEventListener("click", applyManualZone);
   els.compassBtn.addEventListener("click", enableCompass);
+  els.notifyBtn.addEventListener("click", toggleNotifications);
+  els.langSelect.addEventListener("change", (event) => applyLanguage(event.target.value));
 
   initTheme();
+  const savedLang = localStorage.getItem("ws_lang");
+  if (savedLang && I18N[savedLang]) {
+    els.langSelect.value = savedLang;
+    applyLanguage(savedLang);
+  } else {
+    applyLanguage(state.lang);
+  }
+  els.langSelect.addEventListener("change", () => {
+    localStorage.setItem("ws_lang", els.langSelect.value);
+  });
+  state.notifyEnabled = localStorage.getItem("ws_notify") === "1";
+  els.notifyBtn.textContent = state.notifyEnabled
+    ? I18N[state.lang].notifyOn
+    : I18N[state.lang].notifyOff;
   loadCachedZone();
 
   let lastKey = todayKey();

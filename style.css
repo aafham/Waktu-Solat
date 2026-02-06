@@ -209,6 +209,12 @@ select {
   font-family: inherit;
 }
 
+.inline-select {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
 .next-prayer {
   background: linear-gradient(135deg, rgba(31, 122, 84, 0.12), rgba(31, 122, 84, 0.02));
   border: 1px solid var(--border);
