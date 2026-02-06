@@ -289,6 +289,18 @@ select {
   background: rgba(31, 122, 84, 0.12);
 }
 
+.qibla-indicator .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c2463a;
+  display: inline-block;
+}
+
+.qibla-indicator .dot.active {
+  background: var(--accent);
+}
+
 .compass {
   display: grid;
   place-items: center;

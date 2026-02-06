@@ -627,7 +627,7 @@ async function handleDetectLocation() {
 function updateQiblaBearing() {
   if (!state.coords) {
     els.qiblaStatus.textContent = I18N[state.lang].qiblaNeedLocation;
-    setQiblaIndicator(false);
+    if (!state.compassActive) setQiblaIndicator(false);
     return;
   }
   const { lat, lon } = state.coords;
@@ -636,7 +636,7 @@ function updateQiblaBearing() {
   els.qiblaAngle.textContent = Math.round(bearing);
   els.qiblaStatus.textContent = I18N[state.lang].qiblaStatic;
   rotateNeedle(bearing);
-  setQiblaIndicator(state.compassActive);
+  if (state.compassActive) setQiblaIndicator(true);
 }
 
 function getBearing(lat1, lon1, lat2, lon2) {
@@ -670,7 +670,6 @@ async function enableCompass() {
   if (!state.coords) {
     els.qiblaStatus.textContent = I18N[state.lang].qiblaNeedLocation;
   }
-  updateQiblaBearing();
   if (state.compassActive) return;
   if (
     typeof DeviceOrientationEvent !== "undefined" &&
@@ -687,19 +686,20 @@ async function enableCompass() {
       return;
     }
   }
-  window.addEventListener("deviceorientation", handleOrientation, true);
   state.compassActive = true;
-  els.qiblaStatus.textContent = I18N[state.lang].qiblaActive;
   setQiblaIndicator(true);
+  updateQiblaBearing();
+  window.addEventListener("deviceorientation", handleOrientation, true);
+  els.qiblaStatus.textContent = I18N[state.lang].qiblaActive;
 }
 
 function setQiblaIndicator(active) {
   if (!els.qiblaIndicator) return;
   if (active) {
-    els.qiblaIndicator.textContent = "🟢 Aktif & dikalibrasi";
+    els.qiblaIndicator.innerHTML = '<span class="dot active"></span>Aktif & dikalibrasi';
     els.qiblaIndicator.classList.add("active");
   } else {
-    els.qiblaIndicator.textContent = "🔴 Tidak aktif";
+    els.qiblaIndicator.innerHTML = '<span class="dot"></span>Tidak aktif';
     els.qiblaIndicator.classList.remove("active");
   }
 }
@@ -847,3 +847,4 @@ function init() {
 }
 
 init();
+
