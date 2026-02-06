@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ms">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Waktu Solat Malaysia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Karla:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Waktu Solat Malaysia</p>
+          <h1>Jadual Solat Tepat, Ringan, & Mesra Telefon</h1>
+          <p class="lead">
+            Data rasmi JAKIM dengan pengesanan lokasi automatik, kiraan solat
+            seterusnya, dan kompas kiblat yang mudah digunakan.
+          </p>
+        </div>
+        <div class="hero-card">
+          <div class="date-block">
+            <div>
+              <p class="label">Tarikh Masihi</p>
+              <p id="gregorianDate" class="value">—</p>
+            </div>
+            <div>
+              <p class="label">Tarikh Hijrah</p>
+              <p id="hijriDate" class="value">—</p>
+            </div>
+          </div>
+          <div class="toggle-row">
+            <div class="status-pill" id="locationStatus">Lokasi belum dipilih</div>
+            <label class="toggle">
+              <input id="themeToggle" type="checkbox" />
+              <span>Mode Gelap</span>
+            </label>
+          </div>
+        </div>
+      </header>
+
+      <section class="controls">
+        <div class="location-card">
+          <div>
+            <p class="label">Lokasi Semasa</p>
+            <p id="locationName" class="location-name">Belum ditetapkan</p>
+            <p id="locationMeta" class="muted">Sila kesan lokasi atau pilih manual.</p>
+          </div>
+          <div class="button-row">
+            <button id="detectBtn" class="primary">Detect Lokasi Saya</button>
+            <button id="manualToggle" class="ghost">Pilih Lokasi Secara Manual</button>
+          </div>
+        </div>
+
+        <div id="manualPanel" class="manual-panel hidden">
+          <div class="field">
+            <label for="stateSelect">Negeri</label>
+            <select id="stateSelect">
+              <option value="">Pilih negeri</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="zoneSelect">Zon / Wilayah Solat</label>
+            <select id="zoneSelect" disabled>
+              <option value="">Pilih zon</option>
+            </select>
+          </div>
+          <button id="applyZone" class="primary">Papar Waktu Solat</button>
+          <p id="manualHint" class="muted small">
+            Senarai zon dimuat dari data rasmi JAKIM. Jika gagal dimuat, periksa
+            sambungan internet.
+          </p>
+        </div>
+      </section>
+
+      <section class="next-prayer">
+        <div>
+          <p class="label">Waktu Solat Seterusnya</p>
+          <h2 id="nextPrayerName">—</h2>
+          <p id="nextPrayerTime" class="muted">—</p>
+        </div>
+        <div class="countdown">
+          <p class="label">Kiraan Masa</p>
+          <p id="countdownValue" class="countdown-value">--:--:--</p>
+          <p id="currentTime" class="muted small">—</p>
+        </div>
+      </section>
+
+      <section class="prayer-grid" id="prayerGrid">
+        <!-- Cards injected by JS -->
+      </section>
+
+      <section class="qibla-card">
+        <div class="qibla-info">
+          <p class="label">Kompas Kiblat</p>
+          <h2>Arah Kaabah</h2>
+          <p id="qiblaStatus" class="muted">
+            Aktifkan kompas dan benarkan lokasi untuk ketepatan terbaik.
+          </p>
+          <div class="button-row">
+            <button id="compassBtn" class="primary">Aktifkan Kompas</button>
+          </div>
+          <p class="muted small">
+            Cara guna: Pegang telefon rata. Arah anak panah menunjuk ke Kaabah.
+          </p>
+        </div>
+        <div class="compass">
+          <div class="compass-ring">
+            <div class="compass-marker north">N</div>
+            <div class="compass-marker east">E</div>
+            <div class="compass-marker south">S</div>
+            <div class="compass-marker west">W</div>
+            <div class="needle" id="qiblaNeedle"></div>
+          </div>
+          <p class="angle-readout"><span id="qiblaAngle">—</span>°</p>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p class="muted small">
+          Sumber data: JAKIM e-Solat dan Malaysia Waktu Solat API.
+        </p>
+      </footer>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
