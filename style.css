@@ -458,6 +458,10 @@ body:not(.dark) .prayer-card.active {
   z-index: 20;
 }
 
+.modal.hidden {
+  display: none;
+}
+
 .modal-panel {
   position: relative;
   z-index: 1;
