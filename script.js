@@ -225,6 +225,7 @@ const state = {
   lang: "ms",
   notifyEnabled: false,
   lastNotified: null,
+  hijriOffsetDays: -2,
 };
 
 function todayKey() {
@@ -256,6 +257,10 @@ function updateHijriDate() {
       hijriBase = new Date(now);
       hijriBase.setDate(hijriBase.getDate() + 1);
     }
+  }
+  if (state.hijriOffsetDays) {
+    hijriBase = new Date(hijriBase);
+    hijriBase.setDate(hijriBase.getDate() + state.hijriOffsetDays);
   }
   try {
     els.hijriDate.textContent = new Intl.DateTimeFormat("ms-MY-u-ca-islamic", {

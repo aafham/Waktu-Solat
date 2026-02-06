@@ -235,6 +235,7 @@ select {
 .prayer-grid {
   display: grid;
   gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 .prayer-card {
@@ -338,10 +339,6 @@ select {
   .location-card,
   .manual-panel {
     flex: 1;
-  }
-
-  .prayer-grid {
-    grid-template-columns: repeat(3, 1fr);
   }
 
   .prayer-card {
