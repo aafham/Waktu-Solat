@@ -314,6 +314,37 @@ function updateHeroTitle() {
   els.heroTitle.textContent = stateName ? `Waktu Solat, ${stateName}` : "Waktu Solat";
 }
 
+function cacheLastTimes(dateKeyValue, times) {
+  if (!dateKeyValue || !times) return;
+  const payload = {
+    date: dateKeyValue,
+    times,
+    zoneCode: state.zoneCode,
+    zoneName: state.zoneName,
+    stateName: state.stateName,
+  };
+  localStorage.setItem("ws_lastTimes", JSON.stringify(payload));
+}
+
+function applyCachedTimes() {
+  const cached = localStorage.getItem("ws_lastTimes");
+  if (!cached) return false;
+  try {
+    const parsed = JSON.parse(cached);
+    if (!parsed?.times) return false;
+    state.todayTimes = parsed.times;
+    renderPrayerTimes(state.todayTimes);
+    updateCurrentPrayer();
+    renderNextPrayer();
+    startCountdown();
+    updateHijriDate();
+    return true;
+  } catch (error) {
+    localStorage.removeItem("ws_lastTimes");
+    return false;
+  }
+}
+
 function populateStates() {
   ZONE_DATA.forEach((entry) => {
     const option = document.createElement("option");
@@ -560,6 +591,7 @@ async function useZone(zoneCode, meta = {}) {
   state.stateName = meta.stateName || zoneMeta?.state || "Malaysia";
   if (meta.source === "gps") {
     state.detectedStateName = state.stateName || "";
+    localStorage.setItem("ws_lastDetectedState", state.detectedStateName);
   }
   updateHeroTitle();
   setLocationDisplay();
@@ -582,9 +614,13 @@ async function useZone(zoneCode, meta = {}) {
       renderNextPrayer();
       startCountdown();
       updateHijriDate();
+      cacheLastTimes(parseApiDate(todayItem.date), state.todayTimes);
     }
   } catch (error) {
-    els.locationMeta.textContent = I18N[state.lang].statusFail;
+    const usedCache = applyCachedTimes();
+    els.locationMeta.textContent = usedCache
+      ? I18N[state.lang].offlineFallback
+      : I18N[state.lang].statusFail;
   }
 }
 
@@ -729,6 +765,7 @@ function applyManualZone() {
 function loadCachedZone() {
   const zone = localStorage.getItem("ws_lastZone");
   if (!zone) return;
+  state.detectedStateName = localStorage.getItem("ws_lastDetectedState") || "";
   state.zoneCode = zone;
   state.zoneName = localStorage.getItem("ws_lastZoneName");
   state.stateName = localStorage.getItem("ws_lastStateName");
@@ -755,6 +792,11 @@ function initTheme() {
     document.body.classList.toggle("dark", els.themeToggle.checked);
     localStorage.setItem("ws_theme", els.themeToggle.checked ? "dark" : "light");
   });
+}
+
+function registerServiceWorker() {
+  if (!("serviceWorker" in navigator)) return;
+  navigator.serviceWorker.register("./service-worker.js").catch(() => {});
 }
 
 function applyLanguage(lang) {
@@ -818,6 +860,7 @@ function init() {
   populateStates();
   startClock();
   updateHeroTitle();
+  registerServiceWorker();
 
   els.detectBtn.addEventListener("click", handleDetectLocation);
   els.manualToggle.addEventListener("click", toggleManualPanel);
@@ -861,6 +904,7 @@ function init() {
 }
 
 init();
+
 
 
 
