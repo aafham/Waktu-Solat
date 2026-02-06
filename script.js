@@ -715,8 +715,23 @@ function handleOrientation(event) {
 }
 
 async function enableCompass() {
+  if (!state.coords && navigator.geolocation) {
+    try {
+      const position = await new Promise((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 12000,
+        })
+      );
+      state.coords = { lat: position.coords.latitude, lon: position.coords.longitude };
+      localStorage.setItem("ws_lastCoords", JSON.stringify(state.coords));
+    } catch (error) {
+      els.qiblaStatus.textContent = I18N[state.lang].qiblaNeedLocation;
+    }
+  }
   if (!state.coords) {
     els.qiblaStatus.textContent = I18N[state.lang].qiblaNeedLocation;
+    return;
   }
   if (state.compassActive) return;
   if (
@@ -783,14 +798,24 @@ function loadCachedZone() {
 }
 
 function initTheme() {
+  if (!els.themeToggle) return;
+  const setTheme = (isDark) => {
+    document.body.classList.toggle("dark", isDark);
+    els.themeToggle.setAttribute("aria-checked", isDark ? "true" : "false");
+    localStorage.setItem("ws_theme", isDark ? "dark" : "light");
+  };
   const saved = localStorage.getItem("ws_theme");
-  if (saved === "dark") {
-    document.body.classList.add("dark");
-    els.themeToggle.checked = true;
-  }
-  els.themeToggle.addEventListener("change", () => {
-    document.body.classList.toggle("dark", els.themeToggle.checked);
-    localStorage.setItem("ws_theme", els.themeToggle.checked ? "dark" : "light");
+  setTheme(saved === "dark");
+  const toggleTheme = () => {
+    const isDark = !document.body.classList.contains("dark");
+    setTheme(isDark);
+  };
+  els.themeToggle.addEventListener("click", toggleTheme);
+  els.themeToggle.addEventListener("keydown", (event) => {
+    if (event.key === " " || event.key === "Enter") {
+      event.preventDefault();
+      toggleTheme();
+    }
   });
 }
 
