@@ -342,8 +342,11 @@ select {
   height: 70px;
   background: linear-gradient(180deg, var(--accent), transparent);
   border-radius: 999px;
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
   transform-origin: bottom center;
-  transform: rotate(0deg);
+  transform: translateX(-50%) rotate(0deg);
 }
 
 .angle-readout {
