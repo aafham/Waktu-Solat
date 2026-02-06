@@ -208,6 +208,7 @@ const els = {
   settingsBtn: document.getElementById("settingsBtn"),
   settingsModal: document.getElementById("settingsModal"),
   settingsClose: document.getElementById("settingsClose"),
+  clearCacheBtn: document.getElementById("clearCacheBtn"),
   qiblaNeedle: document.getElementById("qiblaNeedle"),
   qiblaAngle: document.getElementById("qiblaAngle"),
   qiblaStatus: document.getElementById("qiblaStatus"),
@@ -788,6 +789,25 @@ function closeSettings() {
   els.settingsModal.classList.add("hidden");
 }
 
+async function clearAppCache() {
+  try {
+    localStorage.clear();
+  } catch (error) {}
+  try {
+    if ("caches" in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((key) => caches.delete(key)));
+    }
+  } catch (error) {}
+  try {
+    if ("serviceWorker" in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map((reg) => reg.unregister()));
+    }
+  } catch (error) {}
+  window.location.reload();
+}
+
 function applyManualZone() {
   const zoneCode = els.zoneSelect.value;
   if (!zoneCode) return;
@@ -838,7 +858,28 @@ function initTheme() {
 
 function registerServiceWorker() {
   if (!("serviceWorker" in navigator)) return;
-  navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+  navigator.serviceWorker
+    .register("./service-worker.js")
+    .then((registration) => {
+      if (registration.waiting) {
+        registration.waiting.postMessage({ type: "SKIP_WAITING" });
+      }
+      registration.addEventListener("updatefound", () => {
+        const worker = registration.installing;
+        if (!worker) return;
+        worker.addEventListener("statechange", () => {
+          if (worker.state === "installed" && navigator.serviceWorker.controller) {
+            registration.waiting?.postMessage({ type: "SKIP_WAITING" });
+          }
+        });
+      });
+      registration.update().catch(() => {});
+    })
+    .catch(() => {});
+
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    window.location.reload();
+  });
 }
 
 function applyLanguage(lang) {
@@ -916,6 +957,11 @@ function init() {
     els.settingsClose.addEventListener("click", (event) => {
       event.stopPropagation();
       closeSettings();
+    });
+  }
+  if (els.clearCacheBtn) {
+    els.clearCacheBtn.addEventListener("click", () => {
+      clearAppCache();
     });
   }
   if (els.settingsModal) {

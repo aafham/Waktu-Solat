@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v4";
+const CACHE_VERSION = "v5";
 const APP_CACHE = `waktu-solat-app-${CACHE_VERSION}`;
 const DATA_CACHE = `waktu-solat-data-${CACHE_VERSION}`;
 
@@ -17,6 +17,12 @@ self.addEventListener("install", (event) => {
       .then((cache) => cache.addAll(APP_SHELL))
       .then(() => self.skipWaiting())
   );
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener("activate", (event) => {
@@ -38,6 +44,22 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
   const url = new URL(event.request.url);
+
+  const accept = event.request.headers.get("accept") || "";
+  const isHtml = event.request.mode === "navigate" || accept.includes("text/html");
+
+  if (isHtml && url.origin === location.origin) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(APP_CACHE).then((cache) => cache.put(event.request, copy));
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
 
   if (APP_SHELL.includes(url.pathname) || url.origin === location.origin) {
     event.respondWith(
