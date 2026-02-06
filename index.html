@@ -38,25 +38,9 @@
           </div>
           <div class="toggle-row">
             <div class="status-pill" id="locationStatus">Lokasi belum dipilih</div>
-            <label class="toggle">
-              <span id="langLabel">Bahasa</span>
-              <select id="langSelect" class="inline-select">
-                <option value="ms">BM</option>
-                <option value="en">EN</option>
-              </select>
-            </label>
-            <button
-              id="themeToggle"
-              class="theme-toggle"
-              type="button"
-              role="switch"
-              aria-checked="false"
-              aria-label="Tukar mode gelap"
-            >
-              <span class="toggle-track">
-                <span class="toggle-thumb"></span>
-              </span>
-              <span class="toggle-text">Mode Gelap</span>
+            <button id="settingsBtn" class="icon-button" type="button" aria-label="Buka tetapan">
+              <span class="icon">⚙️</span>
+              <span class="icon-label">Tetapan</span>
             </button>
           </div>
         </div>
@@ -140,6 +124,39 @@
           <p class="angle-readout"><span id="qiblaAngle">—</span>°</p>
         </div>
       </section>
+
+      <div id="settingsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+        <div class="modal-panel">
+          <div class="modal-header">
+            <h3 id="settingsTitle">Tetapan</h3>
+            <button id="settingsClose" class="icon-button" type="button" aria-label="Tutup tetapan">
+              <span class="icon">✕</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <label class="toggle">
+              <span id="langLabel">Bahasa</span>
+              <select id="langSelect" class="inline-select">
+                <option value="ms">BM</option>
+                <option value="en">EN</option>
+              </select>
+            </label>
+            <button
+              id="themeToggle"
+              class="theme-toggle"
+              type="button"
+              role="switch"
+              aria-checked="false"
+              aria-label="Tukar mode gelap"
+            >
+              <span class="toggle-track">
+                <span class="toggle-thumb"></span>
+              </span>
+              <span class="toggle-text">Mode Gelap</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
       <footer class="footer">
         <p class="muted small">

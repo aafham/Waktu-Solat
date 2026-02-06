@@ -205,6 +205,9 @@ const els = {
   langLabel: document.getElementById("langLabel"),
   notifyBtn: document.getElementById("notifyBtn"),
   compassBtn: document.getElementById("compassBtn"),
+  settingsBtn: document.getElementById("settingsBtn"),
+  settingsModal: document.getElementById("settingsModal"),
+  settingsClose: document.getElementById("settingsClose"),
   qiblaNeedle: document.getElementById("qiblaNeedle"),
   qiblaAngle: document.getElementById("qiblaAngle"),
   qiblaStatus: document.getElementById("qiblaStatus"),
@@ -775,6 +778,16 @@ function toggleManualPanel() {
   els.manualPanel.classList.toggle("hidden");
 }
 
+function openSettings() {
+  if (!els.settingsModal) return;
+  els.settingsModal.classList.remove("hidden");
+}
+
+function closeSettings() {
+  if (!els.settingsModal) return;
+  els.settingsModal.classList.add("hidden");
+}
+
 function applyManualZone() {
   const zoneCode = els.zoneSelect.value;
   if (!zoneCode) return;
@@ -898,6 +911,13 @@ function init() {
   els.compassBtn.addEventListener("click", enableCompass);
   els.notifyBtn.addEventListener("click", toggleNotifications);
   els.langSelect.addEventListener("change", (event) => applyLanguage(event.target.value));
+  if (els.settingsBtn) els.settingsBtn.addEventListener("click", openSettings);
+  if (els.settingsClose) els.settingsClose.addEventListener("click", closeSettings);
+  if (els.settingsModal) {
+    els.settingsModal.addEventListener("click", (event) => {
+      if (event.target === els.settingsModal) closeSettings();
+    });
+  }
 
   initTheme();
   const savedLang = localStorage.getItem("ws_lang");
