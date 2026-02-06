@@ -1,6 +1,7 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ms">
   <head>
+    <link rel='apple-touch-icon' href='icons/apple-touch-icon.png'>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Waktu Solat Malaysia</title>
@@ -29,17 +30,17 @@
           <div class="date-block">
             <div>
               <p class="label">Tarikh Masihi</p>
-              <p id="gregorianDate" class="value">—</p>
+              <p id="gregorianDate" class="value">â€”</p>
             </div>
             <div>
               <p class="label">Tarikh Hijrah</p>
-              <p id="hijriDate" class="value">—</p>
+              <p id="hijriDate" class="value">â€”</p>
             </div>
           </div>
           <div class="toggle-row">
             <div class="status-pill" id="locationStatus">Lokasi belum dipilih</div>
             <button id="settingsBtn" class="icon-button" type="button" aria-label="Buka tetapan">
-              <span class="icon">⚙️</span>
+              <span class="icon">âš™ï¸</span>
               <span class="icon-label">Tetapan</span>
             </button>
           </div>
@@ -84,13 +85,13 @@
       <section class="next-prayer">
         <div>
           <p class="label">Waktu Solat Seterusnya</p>
-          <h2 id="nextPrayerName">—</h2>
-          <p id="nextPrayerTime" class="muted">—</p>
+          <h2 id="nextPrayerName">â€”</h2>
+          <p id="nextPrayerTime" class="muted">â€”</p>
         </div>
         <div class="countdown">
           <p class="label">Kiraan Masa</p>
           <p id="countdownValue" class="countdown-value">--:--:--</p>
-          <p id="currentTime" class="muted small">—</p>
+          <p id="currentTime" class="muted small">â€”</p>
         </div>
       </section>
 
@@ -105,7 +106,7 @@
           <p id="qiblaStatus" class="muted">
             Aktifkan kompas dan benarkan lokasi untuk ketepatan terbaik.
           </p>
-          <div id="qiblaIndicator" class="qibla-indicator">🔴 Tidak aktif</div>
+          <div id="qiblaIndicator" class="qibla-indicator">ðŸ”´ Tidak aktif</div>
           <div class="button-row">
             <button id="compassBtn" class="primary">Aktifkan Kompas</button>
           </div>
@@ -121,7 +122,7 @@
             <div class="compass-marker west">W</div>
             <div class="needle" id="qiblaNeedle"></div>
           </div>
-          <p class="angle-readout"><span id="qiblaAngle">—</span>°</p>
+          <p class="angle-readout"><span id="qiblaAngle">â€”</span>Â°</p>
         </div>
       </section>
 
@@ -130,7 +131,7 @@
           <div class="modal-header">
             <h3 id="settingsTitle">Tetapan</h3>
             <button id="settingsClose" class="icon-button" type="button" aria-label="Tutup tetapan">
-              <span class="icon">✕</span>
+              <span class="icon">âœ•</span>
             </button>
           </div>
           <div class="modal-body">
@@ -171,3 +172,5 @@
     <script src="script.js"></script>
   </body>
 </html>
+
+
