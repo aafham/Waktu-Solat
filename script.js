@@ -1,4 +1,4 @@
-const PRAYER_KEYS = ["subuh", "syuruk", "zohor", "asar", "maghrib", "isyak"];
+﻿const PRAYER_KEYS = ["subuh", "syuruk", "zohor", "asar", "maghrib", "isyak"];
 const KAABA = { lat: 21.4225, lon: 39.8262 };
 const I18N = {
   ms: {
@@ -12,14 +12,16 @@ const I18N = {
     locationHint: "Sila kesan lokasi atau pilih manual.",
     locationDetected: "Lokasi dikesan",
     locationManual: "Lokasi dipilih manual",
-    locationDenied: "Lokasi tidak dibenarkan – sila pilih manual",
+    locationDenied: "Lokasi tidak dibenarkan - sila pilih manual",
     statusUnset: "Lokasi belum dipilih",
     statusUnsupported: "Lokasi tidak disokong",
-    statusDetecting: "Mengesan lokasi…",
+    statusDetecting: "Mengesan lokasi...",
     statusFail: "Gagal menentukan zon. Sila pilih manual.",
     nextPrayer: "Waktu Solat Seterusnya",
     countdown: "Kiraan Masa",
     currentTime: "Masa Semasa",
+    gregorianLabel: "Tarikh Masihi",
+    hijriLabel: "Tarikh Hijrah",
     qiblaTitle: "Kompas Kiblat",
     qiblaHeading: "Arah Kaabah",
     qiblaHint: "Aktifkan kompas dan benarkan lokasi untuk ketepatan terbaik.",
@@ -45,14 +47,16 @@ const I18N = {
     locationHint: "Please detect location or select manually.",
     locationDetected: "Location detected",
     locationManual: "Manual location selected",
-    locationDenied: "Location blocked — select manually",
+    locationDenied: "Location blocked - select manually",
     statusUnset: "Location not set",
     statusUnsupported: "Location not supported",
-    statusDetecting: "Detecting location…",
+    statusDetecting: "Detecting location...",
     statusFail: "Unable to determine zone. Please select manually.",
     nextPrayer: "Next Prayer",
     countdown: "Countdown",
     currentTime: "Current Time",
+    gregorianLabel: "Gregorian Date",
+    hijriLabel: "Hijri Date",
     qiblaTitle: "Qibla Compass",
     qiblaHeading: "Direction to Kaaba",
     qiblaHint: "Enable compass and allow location for best accuracy.",
@@ -221,6 +225,8 @@ const els = {
   langMs: document.getElementById("langMs"),
   langEn: document.getElementById("langEn"),
   notifyBtn: document.getElementById("notifyBtn"),
+  gregorianLabel: document.getElementById("gregorianLabel"),
+  hijriLabel: document.getElementById("hijriLabel"),
   compassBtn: document.getElementById("compassBtn"),
   settingsBtn: document.getElementById("settingsBtn"),
   settingsModal: document.getElementById("settingsModal"),
@@ -267,7 +273,8 @@ function todayKey() {
 
 function formatGregorian() {
   const now = new Date();
-  els.gregorianDate.textContent = new Intl.DateTimeFormat("ms-MY", {
+  const locale = state.lang === "en" ? "en-MY" : "ms-MY";
+  els.gregorianDate.textContent = new Intl.DateTimeFormat(locale, {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -295,7 +302,7 @@ function updateHijriDate() {
     hijriBase.setDate(hijriBase.getDate() + state.hijriOffsetDays);
   }
   try {
-    els.hijriDate.textContent = new Intl.DateTimeFormat("ms-MY-u-ca-islamic", {
+    els.hijriDate.textContent = new Intl.DateTimeFormat("ar-SA-u-ca-islamic", {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -334,7 +341,7 @@ function setLocationDisplay() {
     return;
   }
   els.locationName.textContent = state.zoneName || state.zoneCode;
-  els.locationMeta.textContent = `${state.stateName || "Malaysia"} · ${state.zoneCode}`;
+  els.locationMeta.textContent = `${state.stateName || "Malaysia"} Â· ${state.zoneCode}`;
 }
 
 function updateHeroTitle() {
@@ -395,7 +402,7 @@ function populateZones(stateName) {
   stateEntry.zones.forEach((zone) => {
     const option = document.createElement("option");
     option.value = zone.code;
-    option.textContent = `${zone.code} — ${zone.name}`;
+    option.textContent = `${zone.code} â€” ${zone.name}`;
     els.zoneSelect.appendChild(option);
   });
   els.zoneSelect.disabled = false;
@@ -530,8 +537,8 @@ function computeNextPrayer() {
 function renderNextPrayer() {
   state.nextPrayer = computeNextPrayer();
   if (!state.nextPrayer) {
-    els.nextPrayerName.textContent = "—";
-    els.nextPrayerTime.textContent = "—";
+    els.nextPrayerName.textContent = "â€”";
+    els.nextPrayerTime.textContent = "â€”";
     return;
   }
   els.nextPrayerName.textContent = state.nextPrayer.label;
@@ -940,6 +947,8 @@ function applyLanguage(lang) {
   els.nextPrayerName.previousElementSibling.textContent = dict.nextPrayer;
   els.countdownValue.previousElementSibling.textContent = dict.countdown;
   els.qiblaStatus.textContent = dict.qiblaHint;
+  if (els.gregorianLabel) els.gregorianLabel.textContent = dict.gregorianLabel;
+  if (els.hijriLabel) els.hijriLabel.textContent = dict.hijriLabel;
   if (els.qiblaLabel) els.qiblaLabel.textContent = dict.qiblaTitle;
   if (els.qiblaTitleEl) els.qiblaTitleEl.textContent = dict.qiblaHeading;
   if (els.qiblaHelp) els.qiblaHelp.textContent = dict.qiblaHelp;
@@ -962,6 +971,7 @@ function applyLanguage(lang) {
   }
   setLocationDisplay();
   updateHeroTitle();
+  formatGregorian();
   if (!state.zoneCode) {
     setStatus(dict.statusUnset);
   }
@@ -1099,3 +1109,4 @@ function init() {
 }
 
 init();
+

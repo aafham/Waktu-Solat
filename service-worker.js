@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v14";
+const CACHE_VERSION = "v16";
 const APP_CACHE = `waktu-solat-app-${CACHE_VERSION}`;
 const DATA_CACHE = `waktu-solat-data-${CACHE_VERSION}`;
 
