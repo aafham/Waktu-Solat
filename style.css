@@ -79,6 +79,15 @@ h1 {
   border-radius: 20px;
   padding: 16px;
   box-shadow: var(--shadow);
+  display: grid;
+  gap: 12px;
+}
+
+.date-clock-row {
+  display: grid;
+  gap: 16px;
+  align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 
 .date-block {
@@ -106,6 +115,22 @@ h1 {
   align-items: center;
   gap: 12px;
   margin-top: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 480px) {
+  .toggle-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .status-pill,
+  .icon-button {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
 }
 
 .status-pill {
@@ -122,6 +147,36 @@ h1 {
   gap: 8px;
   align-items: center;
   font-size: 13px;
+}
+
+.lang-toggle {
+  justify-content: space-between;
+}
+
+.segmented {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+}
+
+.segmented-btn {
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.segmented-btn.active {
+  background: var(--accent);
+  color: #fff;
 }
 
 .theme-toggle {
@@ -188,6 +243,7 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  text-align: center;
 }
 
 .location-name {
@@ -206,9 +262,11 @@ h1 {
 }
 
 .button-row {
-  display: flex;
+  display: grid;
   gap: 12px;
-  flex-wrap: wrap;
+  grid-template-columns: 1fr;
+  align-items: center;
+  justify-items: center;
 }
 
 button {
@@ -220,6 +278,9 @@ button {
   font-family: inherit;
 }
 
+.button-row button {
+  width: min(100%, 520px);
+}
 button.theme-toggle {
   border: 1px solid var(--border);
   padding: 6px 12px;
@@ -262,6 +323,99 @@ button.ghost.danger {
   font-size: 12px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+}
+
+.analog-clock {
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.clock-face {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.25), transparent 55%),
+    var(--bg-soft);
+  border: 1px solid var(--border);
+  position: relative;
+  box-shadow: inset 0 0 0 6px rgba(31, 122, 84, 0.08), 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+.clock-tick {
+  position: absolute;
+  width: 3px;
+  height: 10px;
+  background: var(--text);
+  border-radius: 999px;
+  left: 50%;
+  top: 6px;
+  transform: translateX(-50%);
+  opacity: 0.75;
+}
+
+.clock-tick.major {
+  width: 4px;
+  height: 12px;
+  opacity: 0.9;
+}
+
+.clock-tick.right {
+  top: 50%;
+  left: auto;
+  right: 6px;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.clock-tick.bottom {
+  top: auto;
+  bottom: 6px;
+  transform: translateX(-50%) rotate(180deg);
+}
+
+.clock-tick.left {
+  top: 50%;
+  left: 6px;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.hand {
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotate(0deg);
+  border-radius: 999px;
+}
+
+.hand.hour {
+  width: 4px;
+  height: 32px;
+  background: var(--text);
+}
+
+.hand.minute {
+  width: 3px;
+  height: 44px;
+  background: var(--text);
+}
+
+.hand.second {
+  width: 2px;
+  height: 48px;
+  background: var(--accent);
+}
+
+.clock-center {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 2px var(--card);
 }
 
 .manual-panel {
@@ -521,5 +675,25 @@ body:not(.dark) .prayer-card.active {
   .qibla-card {
     grid-template-columns: 1.1fr 0.9fr;
     align-items: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .button-row {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+}
+
+@media (min-width: 560px) {
+  .date-block {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .date-clock-row {
+    grid-template-columns: 1fr;
   }
 }

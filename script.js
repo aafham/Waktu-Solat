@@ -21,10 +21,17 @@ const I18N = {
     countdown: "Kiraan Masa",
     currentTime: "Masa Semasa",
     qiblaTitle: "Kompas Kiblat",
+    qiblaHeading: "Arah Kaabah",
     qiblaHint: "Aktifkan kompas dan benarkan lokasi untuk ketepatan terbaik.",
     qiblaNeedLocation: "Lokasi diperlukan untuk kiraan kiblat.",
     qiblaActive: "Kompas aktif. Halakan anak panah ke Kaabah.",
     qiblaStatic: "Arah kiblat dikira daripada lokasi semasa.",
+    qiblaHelp: "Cara guna: Pegang telefon rata. Arah anak panah menunjuk ke Kaabah.",
+    compassOn: "Aktifkan Kompas",
+    qiblaIndicatorActive: "Aktif & dikalibrasi",
+    qiblaIndicatorInactive: "Tidak aktif",
+    settingsTitle: "Tetapan",
+    settingsButton: "Tetapan",
     prayerLabels: ["Subuh", "Syuruk", "Zohor", "Asar", "Maghrib", "Isyak"],
   },
   en: {
@@ -47,10 +54,17 @@ const I18N = {
     countdown: "Countdown",
     currentTime: "Current Time",
     qiblaTitle: "Qibla Compass",
+    qiblaHeading: "Direction to Kaaba",
     qiblaHint: "Enable compass and allow location for best accuracy.",
     qiblaNeedLocation: "Location needed to calculate Qibla.",
     qiblaActive: "Compass active. Point the arrow to Kaaba.",
     qiblaStatic: "Qibla direction calculated from your location.",
+    qiblaHelp: "How to use: Keep your phone flat. The arrow points to the Kaaba.",
+    compassOn: "Enable Compass",
+    qiblaIndicatorActive: "Active & calibrated",
+    qiblaIndicatorInactive: "Inactive",
+    settingsTitle: "Settings",
+    settingsButton: "Settings",
     prayerLabels: ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"],
   },
 };
@@ -203,17 +217,28 @@ const els = {
   themeToggle: document.getElementById("themeToggle"),
   langSelect: document.getElementById("langSelect"),
   langLabel: document.getElementById("langLabel"),
+  langToggle: document.getElementById("langToggle"),
+  langMs: document.getElementById("langMs"),
+  langEn: document.getElementById("langEn"),
   notifyBtn: document.getElementById("notifyBtn"),
   compassBtn: document.getElementById("compassBtn"),
   settingsBtn: document.getElementById("settingsBtn"),
   settingsModal: document.getElementById("settingsModal"),
   settingsClose: document.getElementById("settingsClose"),
+  settingsTitle: document.getElementById("settingsTitle"),
+  settingsBtnLabel: document.getElementById("settingsBtnLabel"),
+  qiblaLabel: document.getElementById("qiblaLabel"),
+  qiblaTitleEl: document.getElementById("qiblaTitle"),
+  qiblaHelp: document.getElementById("qiblaHelp"),
   clearCacheBtn: document.getElementById("clearCacheBtn"),
   qiblaNeedle: document.getElementById("qiblaNeedle"),
   qiblaAngle: document.getElementById("qiblaAngle"),
   qiblaStatus: document.getElementById("qiblaStatus"),
   qiblaIndicator: document.getElementById("qiblaIndicator"),
   heroTitle: document.getElementById("heroTitle"),
+  clockHour: document.getElementById("clockHour"),
+  clockMinute: document.getElementById("clockMinute"),
+  clockSecond: document.getElementById("clockSecond"),
 };
 
 const state = {
@@ -544,12 +569,32 @@ function startCountdown() {
 
 function startClock() {
   if (state.clockTimer) clearInterval(state.clockTimer);
+  const formatBmTime = (date, withSeconds = false) => {
+    const h = date.getHours();
+    const m = date.getMinutes();
+    const s = date.getSeconds();
+    const hour12 = h % 12 === 0 ? 12 : h % 12;
+    const time = `${hour12}:${String(m).padStart(2, "0")}${
+      withSeconds ? `:${String(s).padStart(2, "0")}` : ""
+    }`;
+    return time;
+  };
   const tick = () => {
-    els.currentTime.textContent = new Date().toLocaleTimeString("ms-MY", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+    const now = new Date();
+    if (els.currentTime) {
+      els.currentTime.textContent = formatBmTime(now, true);
+    }
+    if (els.clockHour && els.clockMinute && els.clockSecond) {
+      const hours = now.getHours() % 12;
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
+      const hourDeg = hours * 30 + minutes * 0.5;
+      const minuteDeg = minutes * 6 + seconds * 0.1;
+      const secondDeg = seconds * 6;
+      els.clockHour.style.transform = `translateX(-50%) rotate(${hourDeg}deg)`;
+      els.clockMinute.style.transform = `translateX(-50%) rotate(${minuteDeg}deg)`;
+      els.clockSecond.style.transform = `translateX(-50%) rotate(${secondDeg}deg)`;
+    }
     updateHijriDate();
   };
   tick();
@@ -766,11 +811,12 @@ async function enableCompass() {
 
 function setQiblaIndicator(active) {
   if (!els.qiblaIndicator) return;
+  const dict = I18N[state.lang];
   if (active) {
-    els.qiblaIndicator.innerHTML = '<span class="dot active"></span>Aktif & dikalibrasi';
+    els.qiblaIndicator.innerHTML = `<span class="dot active"></span>${dict.qiblaIndicatorActive}`;
     els.qiblaIndicator.classList.add("active");
   } else {
-    els.qiblaIndicator.innerHTML = '<span class="dot"></span>Tidak aktif';
+    els.qiblaIndicator.innerHTML = `<span class="dot"></span>${dict.qiblaIndicatorInactive}`;
     els.qiblaIndicator.classList.remove("active");
   }
 }
@@ -887,11 +933,27 @@ function applyLanguage(lang) {
   const dict = I18N[lang];
   els.detectBtn.textContent = dict.detect;
   els.manualToggle.textContent = dict.manual;
-  els.notifyBtn.textContent = state.notifyEnabled ? dict.notifyOn : dict.notifyOff;
+  if (els.notifyBtn) {
+    els.notifyBtn.textContent = state.notifyEnabled ? dict.notifyOn : dict.notifyOff;
+  }
   els.langLabel.textContent = lang === "ms" ? "Bahasa" : "Language";
   els.nextPrayerName.previousElementSibling.textContent = dict.nextPrayer;
   els.countdownValue.previousElementSibling.textContent = dict.countdown;
   els.qiblaStatus.textContent = dict.qiblaHint;
+  if (els.qiblaLabel) els.qiblaLabel.textContent = dict.qiblaTitle;
+  if (els.qiblaTitleEl) els.qiblaTitleEl.textContent = dict.qiblaHeading;
+  if (els.qiblaHelp) els.qiblaHelp.textContent = dict.qiblaHelp;
+  if (els.compassBtn) els.compassBtn.textContent = dict.compassOn;
+  setQiblaIndicator(state.compassActive);
+  if (els.settingsTitle) {
+    els.settingsTitle.textContent = dict.settingsTitle;
+  }
+  if (els.settingsBtnLabel) {
+    els.settingsBtnLabel.textContent = dict.settingsButton;
+  }
+  if (els.settingsBtn) {
+    els.settingsBtn.setAttribute("aria-label", dict.settingsButton);
+  }
   buildPrayerCards();
   if (state.todayTimes) {
     renderPrayerTimes(state.todayTimes);
@@ -903,11 +965,22 @@ function applyLanguage(lang) {
   if (!state.zoneCode) {
     setStatus(dict.statusUnset);
   }
+  if (els.langSelect) {
+    els.langSelect.value = lang;
+  }
+  if (els.langMs && els.langEn) {
+    els.langMs.classList.toggle("active", lang === "ms");
+    els.langEn.classList.toggle("active", lang === "en");
+    els.langMs.setAttribute("aria-pressed", lang === "ms" ? "true" : "false");
+    els.langEn.setAttribute("aria-pressed", lang === "en" ? "true" : "false");
+  }
 }
 
 async function toggleNotifications() {
   if (!("Notification" in window)) {
-    els.notifyBtn.textContent = I18N[state.lang].notifyOff;
+    if (els.notifyBtn) {
+      els.notifyBtn.textContent = I18N[state.lang].notifyOff;
+    }
     return;
   }
   if (Notification.permission === "granted") {
@@ -917,9 +990,11 @@ async function toggleNotifications() {
     state.notifyEnabled = permission === "granted";
   }
   localStorage.setItem("ws_notify", state.notifyEnabled ? "1" : "0");
-  els.notifyBtn.textContent = state.notifyEnabled
-    ? I18N[state.lang].notifyOn
-    : I18N[state.lang].notifyOff;
+  if (els.notifyBtn) {
+    els.notifyBtn.textContent = state.notifyEnabled
+      ? I18N[state.lang].notifyOn
+      : I18N[state.lang].notifyOff;
+  }
 }
 
 function triggerPrayerAlert() {
@@ -950,8 +1025,25 @@ function init() {
   els.stateSelect.addEventListener("change", (event) => populateZones(event.target.value));
   els.applyZone.addEventListener("click", applyManualZone);
   els.compassBtn.addEventListener("click", enableCompass);
-  els.notifyBtn.addEventListener("click", toggleNotifications);
-  els.langSelect.addEventListener("change", (event) => applyLanguage(event.target.value));
+  if (els.notifyBtn) {
+    els.notifyBtn.addEventListener("click", toggleNotifications);
+  }
+  if (els.langSelect) {
+    els.langSelect.addEventListener("change", (event) => {
+      applyLanguage(event.target.value);
+      localStorage.setItem("ws_lang", event.target.value);
+    });
+  }
+  if (els.langToggle) {
+    els.langToggle.addEventListener("click", (event) => {
+      const btn = event.target.closest("button[data-lang]");
+      if (!btn) return;
+      const lang = btn.dataset.lang;
+      if (!I18N[lang]) return;
+      applyLanguage(lang);
+      localStorage.setItem("ws_lang", lang);
+    });
+  }
   if (els.settingsBtn) els.settingsBtn.addEventListener("click", openSettings);
   if (els.settingsClose) {
     els.settingsClose.addEventListener("click", (event) => {
@@ -978,18 +1070,16 @@ function init() {
   initTheme();
   const savedLang = localStorage.getItem("ws_lang");
   if (savedLang && I18N[savedLang]) {
-    els.langSelect.value = savedLang;
     applyLanguage(savedLang);
   } else {
     applyLanguage(state.lang);
   }
-  els.langSelect.addEventListener("change", () => {
-    localStorage.setItem("ws_lang", els.langSelect.value);
-  });
   state.notifyEnabled = localStorage.getItem("ws_notify") === "1";
-  els.notifyBtn.textContent = state.notifyEnabled
-    ? I18N[state.lang].notifyOn
-    : I18N[state.lang].notifyOff;
+  if (els.notifyBtn) {
+    els.notifyBtn.textContent = state.notifyEnabled
+      ? I18N[state.lang].notifyOn
+      : I18N[state.lang].notifyOff;
+  }
   loadCachedZone();
 
   let lastKey = todayKey();
@@ -1009,10 +1099,3 @@ function init() {
 }
 
 init();
-
-
-
-
-
-
-

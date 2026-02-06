@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v5";
+const CACHE_VERSION = "v14";
 const APP_CACHE = `waktu-solat-app-${CACHE_VERSION}`;
 const DATA_CACHE = `waktu-solat-data-${CACHE_VERSION}`;
 
@@ -8,6 +8,9 @@ const APP_SHELL = [
   "./style.css",
   "./script.js",
   "./manifest.json",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
+  "./icons/apple-touch-icon.png",
 ];
 
 self.addEventListener("install", (event) => {

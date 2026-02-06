@@ -27,21 +27,35 @@
           </p>
         </div>
         <div class="hero-card">
-          <div class="date-block">
-            <div>
-              <p class="label">Tarikh Masihi</p>
-              <p id="gregorianDate" class="value">â€”</p>
+          <div class="date-clock-row">
+            <div class="date-block">
+              <div>
+                <p class="label">Tarikh Masihi</p>
+                <p id="gregorianDate" class="value">&mdash;</p>
+              </div>
+              <div>
+                <p class="label">Tarikh Hijrah</p>
+                <p id="hijriDate" class="value">&mdash;</p>
+              </div>
             </div>
-            <div>
-              <p class="label">Tarikh Hijrah</p>
-              <p id="hijriDate" class="value">â€”</p>
+            <div class="analog-clock" aria-label="Jam analog masa semasa" role="img">
+              <div class="clock-face">
+                <div class="clock-tick major top"></div>
+                <div class="clock-tick major right"></div>
+                <div class="clock-tick major bottom"></div>
+                <div class="clock-tick major left"></div>
+                <div class="hand hour" id="clockHour"></div>
+                <div class="hand minute" id="clockMinute"></div>
+                <div class="hand second" id="clockSecond"></div>
+                <div class="clock-center"></div>
+              </div>
             </div>
           </div>
           <div class="toggle-row">
             <div class="status-pill" id="locationStatus">Lokasi belum dipilih</div>
             <button id="settingsBtn" class="icon-button" type="button" aria-label="Buka tetapan">
-              <span class="icon">âš™ï¸</span>
-              <span class="icon-label">Tetapan</span>
+              <span class="icon">&#9881;&#65039;</span>
+              <span class="icon-label" id="settingsBtnLabel">Tetapan</span>
             </button>
           </div>
         </div>
@@ -57,7 +71,6 @@
           <div class="button-row">
             <button id="detectBtn" class="primary">Detect Lokasi Saya</button>
             <button id="manualToggle" class="ghost">Pilih Lokasi Secara Manual</button>
-            <button id="notifyBtn" class="ghost">Aktifkan Notifikasi Azan</button>
           </div>
         </div>
 
@@ -85,13 +98,13 @@
       <section class="next-prayer">
         <div>
           <p class="label">Waktu Solat Seterusnya</p>
-          <h2 id="nextPrayerName">â€”</h2>
-          <p id="nextPrayerTime" class="muted">â€”</p>
+          <h2 id="nextPrayerName">&mdash;</h2>
+          <p id="nextPrayerTime" class="muted">&mdash;</p>
         </div>
         <div class="countdown">
           <p class="label">Kiraan Masa</p>
           <p id="countdownValue" class="countdown-value">--:--:--</p>
-          <p id="currentTime" class="muted small">â€”</p>
+          <p id="currentTime" class="muted small">&mdash;</p>
         </div>
       </section>
 
@@ -101,8 +114,8 @@
 
       <section class="qibla-card">
         <div class="qibla-info">
-          <p class="label">Kompas Kiblat</p>
-          <h2>Arah Kaabah</h2>
+          <p class="label" id="qiblaLabel">Kompas Kiblat</p>
+          <h2 id="qiblaTitle">Arah Kaabah</h2>
           <p id="qiblaStatus" class="muted">
             Aktifkan kompas dan benarkan lokasi untuk ketepatan terbaik.
           </p>
@@ -110,7 +123,7 @@
           <div class="button-row">
             <button id="compassBtn" class="primary">Aktifkan Kompas</button>
           </div>
-          <p class="muted small">
+          <p class="muted small" id="qiblaHelp">
             Cara guna: Pegang telefon rata. Arah anak panah menunjuk ke Kaabah.
           </p>
         </div>
@@ -122,7 +135,7 @@
             <div class="compass-marker west">W</div>
             <div class="needle" id="qiblaNeedle"></div>
           </div>
-          <p class="angle-readout"><span id="qiblaAngle">â€”</span>Â°</p>
+          <p class="angle-readout"><span id="qiblaAngle">&mdash;</span>&deg;</p>
         </div>
       </section>
 
@@ -131,16 +144,16 @@
           <div class="modal-header">
             <h3 id="settingsTitle">Tetapan</h3>
             <button id="settingsClose" class="icon-button" type="button" aria-label="Tutup tetapan">
-              <span class="icon">âœ•</span>
+              <span class="icon">&#10005;</span>
             </button>
           </div>
           <div class="modal-body">
-            <label class="toggle">
+            <label class="toggle lang-toggle">
               <span id="langLabel">Bahasa</span>
-              <select id="langSelect" class="inline-select">
-                <option value="ms">BM</option>
-                <option value="en">EN</option>
-              </select>
+              <div class="segmented" id="langToggle" role="group" aria-label="Tukar bahasa">
+                <button id="langMs" class="segmented-btn" type="button" data-lang="ms">BM</button>
+                <button id="langEn" class="segmented-btn" type="button" data-lang="en">EN</button>
+              </div>
             </label>
             <button
               id="themeToggle"
@@ -172,5 +185,3 @@
     <script src="script.js"></script>
   </body>
 </html>
-
-
