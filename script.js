@@ -209,6 +209,7 @@ const els = {
   qiblaAngle: document.getElementById("qiblaAngle"),
   qiblaStatus: document.getElementById("qiblaStatus"),
   qiblaIndicator: document.getElementById("qiblaIndicator"),
+  heroTitle: document.getElementById("heroTitle"),
 };
 
 const state = {
@@ -227,6 +228,7 @@ const state = {
   notifyEnabled: false,
   lastNotified: null,
   hijriOffsetDays: -2,
+  detectedStateName: "",
 };
 
 function todayKey() {
@@ -304,6 +306,12 @@ function setLocationDisplay() {
   }
   els.locationName.textContent = state.zoneName || state.zoneCode;
   els.locationMeta.textContent = `${state.stateName || "Malaysia"} · ${state.zoneCode}`;
+}
+
+function updateHeroTitle() {
+  if (!els.heroTitle) return;
+  const stateName = state.detectedStateName?.trim();
+  els.heroTitle.textContent = stateName ? `Waktu Solat, ${stateName}` : "Waktu Solat";
 }
 
 function populateStates() {
@@ -550,6 +558,10 @@ async function useZone(zoneCode, meta = {}) {
   const zoneMeta = findZoneMeta(zoneCode);
   state.zoneName = meta.zoneName || zoneMeta?.name || zoneCode;
   state.stateName = meta.stateName || zoneMeta?.state || "Malaysia";
+  if (meta.source === "gps") {
+    state.detectedStateName = state.stateName || "";
+  }
+  updateHeroTitle();
   setLocationDisplay();
   if (meta.source === "manual") {
     setStatus(I18N[state.lang].locationManual, "ok");
@@ -762,6 +774,7 @@ function applyLanguage(lang) {
     renderNextPrayer();
   }
   setLocationDisplay();
+  updateHeroTitle();
   if (!state.zoneCode) {
     setStatus(dict.statusUnset);
   }
@@ -804,6 +817,7 @@ function init() {
   buildPrayerCards();
   populateStates();
   startClock();
+  updateHeroTitle();
 
   els.detectBtn.addEventListener("click", handleDetectLocation);
   els.manualToggle.addEventListener("click", toggleManualPanel);
@@ -847,4 +861,9 @@ function init() {
 }
 
 init();
+
+
+
+
+
 
