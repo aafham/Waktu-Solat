@@ -243,13 +243,26 @@ function formatGregorian() {
 }
 
 function formatHijri() {
+  updateHijriDate();
+}
+
+function updateHijriDate() {
   const now = new Date();
+  let hijriBase = now;
+  if (state.todayTimes?.maghrib) {
+    const key = todayKey();
+    const maghribTime = timeToDate(key, state.todayTimes.maghrib);
+    if (maghribTime && now >= maghribTime) {
+      hijriBase = new Date(now);
+      hijriBase.setDate(hijriBase.getDate() + 1);
+    }
+  }
   try {
     els.hijriDate.textContent = new Intl.DateTimeFormat("ms-MY-u-ca-islamic", {
       day: "numeric",
       month: "long",
       year: "numeric",
-    }).format(now);
+    }).format(hijriBase);
   } catch (error) {
     els.hijriDate.textContent = "—";
   }
@@ -487,6 +500,7 @@ function startClock() {
       minute: "2-digit",
       second: "2-digit",
     });
+    updateHijriDate();
   };
   tick();
   state.clockTimer = setInterval(tick, 1000);
@@ -550,6 +564,7 @@ async function useZone(zoneCode, meta = {}) {
       updateCurrentPrayer();
       renderNextPrayer();
       startCountdown();
+      updateHijriDate();
     }
   } catch (error) {
     els.locationMeta.textContent = I18N[state.lang].statusFail;
