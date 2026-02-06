@@ -208,6 +208,7 @@ const els = {
   qiblaNeedle: document.getElementById("qiblaNeedle"),
   qiblaAngle: document.getElementById("qiblaAngle"),
   qiblaStatus: document.getElementById("qiblaStatus"),
+  qiblaIndicator: document.getElementById("qiblaIndicator"),
 };
 
 const state = {
@@ -288,7 +289,6 @@ function buildPrayerCards() {
     card.innerHTML = `
       <div>
         <p class="prayer-name">${label}</p>
-        <p class="muted small">Waktu</p>
       </div>
       <div class="prayer-time">--:--</div>
     `;
@@ -627,6 +627,7 @@ async function handleDetectLocation() {
 function updateQiblaBearing() {
   if (!state.coords) {
     els.qiblaStatus.textContent = I18N[state.lang].qiblaNeedLocation;
+    setQiblaIndicator(false);
     return;
   }
   const { lat, lon } = state.coords;
@@ -635,6 +636,7 @@ function updateQiblaBearing() {
   els.qiblaAngle.textContent = Math.round(bearing);
   els.qiblaStatus.textContent = I18N[state.lang].qiblaStatic;
   rotateNeedle(bearing);
+  setQiblaIndicator(state.compassActive);
 }
 
 function getBearing(lat1, lon1, lat2, lon2) {
@@ -688,6 +690,18 @@ async function enableCompass() {
   window.addEventListener("deviceorientation", handleOrientation, true);
   state.compassActive = true;
   els.qiblaStatus.textContent = I18N[state.lang].qiblaActive;
+  setQiblaIndicator(true);
+}
+
+function setQiblaIndicator(active) {
+  if (!els.qiblaIndicator) return;
+  if (active) {
+    els.qiblaIndicator.textContent = "🟢 Aktif & dikalibrasi";
+    els.qiblaIndicator.classList.add("active");
+  } else {
+    els.qiblaIndicator.textContent = "🔴 Tidak aktif";
+    els.qiblaIndicator.classList.remove("active");
+  }
 }
 
 function toggleManualPanel() {
