@@ -912,12 +912,22 @@ function init() {
   els.notifyBtn.addEventListener("click", toggleNotifications);
   els.langSelect.addEventListener("change", (event) => applyLanguage(event.target.value));
   if (els.settingsBtn) els.settingsBtn.addEventListener("click", openSettings);
-  if (els.settingsClose) els.settingsClose.addEventListener("click", closeSettings);
+  if (els.settingsClose) {
+    els.settingsClose.addEventListener("click", (event) => {
+      event.stopPropagation();
+      closeSettings();
+    });
+  }
   if (els.settingsModal) {
     els.settingsModal.addEventListener("click", (event) => {
       if (event.target === els.settingsModal) closeSettings();
     });
   }
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && els.settingsModal && !els.settingsModal.classList.contains("hidden")) {
+      closeSettings();
+    }
+  });
 
   initTheme();
   const savedLang = localStorage.getItem("ws_lang");

@@ -459,6 +459,8 @@ body:not(.dark) .prayer-card.active {
 }
 
 .modal-panel {
+  position: relative;
+  z-index: 1;
   width: min(420px, 100%);
   background: var(--card);
   border: 1px solid var(--border);
