@@ -650,7 +650,7 @@ function getBearing(lat1, lon1, lat2, lon2) {
 }
 
 function rotateNeedle(angle) {
-  els.qiblaNeedle.style.transform = `rotate(${angle}deg)`;
+  els.qiblaNeedle.style.transform = `translateX(-50%) rotate(${angle}deg)`;
 }
 
 function handleOrientation(event) {
