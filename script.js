@@ -310,8 +310,10 @@ function setLocationDisplay() {
 
 function updateHeroTitle() {
   if (!els.heroTitle) return;
-  const stateName = state.detectedStateName?.trim();
-  els.heroTitle.textContent = stateName ? `Waktu Solat, ${stateName}` : "Waktu Solat";
+  const primary = state.detectedStateName?.trim();
+  const fallback = state.stateName?.trim() || state.zoneName?.trim();
+  const label = primary || fallback;
+  els.heroTitle.textContent = label ? `Waktu Solat, ${label}` : "Waktu Solat";
 }
 
 function cacheLastTimes(dateKeyValue, times) {
@@ -585,12 +587,14 @@ async function fetchZoneFromGps(lat, lon) {
 }
 
 async function useZone(zoneCode, meta = {}) {
-  state.zoneCode = zoneCode;
-  const zoneMeta = findZoneMeta(zoneCode);
-  state.zoneName = meta.zoneName || zoneMeta?.name || zoneCode;
+  const normalizedZone = zoneCode ? String(zoneCode).toUpperCase() : zoneCode;
+  state.zoneCode = normalizedZone;
+  const zoneMeta = findZoneMeta(normalizedZone);
+  state.zoneName = meta.zoneName || zoneMeta?.name || normalizedZone;
   state.stateName = meta.stateName || zoneMeta?.state || "Malaysia";
   if (meta.source === "gps") {
-    state.detectedStateName = state.stateName || "";
+    const detectedLabel = (meta.stateName || zoneMeta?.state || state.stateName || meta.zoneName || state.zoneName || "").trim();
+    state.detectedStateName = detectedLabel;
     localStorage.setItem("ws_lastDetectedState", state.detectedStateName);
   }
   updateHeroTitle();
