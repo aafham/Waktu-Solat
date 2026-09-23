@@ -24,6 +24,11 @@ jobs:
           node --check prayer-data.js
           node --check location-service.js
           node --check qibla.js
+          node --check islamic-calendar.js
+          node --check islamic-calendar-data.js
+          node --check islamic-references.js
+          node --check islamic-calendar-view.js
+          node --check event-countdown.js
           node --check zones.js
           node --check service-worker.js
       - name: Test prayer data, compass and offline cache

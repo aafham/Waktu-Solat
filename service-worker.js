@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v18";
+const CACHE_VERSION = "v19";
 const APP_CACHE = `waktu-solat-app-${CACHE_VERSION}`;
 const APP_SHELL = [
   "./",
@@ -7,6 +7,12 @@ const APP_SHELL = [
   "./script.js",
   "./prayer-data.js",
   "./location-service.js",
+  "./islamic-calendar.js",
+  "./islamic-calendar-data.js",
+  "./islamic-references.js",
+  "./islamic-calendar-view.js",
+  "./islamic-calendar.css",
+  "./event-countdown.js",
   "./qibla.js",
   "./zones.js",
   "./manifest.json",

@@ -10,6 +10,9 @@ import {
 } from "./prayer-data.js";
 import { ZONE_DATA } from "./zones.js";
 import { createQibla } from "./qibla.js";
+import { createCalendarView } from "./islamic-calendar-view.js";
+import { createEventCountdown } from "./event-countdown.js";
+import { toHijri, MONTH_NAMES } from "./islamic-calendar.js";
 import {
   createLocationController,
   requestPosition,
@@ -54,6 +57,17 @@ const text = {
     monthly: "Jadual bulanan",
     qibla: "Arah kiblat",
     settings: "Tetapan",
+    calendar: "Kalendar Islam",
+    calendarShort: "Kalendar",
+    calendarTitle: "Setiap tarikh, ada makna",
+    calendarSubtitle: "Takwim Hijrah, hari istimewa dan penukar tarikh anda.",
+    eventEyebrow: "MENANTI HARI ISTIMEWA",
+    openCalendar: "Buka kalendar Islam",
+    otherEvents: "Dalam takwim",
+    days: "HARI",
+    eventTimeRemaining: "Masa berbaki ke acara Islam",
+    eventCountdownNote:
+      "Kiraan ke 00:00 MYT pada tarikh kalendar. Hari Hijrah bermula selepas Maghrib. * Tarikh anggaran.",
     sideNote: "Luangkan sejenak. Dekatkan diri kepada-Nya.",
     madeFor: "Untuk setiap waktu, setiap hari.",
     appName: "Waktu Solat Malaysia",
@@ -143,7 +157,8 @@ const text = {
     noNext: "Jadual seterusnya belum tersedia",
     nextMissing: "Waktu Subuh esok belum tersedia. Cuba muat semula data.",
     apiHijri: "Tarikh Hijrah daripada jadual API",
-    estimatedHijri: "Anggaran kalendar pelayar",
+    estimatedHijri: "Anggaran hisab Hijrah",
+    publishedHijri: "Takwim terbitan JAKIM",
     date: "Tarikh",
     monthCache: "Jadual tersimpan untuk bulan ini.",
     detecting: "Mengesan lokasi…",
@@ -195,6 +210,18 @@ const text = {
     monthly: "Monthly schedule",
     qibla: "Qibla direction",
     settings: "Settings",
+    calendar: "Islamic calendar",
+    calendarShort: "Calendar",
+    calendarTitle: "Every date has a meaning",
+    calendarSubtitle:
+      "Your Hijri calendar, important occasions and date converter.",
+    eventEyebrow: "LOOKING FORWARD",
+    openCalendar: "Open Islamic calendar",
+    otherEvents: "On the calendar",
+    days: "DAYS",
+    eventTimeRemaining: "Time remaining until the Islamic occasion",
+    eventCountdownNote:
+      "Counts down to 00:00 MYT on the calendar date. Hijri days begin after Maghrib. * Estimated date.",
     sideNote: "Take a moment. Draw closer to Him.",
     madeFor: "For every prayer, every day.",
     appName: "Malaysia Prayer Times",
@@ -285,7 +312,8 @@ const text = {
     nextMissing:
       "Tomorrow’s Fajr is not available yet. Try refreshing prayer data.",
     apiHijri: "Hijri date from the API schedule",
-    estimatedHijri: "Browser calendar estimate",
+    estimatedHijri: "Calculated Hijri estimate",
+    publishedHijri: "Published JAKIM calendar",
     date: "Date",
     monthCache: "Saved schedule for this month.",
     detecting: "Detecting your location…",
@@ -377,6 +405,8 @@ const qibla = createQibla({
   getLanguage: () => state.lang,
   getPosition: requestPosition,
 });
+const calendarView = createCalendarView({ getLanguage: () => state.lang });
+const eventCountdown = createEventCountdown({ getLanguage: () => state.lang });
 let dailyRequest = 0,
   monthRequest = 0,
   installPrompt = null;
@@ -615,13 +645,12 @@ function renderDates(now = new Date()) {
       `${Number(hijri[3])} ${months[Number(hijri[2]) - 1]} ${hijri[1]} H`;
     $("hijriSource").textContent = t("apiHijri");
   } else {
-    $("hijriDate").textContent = dateFormat(now, {
-      calendar: "islamic",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-    $("hijriSource").textContent = t("estimatedHijri");
+    const converted = toHijri(dateKey(now));
+    $("hijriDate").textContent =
+      `${converted.day} ${MONTH_NAMES[state.lang][converted.month - 1]} ${converted.year} H`;
+    $("hijriSource").textContent = t(
+      converted.estimated ? "estimatedHijri" : "publishedHijri",
+    );
   }
   $("hijriDate").title = $("hijriSource").textContent;
 }
@@ -656,6 +685,8 @@ function renderCards(now, prayer) {
 function tick(force = false) {
   const now = new Date(),
     today = dateKey(now);
+  eventCountdown.tick(now, force);
+  if (state.view === "calendar") calendarView.tick(now);
   $("currentTime").textContent = dateFormat(now, {
     hour: "2-digit",
     minute: "2-digit",
@@ -762,10 +793,11 @@ async function useZone(code, source = "manualLocation", force = false) {
   }
 }
 function setView(view, updateHash = true) {
-  if (!["home", "schedule", "qibla"].includes(view)) view = "home";
+  if (!["home", "schedule", "qibla", "calendar"].includes(view)) view = "home";
   if (state.view === "qibla" && view !== "qibla") qibla.stop();
   state.view = view;
-  for (const name of ["home", "schedule", "qibla"])
+  document.body.classList.toggle("calendar-open", view === "calendar");
+  for (const name of ["home", "schedule", "qibla", "calendar"])
     $(`${name}View`).hidden = name !== view;
   all(".main-nav [data-view],.bottom-nav [data-view]").forEach((button) => {
     const active = button.dataset.view === view;
@@ -776,19 +808,20 @@ function setView(view, updateHash = true) {
   $("pageTitle").innerHTML = `${escapeHtml(t(`${view}Title`))}<span>.</span>`;
   $("pageSubtitle").textContent = t(`${view}Subtitle`);
   $("breadcrumb").textContent = t(
-    view === "home" ? "today" : view === "schedule" ? "monthly" : "qibla",
+    view === "home" ? "today" : view === "schedule" ? "monthly" : view,
   );
-  document.title = `${t(view === "home" ? "today" : view === "schedule" ? "monthly" : "qibla")} · ${t("appName")}`;
+  document.title = `${$("breadcrumb").textContent} · ${t("appName")}`;
   if (updateHash) {
     history.pushState(
       null,
       "",
-      `#${{ home: "hari-ini", schedule: "jadual", qibla: "kiblat" }[view]}`,
+      `#${{ home: "hari-ini", schedule: "jadual", qibla: "kiblat", calendar: "kalendar" }[view]}`,
     );
     window.scrollTo(0, 0);
     $("main").focus({ preventScroll: true });
   }
   if (view === "schedule") showMonth();
+  if (view === "calendar") calendarView.render();
 }
 function renderMonth() {
   const monthDate = new Date(`${state.month}-01T12:00:00+08:00`);
@@ -953,6 +986,7 @@ function applyLanguage() {
   setStatus();
   renderMonth();
   qibla.render();
+  calendarView.render();
   $("dataSource").textContent = state.busy
     ? t("loading")
     : state.error
@@ -971,7 +1005,7 @@ function applyLanguage() {
       ? "today"
       : state.view === "schedule"
         ? "monthly"
-        : "qibla",
+        : state.view,
   );
   document.title = `${$("breadcrumb").textContent} · ${t("appName")}`;
 }
@@ -1000,6 +1034,10 @@ async function installApp() {
 all("[data-view]").forEach((button) =>
   button.addEventListener("click", () => setView(button.dataset.view)),
 );
+$("eventCountdownLink").addEventListener("click", () => {
+  const date = eventCountdown.targetDate();
+  if (date) calendarView.showDate(date);
+});
 all(".settings-trigger").forEach((button) =>
   button.addEventListener("click", () => openDialog("settingsDialog")),
 );
@@ -1114,7 +1152,9 @@ window.addEventListener("online", () => {
   detectLocation({ automatic: true });
 });
 const viewFromHash = () =>
-  ({ "#jadual": "schedule", "#kiblat": "qibla" })[location.hash] || "home";
+  ({ "#jadual": "schedule", "#kiblat": "qibla", "#kalendar": "calendar" })[
+    location.hash
+  ] || "home";
 window.addEventListener("hashchange", () => setView(viewFromHash(), false));
 document.querySelector(".skip-link").addEventListener("click", (event) => {
   event.preventDefault();

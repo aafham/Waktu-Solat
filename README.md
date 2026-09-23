@@ -12,6 +12,9 @@ Aplikasi web untuk menyemak waktu solat di seluruh Malaysia, melihat lokasi sema
 - Nama lokasi sebenar dipaparkan **berasingan daripada zon waktu JAKIM**. Satu zon solat boleh merangkumi beberapa daerah.
 - Carian negeri, daerah atau kod zon secara manual, serta lokasi kegemaran.
 - Kompas kiblat masa nyata, panduan pusing kiri/kanan dan jarak anggaran ke Kaabah.
+- Kiraan detik acara Islam yang bertukar sepanjang tahun, dengan keutamaan Aidilfitri semasa Ramadan.
+- Kalendar Hijrah 12 bulan, tarikh penting dan penukar Masihi ↔ Hijrah untuk tarikh peribadi atau perancangan.
+- Penanda puasa sunat, hari larangan puasa, panduan haji dan rujukan 25 rasul berserta dalil.
 - Bahasa Melayu/English, format 12/24 jam dan tema cerah/gelap.
 - Pemasangan PWA, jadual tersimpan untuk offline dan pemulihan apabila sambungan kembali.
 
@@ -28,6 +31,36 @@ Semua tarikh dan pengiraan waktu menggunakan `Asia/Kuala_Lumpur`, walaupun peran
 Sebelum pengesanan berjaya, zon lalai **WLY01 — Kuala Lumpur, Putrajaya** dilabelkan sebagai belum disahkan. Zon manual/tersimpan juga dikenal pasti dengan jelas. Pengguna sedia ada yang telah menyimpan zon manual mengekalkan pilihan tersebut.
 
 Ketepatan lokasi bergantung pada peranti, isyarat dan izin pelayar. Angka **GPS ±… m** ialah anggaran ketepatan yang diberikan peranti, bukan jaminan lokasi tepat pada meter tertentu. Bacaan dengan ketidakpastian melebihi 5 km tidak digunakan untuk memilih zon secara automatik. Jika nama kawasan tidak dapat dimuatkan, koordinat sebenar masih dipaparkan. Kawasan yang mempunyai zon khas atau pemetaan bercanggah memerlukan pengesahan manual.
+
+## Kalendar Islam dan kiraan detik
+
+Buka **Kalendar** melalui navigasi sisi desktop atau navigasi bawah telefon. Pilih bulan/tahun Hijrah, kembali ke hari ini, atau tekan tarikh untuk melihat padanan Masihi dan acara pada hari tersebut. Senarai tarikh penting membantu menyemak sambutan sepanjang tahun.
+
+Kad kiraan detik pada halaman utama memilih acara seterusnya secara automatik, termasuk selepas bertukar tahun. Ketika Ramadan berlangsung, Aidilfitri diberi keutamaan; acara terdekat lain tetap disenaraikan. Pada hari acara, kad menunjukkan **Hari ini**, kemudian bergerak ke acara berikutnya apabila hari itu tamat.
+
+Kiraan masa menuju **00:00 waktu Malaysia pada tarikh Masihi dalam takwim**. Ia bukan anggaran waktu Maghrib atau pengisytiharan bermulanya bulan Hijrah. Hari Hijrah bermula selepas Maghrib; penukaran tarikh sahaja tidak menentukan waktu sebenar sesuatu peristiwa selepas matahari terbenam.
+
+Tarikh daripada takwim Malaysia yang tersedia dilabelkan **takwim terbitan JAKIM**. Tarikh di luar liputan rasmi menggunakan pengiraan Hijrah dan dilabelkan **anggaran hisab**. Ramadan, Aidilfitri dan Aidiladha tetap tertakluk kepada pengisytiharan rasmi Malaysia. Tahun baharu terus berfungsi melalui anggaran tanpa perlu menukar kiraan detik secara manual.
+
+Data yang disertakan meliputi **takwim Malaysia 2025–2026**, berdasarkan 25 permulaan bulan Hijrah. Aidilfitri 1447 turut mempunyai rujukan [pengisytiharan 19 Mac 2026](https://dmedia.penerangan.gov.my/upload/sm/19032026.1309983745.pdf). Tarikh tahun 2027 dan di luar liputan ini dilabel anggaran. Pengiraan sandaran menggunakan kalendar Hijrah sivil dengan kitaran 30 tahun; ia tidak bergantung pada algoritma Hijrah berbeza antara pelayar.
+
+### Puasa, haji dan rujukan 25 rasul
+
+- Puasa Isnin/Khamis, hari putih 13–15, Tasu‘a/Asyura, sembilan hari awal Zulhijjah dan Arafah ditandakan dengan rujukan. Enam hari Syawal ialah pilihan enam hari dalam tempoh selepas Aidilfitri, bukan enam tarikh tetap.
+- Aidilfitri serta 10–13 Zulhijjah mengatasi sebarang penanda puasa sunat. Ramadan ditandakan sebagai puasa wajib bagi yang diwajibkan, dengan keterangan berkaitan keadaan individu.
+- Tarwiyah, Arafah, Muzdalifah, Nahar dan Tasyrik diterangkan sebagai penanda ibadah. Tarikh Masihi dalam aplikasi mengikuti Malaysia; jemaah haji mengikuti pengisytiharan Arab Saudi dan pembimbing haji. [Penjelasan Mufti WP tentang Arafah](https://www.muftiwp.gov.my/ms/artikel/irsyad-hukum/edisi-haji-korban/5329-irsyad-al-fatwa-haji-dan-korban-siri-ke-61-polemik-masyarakat-terhadap-penentuan-hari-wukuf-di-arafah).
+- Sepuluh malam terakhir Ramadan dipaparkan sebagai tempoh mencari Lailatulqadar; tiada satu malam ditetapkan sebagai tarikh pasti. Nisfu Syaaban ialah penanda peringatan dengan penjelasan, bukan anjuran puasa khusus daripada aplikasi.
+- **25 rasul** boleh dicari mengikut nama. Setiap profil mempunyai rujukan al-Quran dan maklumat kelahiran yang dibezakan daripada kisah peristiwa. Tarikh lahir yang tidak disahkan tidak direka atau dijadikan acara tahunan.
+
+Hari Isnin bagi kelahiran Nabi Muhammad ﷺ mempunyai sandaran [Sahih Muslim 1162e](https://sunnah.com/muslim:1162e). **12 Rabiulawal** dilabel sebagai tarikh peringatan Maulidur Rasul di Malaysia; profil menjelaskan perbezaan pendapat tentang tarikh lahir sejarah. Penciptaan Adam pada Jumaat dan kisah penyelamatan Musa pada Asyura tidak dilabel sebagai hari lahir mereka.
+
+### Penukar tarikh
+
+Pilih **Masihi → Hijrah** untuk tarikh lahir, ulang tahun perkahwinan atau tarikh pilihan lain. Pilih **Hijrah → Masihi** untuk menukar semula. Masukkan tarikh yang sah dan semak keputusan serta label sumber/anggarannya. Hari yang tidak wujud dalam sesuatu bulan ditolak.
+
+Penukaran dilakukan sepenuhnya pada peranti. Tarikh yang dimasukkan tidak dihantar ke API atau disimpan sebagai rekod peribadi. Kalendar dan penukar juga boleh digunakan offline selepas fail aplikasi disimpan oleh pelayar.
+
+Julat penukaran ialah **19 Julai 622 hingga 1 Oktober 9999 Masihi**, bersamaan tahun Hijrah **1–9665**. Tarikh sejarah di luar liputan takwim rasmi ialah anggaran kalendar, bukan pengesahan catatan kelahiran atau rekod sejarah.
 
 ## Kiblat masa nyata
 
@@ -83,19 +116,23 @@ Ujian pelayar meniru respons API dan bacaan sensor. **Koordinat simulasi tidak d
 
 ## Struktur fail
 
-| Fail                                 | Kegunaan                                                         |
-| ------------------------------------ | ---------------------------------------------------------------- |
-| `index.html`, `style.css`            | Halaman responsif, navigasi, dialog dan tema                     |
-| `script.js`                          | Paparan, jadual, tetapan, kegemaran dan aliran lokasi            |
-| `location-service.js`                | GPS, nama kawasan, pembatalan dan semakan lokasi automatik       |
-| `prayer-data.js`                     | JAKIM, pengesahan/cache jadual, tarikh Malaysia dan pemetaan zon |
-| `zones.js`                           | Katalog 60 zon dalam 14 kumpulan negeri/wilayah                  |
-| `qibla.js`                           | Bearing, jarak, sensor kompas dan kitar hayat sesi               |
-| `service-worker.js`                  | Cache fail aplikasi dan pemulihan halaman offline                |
-| `manifest.json`, `icons/`            | Metadata dan ikon PWA                                            |
-| `tests/*.test.js`                    | Ujian unit/integrasi modul                                       |
-| `tests/e2e/`, `playwright.config.js` | Ujian aliran pelayar dan susun atur responsif                    |
-| `.github/workflows/checks.yml`       | Semakan sintaks, unit dan pelayar pada GitHub Actions            |
+| Fail                                               | Kegunaan                                                         |
+| -------------------------------------------------- | ---------------------------------------------------------------- |
+| `index.html`, `style.css`                          | Halaman responsif, navigasi, dialog dan tema                     |
+| `script.js`                                        | Paparan, jadual, tetapan, kegemaran dan aliran lokasi            |
+| `location-service.js`                              | GPS, nama kawasan, pembatalan dan semakan lokasi automatik       |
+| `prayer-data.js`                                   | JAKIM, pengesahan/cache jadual, tarikh Malaysia dan pemetaan zon |
+| `zones.js`                                         | Katalog 60 zon dalam 14 kumpulan negeri/wilayah                  |
+| `qibla.js`                                         | Bearing, jarak, sensor kompas dan kitar hayat sesi               |
+| `islamic-calendar.js`, `islamic-calendar-data.js`  | Pengiraan Hijrah, takwim rasmi, peristiwa dan aturan puasa       |
+| `islamic-calendar-view.js`, `islamic-calendar.css` | Kalendar, penukar tarikh dan paparan rujukan responsif           |
+| `islamic-references.js`                            | Dalil puasa/haji dan profil 25 rasul dalam BM/EN                 |
+| `event-countdown.js`                               | Kiraan detik peristiwa terdekat mengikut tarikh Malaysia         |
+| `service-worker.js`                                | Cache fail aplikasi dan pemulihan halaman offline                |
+| `manifest.json`, `icons/`                          | Metadata dan ikon PWA                                            |
+| `tests/*.test.js`                                  | Ujian unit/integrasi modul                                       |
+| `tests/e2e/`, `playwright.config.js`               | Ujian aliran pelayar dan susun atur responsif                    |
+| `.github/workflows/checks.yml`                     | Semakan sintaks, unit dan pelayar pada GitHub Actions            |
 
 ## Sumber data dan privasi
 
@@ -125,14 +162,15 @@ Katalog zon disemak pada **23 September 2026**. Pemetaan daerah Kinta dibetulkan
 
 Hos sebagai laman statik di Vercel: preset **Other**, root `./`, tanpa arahan build. Push ke `main` mencetuskan production melalui integrasi GitHub Vercel. Workflow **Check application** menjalankan semakan sintaks, ujian modul dan ujian Chromium pada push/pull request.
 
-Apabila aset berubah, naikkan `CACHE_VERSION` dalam `service-worker.js` dan versi URL CSS/JavaScript dalam `index.html`. Versi shell semasa ialah **v18**, termasuk modul lokasi baharu. Hanya cache lama berawalan `waktu-solat-` dipadamkan semasa pengaktifan; respons API diurus oleh modul data.
+Apabila aset berubah, naikkan `CACHE_VERSION` dalam `service-worker.js` dan versi URL CSS/JavaScript dalam `index.html`. Versi shell semasa ialah **v19**, termasuk modul kalendar dan penukar tarikh. Hanya cache lama berawalan `waktu-solat-` dipadamkan semasa pengaktifan; respons API diurus oleh modul data.
 
-## Pengesahan versi 2.1
+## Pengesahan versi 2.2
 
 Semakan pada **23 September 2026**:
 
-- **71 ujian modul**: 29 data waktu/pemetaan zon, 14 lokasi, 18 kiblat dan 10 service worker.
-- **22 ujian pelayar**: lokasi automatik/nama kawasan, pembatalan GPS dan pemulihan halaman, pilihan manual mengatasi permintaan lambat, kegemaran, BM/EN, 12/24 jam, tema, dialog/fokus, navigasi bawah, jadual bulanan, pemasangan, ralat/cuba semula, offline/pemulihan serta kompas langsung/arah tetap.
+- **94 ujian modul**: 29 data waktu/pemetaan zon, 14 lokasi, 18 kiblat, 10 service worker, 19 kalendar/aturan puasa dan 4 kiraan detik.
+- **33 ujian pelayar**: aliran lokasi, jadual, kiblat, tetapan dan offline; ditambah navigasi kalendar, penukaran dua hala, sempadan tarikh/ralat, pertukaran kiraan detik, puasa/haji serta carian dan rujukan 25 rasul.
+- Penukaran pergi-balik bagi setiap hari dalam liputan takwim rasmi 2025–2026 diperiksa. Ujian memastikan Aidilfitri, Aidiladha dan hari Tasyrik mengatasi penandaan puasa sunat.
 - Paparan desktop **1440px** dan telefon **390px/320px** diperiksa untuk limpahan mendatar.
 - Simulasi peranti dalam zon masa New York mengesahkan penggunaan tarikh Malaysia dan pertukaran Subuh pada hujung bulan.
 - Permintaan langsung JAKIM untuk **kesemua 60 zon, September 2026** berjaya: 1,800 rekod hari-zon dan 10,800 waktu.
@@ -146,4 +184,4 @@ Semakan 60 zon mengesahkan muatan jadual JAKIM untuk bulan tersebut, bukan ketep
 - Peta masjid/surau berdekatan dengan maklumat sumber dan pautan navigasi.
 - Eksport jadual bulanan kepada PDF atau kalendar untuk perjalanan dan perkongsian keluarga.
 
-Cadangan ini belum termasuk dalam versi 2.1.
+Cadangan ini belum termasuk dalam versi 2.2.

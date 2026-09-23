@@ -8,7 +8,7 @@
     />
     <meta
       name="description"
-      content="Waktu solat Malaysia mengikut zon JAKIM. Jadual harian dan bulanan, kiraan masa solat seterusnya dan arah kiblat."
+      content="Waktu solat Malaysia mengikut zon JAKIM, kiblat langsung, kalendar Islam, kiraan detik perayaan, puasa sunat dan penukar tarikh Masihi-Hijrah."
     />
     <meta name="theme-color" content="#174f43" />
     <title>Waktu Solat · Malaysia</title>
@@ -21,7 +21,8 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Manrope:wght@400;500;600;650;700;750;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="style.css?v=2026-09-23-v2" />
+    <link rel="stylesheet" href="style.css?v=2026-09-23-v3" />
+    <link rel="stylesheet" href="islamic-calendar.css?v=2026-09-23-v3" />
   </head>
   <body>
     <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -118,6 +119,10 @@
         ><button class="nav-item" data-view="qibla">
           <svg class="icon"><use href="#i-compass" /></svg
           ><span data-i18n="qibla">Arah kiblat</span>
+        </button>
+        <button class="nav-item" data-view="calendar">
+          <svg class="icon"><use href="#i-moon" /></svg>
+          <span data-i18n="calendar">Kalendar Islam</span>
         </button>
       </nav>
       <div class="sidebar-bottom">
@@ -329,6 +334,62 @@
               >
             </div>
           </section>
+          <section class="event-countdown" aria-labelledby="eventCountdownName">
+            <div class="event-countdown-copy">
+              <p class="eyebrow" data-i18n="eventEyebrow">
+                MENANTI HARI ISTIMEWA
+              </p>
+              <h2 id="eventCountdownName">—</h2>
+              <p id="eventCountdownDate" class="event-countdown-date"></p>
+              <p
+                id="eventCountdownStatus"
+                class="event-countdown-status"
+                role="status"
+              ></p>
+              <button
+                id="eventCountdownLink"
+                class="text-button"
+                data-view="calendar"
+              >
+                <span data-i18n="openCalendar">Buka kalendar Islam</span>
+                <svg class="icon"><use href="#i-arrow" /></svg>
+              </button>
+            </div>
+            <div class="event-countdown-right">
+              <div
+                class="event-countdown-digits"
+                aria-live="off"
+                role="timer"
+                data-i18n-aria="eventTimeRemaining"
+                aria-label="Masa berbaki ke acara Islam"
+              >
+                <div>
+                  <strong id="eventCountdownDays">—</strong
+                  ><span data-i18n="days">HARI</span>
+                </div>
+                <div>
+                  <strong id="eventCountdownHours">—</strong
+                  ><span data-i18n="hours">JAM</span>
+                </div>
+                <div>
+                  <strong id="eventCountdownMinutes">—</strong
+                  ><span data-i18n="minutes">MINIT</span>
+                </div>
+                <div>
+                  <strong id="eventCountdownSeconds">—</strong
+                  ><span data-i18n="seconds">SAAT</span>
+                </div>
+              </div>
+              <p class="event-countdown-note" data-i18n="eventCountdownNote">
+                Kiraan ke 00:00 MYT pada tarikh kalendar. Hari Hijrah bermula
+                selepas Maghrib.
+              </p>
+            </div>
+            <div class="event-countdown-upcoming">
+              <span data-i18n="otherEvents">Dalam takwim</span>
+              <ul id="eventCountdownUpcoming"></ul>
+            </div>
+          </section>
           <div class="support-grid">
             <button class="qibla-shortcut" data-view="qibla">
               <span class="shortcut-icon"
@@ -487,6 +548,14 @@
             </div>
           </div>
         </section>
+        <section
+          id="calendarView"
+          class="view"
+          hidden
+          aria-labelledby="calendarHeading"
+        >
+          <div id="calendarContent"></div>
+        </section>
         <footer class="footer">
           <span>© <span id="year">2026</span> Waktu Solat</span
           ><span
@@ -519,6 +588,9 @@
       ><button data-view="qibla">
         <svg class="icon"><use href="#i-compass" /></svg
         ><span data-i18n="qiblaShort">Kiblat</span></button
+      ><button data-view="calendar">
+        <svg class="icon"><use href="#i-moon" /></svg>
+        <span data-i18n="calendarShort">Kalendar</span></button
       ><button class="settings-trigger">
         <svg class="icon"><use href="#i-settings" /></svg
         ><span data-i18n="settings">Tetapan</span>
@@ -668,6 +740,6 @@
         <a href="https://www.e-solat.gov.my/">Buka JAKIM e-Solat</a>.
       </p></noscript
     >
-    <script type="module" src="script.js?v=2026-09-23-v2"></script>
+    <script type="module" src="script.js?v=2026-09-23-v3"></script>
   </body>
 </html>
