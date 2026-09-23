@@ -1,5 +1,9 @@
 import * as calendar from "./islamic-calendar.js";
-import * as references from "./islamic-references.js";
+import {
+  MUHAMMAD_REFERENCE,
+  FASTING_REFERENCES,
+  HAJJ_REFERENCES,
+} from "./islamic-references.js";
 
 const escape = (value) =>
   String(value ?? "").replace(
@@ -33,10 +37,9 @@ const shiftDate = (date, amount) => {
 
 const messages = {
   ms: {
-    heading: "Satu takwim, banyak makna.",
+    heading: "Kalendar Hijrah",
     eyebrow: "KALENDAR ISLAM",
-    intro:
-      "Terokai bulan Hijrah, kenali hari penting dan tukarkan tarikh pilihan anda.",
+    intro: "Tarikh, hari penting dan panduan amalan dalam satu tempat.",
     previous: "Bulan Hijrah sebelumnya",
     next: "Bulan Hijrah seterusnya",
     today: "Hari ini",
@@ -60,10 +63,9 @@ const messages = {
     estimateNote:
       "Tarikh di luar liputan takwim rasmi dikira dengan kalendar Hijrah sivil dan ditandakan “Anggaran”. Ia boleh berbeza daripada takwim tempatan.",
     selected: "TARIKH PILIHAN",
-    noEvent: "Tiada peringatan dalam senarai ini pada tarikh tersebut.",
+    noEvent: "Tiada peringatan tersenarai pada tarikh ini.",
     inMonth: "Dalam bulan ini",
-    noMonthEvent:
-      "Tiada peringatan tersenarai untuk bulan ini. Anda masih boleh meneroka setiap tarikh.",
+    noMonthEvent: "Tiada peringatan tersenarai untuk bulan ini.",
     event: "Peringatan",
     celebration: "Perayaan",
     announcement: "Tertakluk kepada pengumuman rasmi",
@@ -72,7 +74,7 @@ const messages = {
     todayLegend: "Hari ini",
     eventLegend: "Hari dengan peringatan",
     keyboard: "Gunakan kekunci anak panah untuk memilih tarikh.",
-    annual: "Peringatan sepanjang tahun",
+    annual: "Hari penting sepanjang tahun",
     annualIntro:
       "Perayaan dan hari penting bagi tahun Hijrah yang sedang dipaparkan.",
     showAnnual: "Lihat senarai setahun",
@@ -85,16 +87,15 @@ const messages = {
     scope:
       "Senarai ini merangkumi perayaan dan peringatan yang lazim dirujuk di Malaysia. Ia bukan senarai setiap tradisi Islam atau pengesahan cuti umum.",
     converterEyebrow: "TARIKH YANG BERMAKNA",
-    converterTitle: "Tukar tarikh pilihan anda",
-    converterIntro:
-      "Semak tarikh kelahiran, pernikahan atau hari istimewa dalam kedua-dua kalendar.",
-    gregorianToHijri: "Masihi ke Hijrah",
-    hijriToGregorian: "Hijrah ke Masihi",
+    converterTitle: "Penukar tarikh",
+    converterIntro: "Semak hari lahir, pernikahan atau tarikh pilihan anda.",
+    gregorianToHijri: "Masihi → Hijrah",
+    hijriToGregorian: "Hijrah → Masihi",
     gregorianDate: "Tarikh Masihi",
     hijriDate: "Tarikh Hijrah",
     day: "Hari",
-    convertHijri: "Tukar ke Hijrah",
-    convertGregorian: "Tukar ke Masihi",
+    convertHijri: "Tukar tarikh",
+    convertGregorian: "Tukar tarikh",
     viewDate: "Lihat dalam kalendar",
     invalidGregorian:
       "Masukkan tarikh Masihi yang sah dalam julat yang disokong.",
@@ -110,7 +111,7 @@ const messages = {
     jumpCalendar: "Kalendar",
     jumpConverter: "Penukar tarikh",
     jumpFasting: "Puasa & haji",
-    jumpProphets: "25 rasul & dalil",
+    jumpMuhammad: "Nabi Muhammad ﷺ",
     sections: "Bahagian kalendar Islam",
     fastingTitle: "Puasa pada tarikh ini",
     obligatory: "Puasa Ramadan",
@@ -120,28 +121,31 @@ const messages = {
     fastingLegend: "Puasa sunat",
     prohibitedLegend: "Larangan puasa",
     guideEyebrow: "AMALAN DENGAN RUJUKAN",
-    guideTitle: "Puasa dan perjalanan haji",
-    guideIntro:
-      "Kenali anjuran, larangan dan waktu ibadah dengan merujuk dalil yang dinyatakan.",
+    guideTitle: "Puasa & haji",
+    guideIntro: "Panduan ringkas dengan dalil dan rujukan.",
     fastingGuides: "Panduan puasa",
     hajjGuides: "Hari-hari haji",
     evidence: "Dalil & rujukan",
-    prophetsEyebrow: "KENALI PARA RASUL",
-    prophetsTitle: "25 rasul dan rujukan dalil",
-    prophetsIntro:
-      "Nama yang disebut dalam al-Quran, kisah ringkas dan maklumat kelahiran yang dapat disahkan. Tarikh yang tidak dapat disahkan tidak dimasukkan sebagai hari lahir dalam kalendar.",
-    prophetSearch: "Cari nama rasul",
-    prophetSearchHint: "Contoh: Musa, Ibrahim, Muhammad",
+    muhammadEyebrow: "SIRAH & DALIL",
+    muhammadTitle: "Nabi Muhammad ﷺ",
+    muhammadIntro: "Kelahiran Baginda dan peringatan Maulidur Rasul.",
     prophetBirth: "Maklumat kelahiran",
     quranReference: "Rujukan al-Quran",
-    noProphets: "Tiada nama sepadan. Cuba ejaan lain.",
+    readEvidence: "Baca dalil & rujukan",
+    accuracyTitle: "Tentang ketepatan tarikh",
+    conversionNotes: "Ketepatan tarikh & waktu selepas Maghrib",
+    directionLabel: "Arah penukaran tarikh",
+    useToday: "Guna hari ini",
+    enterDate: "Pilih tarikh anda",
+    resultHint: "Hasil penukaran akan muncul di sini.",
+    resultHelp: "Pilih tarikh, kemudian tekan Tukar tarikh.",
+    resultLabel: "HASIL PENUKARAN",
     window: "Tempoh amalan",
   },
   en: {
-    heading: "A calendar of meaningful days.",
+    heading: "Hijri calendar",
     eyebrow: "ISLAMIC CALENDAR",
-    intro:
-      "Explore Hijri months, discover important days and convert a date that matters to you.",
+    intro: "Dates, important days and a guide to Islamic practices.",
     previous: "Previous Hijri month",
     next: "Next Hijri month",
     today: "Today",
@@ -168,8 +172,7 @@ const messages = {
     selected: "SELECTED DATE",
     noEvent: "No observance from this list falls on the selected date.",
     inMonth: "This month",
-    noMonthEvent:
-      "No observances are listed for this month. You can still explore every date.",
+    noMonthEvent: "No observances are listed for this month.",
     event: "Observance",
     celebration: "Celebration",
     announcement: "Subject to official announcement",
@@ -178,7 +181,7 @@ const messages = {
     todayLegend: "Today",
     eventLegend: "Day with an observance",
     keyboard: "Use the arrow keys to choose a date.",
-    annual: "Observances through the year",
+    annual: "Important days this year",
     annualIntro:
       "Celebrations and important days in the Hijri year currently displayed.",
     showAnnual: "Explore the full year",
@@ -191,16 +194,16 @@ const messages = {
     scope:
       "This list covers celebrations and observances commonly referenced in Malaysia. It is not a list of every Islamic tradition or confirmation of public holidays.",
     converterEyebrow: "DATES THAT MATTER",
-    converterTitle: "Convert your special date",
+    converterTitle: "Date converter",
     converterIntro:
-      "Look up a birth, marriage or another meaningful day in both calendars.",
-    gregorianToHijri: "Gregorian to Hijri",
-    hijriToGregorian: "Hijri to Gregorian",
+      "Look up a birthday, wedding or any date that matters to you.",
+    gregorianToHijri: "Gregorian → Hijri",
+    hijriToGregorian: "Hijri → Gregorian",
     gregorianDate: "Gregorian date",
     hijriDate: "Hijri date",
     day: "Day",
-    convertHijri: "Convert to Hijri",
-    convertGregorian: "Convert to Gregorian",
+    convertHijri: "Convert date",
+    convertGregorian: "Convert date",
     viewDate: "Show in calendar",
     invalidGregorian:
       "Enter a valid Gregorian date within the supported range.",
@@ -216,7 +219,7 @@ const messages = {
     jumpCalendar: "Calendar",
     jumpConverter: "Date converter",
     jumpFasting: "Fasting & Hajj",
-    jumpProphets: "25 prophets & sources",
+    jumpMuhammad: "Prophet Muhammad ﷺ",
     sections: "Islamic calendar sections",
     fastingTitle: "Fasting on this date",
     obligatory: "Ramadan fasting",
@@ -226,21 +229,25 @@ const messages = {
     fastingLegend: "Recommended fast",
     prohibitedLegend: "Fasting prohibited",
     guideEyebrow: "PRACTICES WITH SOURCES",
-    guideTitle: "Fasting and the days of Hajj",
-    guideIntro:
-      "Explore recommendations, prohibitions and the timing of worship alongside the cited evidence.",
+    guideTitle: "Fasting & Hajj",
+    guideIntro: "A concise guide with evidence and references.",
     fastingGuides: "Fasting guide",
     hajjGuides: "Days of Hajj",
     evidence: "Evidence & sources",
-    prophetsEyebrow: "KNOW THE PROPHETS",
-    prophetsTitle: "25 prophets and their sources",
-    prophetsIntro:
-      "Names mentioned in the Quran, brief accounts and birth information where it can be established. Dates that cannot be verified are not added to the calendar as birthdays.",
-    prophetSearch: "Find a prophet",
-    prophetSearchHint: "For example: Musa, Ibrahim, Muhammad",
+    muhammadEyebrow: "LIFE & SOURCES",
+    muhammadTitle: "Prophet Muhammad ﷺ",
+    muhammadIntro: "His birth and the observance of Mawlid.",
     prophetBirth: "Birth information",
     quranReference: "Quran references",
-    noProphets: "No matching names. Try another spelling.",
+    readEvidence: "Read evidence & sources",
+    accuracyTitle: "About date accuracy",
+    conversionNotes: "Date accuracy & times after Maghrib",
+    directionLabel: "Date conversion direction",
+    useToday: "Use today",
+    enterDate: "Choose your date",
+    resultHint: "Your converted date will appear here.",
+    resultHelp: "Choose a date, then select Convert date.",
+    resultLabel: "CONVERTED DATE",
     window: "Period of practice",
   },
 };
@@ -287,7 +294,9 @@ export function createCalendarView({ getLanguage = () => "ms" } = {}) {
     annualOpen: false,
     filter: "all",
     jumpError: "",
-    prophetSearch: "",
+    direction: "gregorian",
+    conversionNotesOpen: false,
+    accuracyOpen: false,
     openReferences: [],
     inputs: {
       gregorianInput: initialDate,
@@ -373,24 +382,65 @@ export function createCalendarView({ getLanguage = () => "ms" } = {}) {
 
   function conversionOutput(result, direction) {
     if (!result) return "";
-    const heading =
-      direction === "hijri"
-        ? formatHijri(result)
-        : formatGregorian(result.date, {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          });
-    const secondary =
-      direction === "hijri"
-        ? formatGregorian(result.date)
-        : formatHijri(result.hijri);
-    return `<p class="ic-result-caption">${t(direction === "hijri" ? "hijriDate" : "gregorianDate")}</p><strong>${escape(heading)}</strong><p>${escape(secondary)}</p>${sourceLine(result)}<button type="button" class="ic-inline-link" data-calendar-date="${escape(result.date)}">${t("viewDate")}${icon("arrow")}</button>`;
+    const isHijri = direction === "hijri";
+    const day = isHijri ? result.day : utcDate(result.date).getUTCDate();
+    const month = isHijri
+      ? monthName(result.month)
+      : formatGregorian(result.date, { month: "long" });
+    const year = isHijri
+      ? `${result.year} H`
+      : formatGregorian(result.date, { year: "numeric" });
+    const secondary = isHijri
+      ? formatGregorian(result.date, {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
+      : formatHijri(result.hijri);
+    return `<div class="ic-result-top"><p class="ic-result-caption">${t(isHijri ? "hijriDate" : "gregorianDate")}</p>${badge(result)}</div>
+      <div class="ic-result-date"><span>${day}</span><strong>${escape(month)}<small>${escape(year)}</small></strong></div>
+      <p class="ic-result-equivalent">${escape(secondary)}</p>
+      <div class="ic-result-source">${sourceLink(result)}</div>
+      <button type="button" class="ic-result-action" data-calendar-date="${escape(result.date)}">${t("viewDate")}${icon("arrow")}</button>`;
+  }
+
+  function resultArea(result, direction) {
+    const id =
+      direction === "hijri" ? "hijriConvertResult" : "gregorianConvertResult";
+    return `<div class="ic-result-area"><div id="${id}" class="ic-conversion-result" role="status" aria-live="polite"${result ? "" : " hidden"}>${conversionOutput(result, direction)}</div>
+      <div id="${id}Placeholder" class="ic-result-placeholder"${result ? " hidden" : ""}>${icon("calendar")}<strong>${t("resultHint")}</strong><p>${t("resultHelp")}</p></div></div>`;
   }
 
   function renderConverters() {
-    return `<section class="ic-converter" aria-labelledby="islamicConverterTitle"><div class="ic-section-heading"><div><p class="ic-eyebrow">${t("converterEyebrow")}</p><h3 id="islamicConverterTitle">${t("converterTitle")}</h3><p>${t("converterIntro")}</p></div>${icon("calendar")}</div><div class="ic-converter-grid"><form id="gregorianConvertForm" class="ic-convert-form" novalidate><h4>${t("gregorianToHijri")}</h4><label for="gregorianInput">${t("gregorianDate")}</label><input id="gregorianInput" type="date" required min="${minimum}" max="${maximum}" value="${escape(state.inputs.gregorianInput)}" aria-describedby="calendarSupportedRange gregorianConvertError"><button type="submit" class="primary" id="gregorianConvertBtn">${t("convertHijri")}${icon("arrow")}</button><p id="gregorianConvertError" class="ic-error" role="alert"${state.gregorianError ? "" : " hidden"}>${escape(state.gregorianError)}</p><div id="hijriConvertResult" class="ic-conversion-result" role="status" aria-live="polite"${state.fromGregorian ? "" : " hidden"}>${conversionOutput(state.fromGregorian, "hijri")}</div></form><form id="hijriConvertForm" class="ic-convert-form" novalidate><h4>${t("hijriToGregorian")}</h4><div class="ic-hijri-fields"><div><label for="hijriInputDay">${t("day")}</label><input id="hijriInputDay" type="number" inputmode="numeric" required min="1" max="30" value="${escape(state.inputs.hijriInputDay)}" aria-describedby="hijriConvertError"></div><div><label for="hijriInputMonth">${t("month")}</label><select id="hijriInputMonth" aria-describedby="hijriConvertError">${monthOptions(state.inputs.hijriInputMonth)}</select></div><div><label for="hijriInputYear">${t("year")}</label><input id="hijriInputYear" type="number" inputmode="numeric" required min="${minimumYear}" max="${maximumYear}" value="${escape(state.inputs.hijriInputYear)}" aria-describedby="calendarSupportedRange hijriConvertError"></div></div><button type="submit" class="primary" id="hijriConvertBtn">${t("convertGregorian")}${icon("arrow")}</button><p id="hijriConvertError" class="ic-error" role="alert"${state.hijriError ? "" : " hidden"}>${escape(state.hijriError)}</p><div id="gregorianConvertResult" class="ic-conversion-result" role="status" aria-live="polite"${state.fromHijri ? "" : " hidden"}>${conversionOutput(state.fromHijri, "gregorian")}</div></form></div><p id="calendarSupportedRange" class="ic-range">${t("range")}: ${escape(formatGregorian(minimum))} – ${escape(formatGregorian(maximum))} · ${minimumYear}–${maximumYear} H</p><div class="ic-boundary-note"><span>${icon("moon")}</span><div><strong>${t("boundaryTitle")}</strong><p>${t("boundary")}</p></div></div></section>`;
+    const isGregorian = state.direction === "gregorian";
+    return `<section class="ic-converter" aria-labelledby="islamicConverterTitle">
+      <div class="ic-section-heading"><div><p class="ic-eyebrow">${t("converterEyebrow")}</p><h2 id="islamicConverterTitle">${t("converterTitle")}</h2><p>${t("converterIntro")}</p></div><span class="ic-section-icon" aria-hidden="true">${icon("calendar")}</span></div>
+      <div class="ic-converter-tabs" role="tablist" aria-label="${t("directionLabel")}">
+        <button type="button" role="tab" id="gregorianDirectionTab" data-convert-direction="gregorian" aria-controls="gregorianConvertPanel" aria-selected="${isGregorian}" tabindex="${isGregorian ? 0 : -1}">${t("gregorianToHijri")}</button>
+        <button type="button" role="tab" id="hijriDirectionTab" data-convert-direction="hijri" aria-controls="hijriConvertPanel" aria-selected="${!isGregorian}" tabindex="${isGregorian ? -1 : 0}">${t("hijriToGregorian")}</button>
+      </div>
+      <div id="gregorianConvertPanel" class="ic-converter-panel" role="tabpanel" aria-labelledby="gregorianDirectionTab"${isGregorian ? "" : " hidden"}>
+        <form id="gregorianConvertForm" class="ic-convert-form" novalidate>
+          <div class="ic-form-heading"><h3>${t("enterDate")}</h3><button type="button" class="ic-text-button" data-converter-today="gregorian">${t("useToday")}</button></div>
+          <label for="gregorianInput">${t("gregorianDate")}</label>
+          <input id="gregorianInput" type="date" required min="${minimum}" max="${maximum}" value="${escape(state.inputs.gregorianInput)}" aria-describedby="calendarSupportedRange gregorianConvertError">
+          <p id="gregorianConvertError" class="ic-error" role="alert"${state.gregorianError ? "" : " hidden"}>${escape(state.gregorianError)}</p>
+          <button type="submit" class="primary" id="gregorianConvertBtn">${t("convertHijri")}${icon("arrow")}</button>
+        </form>${resultArea(state.fromGregorian, "hijri")}
+      </div>
+      <div id="hijriConvertPanel" class="ic-converter-panel" role="tabpanel" aria-labelledby="hijriDirectionTab"${isGregorian ? " hidden" : ""}>
+        <form id="hijriConvertForm" class="ic-convert-form" novalidate>
+          <div class="ic-form-heading"><h3>${t("enterDate")}</h3><button type="button" class="ic-text-button" data-converter-today="hijri">${t("useToday")}</button></div>
+          <div class="ic-hijri-fields"><div><label for="hijriInputDay">${t("day")}</label><input id="hijriInputDay" type="number" inputmode="numeric" required min="1" max="30" value="${escape(state.inputs.hijriInputDay)}" aria-describedby="hijriConvertError"></div>
+          <div><label for="hijriInputMonth">${t("month")}</label><select id="hijriInputMonth" aria-describedby="hijriConvertError">${monthOptions(state.inputs.hijriInputMonth)}</select></div>
+          <div><label for="hijriInputYear">${t("year")}</label><input id="hijriInputYear" type="number" inputmode="numeric" required min="${minimumYear}" max="${maximumYear}" value="${escape(state.inputs.hijriInputYear)}" aria-describedby="calendarSupportedRange hijriConvertError"></div></div>
+          <p id="hijriConvertError" class="ic-error" role="alert"${state.hijriError ? "" : " hidden"}>${escape(state.hijriError)}</p>
+          <button type="submit" class="primary" id="hijriConvertBtn">${t("convertGregorian")}${icon("arrow")}</button>
+        </form>${resultArea(state.fromHijri, "gregorian")}
+      </div>
+      <details id="calendarConversionNotes" class="ic-conversion-notes"${state.conversionNotesOpen ? " open" : ""}><summary>${icon("moon")}<span>${t("conversionNotes")}</span>${icon("chevron")}</summary><div><p>${t("estimateNote")}</p><p id="calendarSupportedRange" class="ic-range">${t("range")}: ${escape(formatGregorian(minimum))} – ${escape(formatGregorian(maximum))} · ${minimumYear}–${maximumYear} H</p><strong>${t("boundaryTitle")}</strong><p>${t("boundary")}</p></div></details>
+    </section>`;
   }
 
   function renderAnnual() {
@@ -411,7 +461,7 @@ export function createCalendarView({ getLanguage = () => "ms" } = {}) {
       ["islamicMonthSection", "jumpCalendar"],
       ["islamicConverterSection", "jumpConverter"],
       ["islamicFastingSection", "jumpFasting"],
-      ["islamicProphetsSection", "jumpProphets"],
+      ["islamicMuhammadSection", "jumpMuhammad"],
     ]
       .map(
         ([id, label]) =>
@@ -432,40 +482,27 @@ export function createCalendarView({ getLanguage = () => "ms" } = {}) {
   }
 
   function renderGuides() {
-    return `<section id="islamicFastingSection" class="ic-guide-card" aria-labelledby="islamicFastingTitle" tabindex="-1"><div class="ic-section-heading"><div><p class="ic-eyebrow">${t("guideEyebrow")}</p><h3 id="islamicFastingTitle">${t("guideTitle")}</h3><p>${t("guideIntro")}</p></div>${icon("moon")}</div><div class="ic-guide-columns"><div><h4 class="ic-guide-label">${t("fastingGuides")}</h4>${(references.FASTING_REFERENCES || []).map((entry) => renderReferenceCard(entry, "fasting")).join("")}</div><div><h4 class="ic-guide-label">${t("hajjGuides")}</h4>${(references.HAJJ_REFERENCES || []).map((entry) => renderReferenceCard(entry, "hajj")).join("")}</div></div></section>`;
+    return `<section id="islamicFastingSection" class="ic-guide-card" aria-labelledby="islamicFastingTitle" tabindex="-1"><div class="ic-section-heading"><div><p class="ic-eyebrow">${t("guideEyebrow")}</p><h2 id="islamicFastingTitle">${t("guideTitle")}</h2><p>${t("guideIntro")}</p></div>${icon("moon")}</div><div class="ic-guide-columns"><div><h4 class="ic-guide-label">${t("fastingGuides")}</h4>${FASTING_REFERENCES.map((entry) => renderReferenceCard(entry, "fasting")).join("")}</div><div><h4 class="ic-guide-label">${t("hajjGuides")}</h4>${HAJJ_REFERENCES.map((entry) => renderReferenceCard(entry, "hajj")).join("")}</div></div></section>`;
   }
 
-  function filteredProphets() {
-    const query = state.prophetSearch.trim().toLocaleLowerCase();
-    return (references.PROPHETS || []).filter(
-      (prophet) =>
-        !query ||
-        `${prophet.name?.ms} ${prophet.name?.en}`
-          .toLocaleLowerCase()
-          .includes(query),
-    );
-  }
-
-  function renderProphetCards() {
-    const prophets = filteredProphets();
-    return prophets.length
-      ? prophets
-          .map((prophet) => {
-            const id = `prophet-${prophet.id}`;
-            return `<details class="ic-reference-card ic-prophet-card" data-reference-id="${escape(id)}"${state.openReferences.includes(id) ? " open" : ""}><summary><span>${escape(prophet.name?.[lang()] || prophet.id)}</span>${icon("chevron")}</summary><div class="ic-reference-body"><p class="ic-reference-caption">${t("prophetBirth")}</p><p class="ic-birth-note">${escape(prophet.birth?.[lang()] || "")}</p>${prophet.note?.[lang()] ? `<p>${escape(prophet.note[lang()])}</p>` : ""}<p class="ic-reference-caption">${t("quranReference")}</p>${referenceLinks(prophet.quran)}${prophet.sources?.length ? `<p class="ic-reference-caption">${t("evidence")}</p>${referenceLinks(prophet.sources)}` : ""}</div></details>`;
-          })
-          .join("")
-      : `<p class="ic-empty-copy">${t("noProphets")}</p>`;
-  }
-
-  function renderProphets() {
-    return `<section id="islamicProphetsSection" class="ic-prophets-card" aria-labelledby="islamicProphetsTitle" tabindex="-1"><div class="ic-section-heading"><div><p class="ic-eyebrow">${t("prophetsEyebrow")}</p><h3 id="islamicProphetsTitle">${t("prophetsTitle")}</h3><p>${t("prophetsIntro")}</p></div><span class="ic-count">${references.PROPHETS?.length || 25}</span></div><div class="ic-prophet-search"><div><label for="islamicProphetSearch">${t("prophetSearch")}</label><input type="search" id="islamicProphetSearch" placeholder="${t("prophetSearchHint")}" value="${escape(state.prophetSearch)}" autocomplete="off"></div><span id="prophetResultCount" role="status">${filteredProphets().length} / ${references.PROPHETS?.length || 25}</span></div><div id="islamicProphetList" class="ic-prophet-list">${renderProphetCards()}</div></section>`;
+  function renderMuhammad() {
+    const prophet = MUHAMMAD_REFERENCE;
+    const id = `prophet-${prophet.id}`;
+    return `<section id="islamicMuhammadSection" class="ic-muhammad-card" aria-labelledby="islamicMuhammadTitle" tabindex="-1">
+      <div class="ic-section-heading"><div><p class="ic-eyebrow">${t("muhammadEyebrow")}</p><h2 id="islamicMuhammadTitle">${t("muhammadTitle")}</h2><p>${t("muhammadIntro")}</p></div><span class="ic-section-icon" aria-hidden="true">${icon("moon")}</span></div>
+      <div class="ic-birth-summary"><p class="ic-reference-caption">${t("prophetBirth")}</p><p class="ic-birth-note">${escape(prophet.birth[lang()])}</p></div>
+      <details class="ic-reference-card ic-muhammad-reference" data-reference-id="${escape(id)}"${state.openReferences.includes(id) ? " open" : ""}><summary><span>${t("readEvidence")}</span>${icon("chevron")}</summary><div class="ic-reference-body"><p>${escape(prophet.note[lang()])}</p><p class="ic-reference-caption">${t("quranReference")}</p>${referenceLinks(prophet.quran)}<p class="ic-reference-caption">${t("evidence")}</p>${referenceLinks(prophet.sources)}</div></details>
+    </section>`;
   }
 
   function readInputs() {
     for (const id of Object.keys(state.inputs))
       if ($(id)) state.inputs[id] = $(id).value;
     if ($("islamicYearPanel")) state.annualOpen = $("islamicYearPanel").open;
+    if ($("calendarConversionNotes"))
+      state.conversionNotesOpen = $("calendarConversionNotes").open;
+    if ($("calendarAccuracyNote"))
+      state.accuracyOpen = $("calendarAccuracyNote").open;
     state.openReferences = Array.from(
       host.querySelectorAll("[data-reference-id][open]"),
       (element) => element.dataset.referenceId,
@@ -498,7 +535,7 @@ export function createCalendarView({ getLanguage = () => "ms" } = {}) {
       .filter((event) => event.hijri.month === state.month);
     const monthEstimated = state.monthDays.some((day) => day.estimated);
     const annualCount = calendar.getEventsForHijriYear(state.year).length;
-    host.innerHTML = `<div class="ic-view"><div class="ic-intro"><div><p class="ic-eyebrow">${t("eyebrow")}</p><h1 id="calendarHeading">${t("heading")}</h1><p>${t("intro")}</p></div><span class="ic-intro-mark" aria-hidden="true">${icon("moon")}</span></div><div class="ic-accuracy-note">${icon("calendar")}<p>${t("estimateNote")}</p></div><div class="ic-layout"><section class="ic-calendar-card" aria-labelledby="hijriMonthTitle"><div class="ic-month-toolbar"><div><p class="ic-eyebrow">${state.year} H</p><h3 id="hijriMonthTitle">${escape(monthName(state.month))} ${state.year} H</h3><p class="ic-month-range">${escape(formatGregorian(state.monthDays[0].date, { day: "numeric", month: "short", year: "numeric" }))} – ${escape(formatGregorian(state.monthDays.at(-1).date, { day: "numeric", month: "short", year: "numeric" }))}</p></div><div class="ic-month-actions"><button type="button" id="hijriPrevMonth" class="icon-button" aria-label="${t("previous")}"${state.year === minimumYear && state.month === 1 ? " disabled" : ""}>${icon("chevron")}</button><button type="button" id="hijriToday" class="secondary">${t("today")}</button><button type="button" id="hijriNextMonth" class="icon-button" aria-label="${t("next")}"${state.year === maximumYear && state.month === 12 ? " disabled" : ""}>${icon("chevron")}</button></div></div><form id="hijriJumpForm" class="ic-jump" novalidate><div><label for="hijriJumpMonth">${t("month")}</label><select id="hijriJumpMonth">${monthOptions(state.month)}</select></div><div><label for="hijriJumpYear">${t("year")}</label><input id="hijriJumpYear" type="number" inputmode="numeric" required min="${minimumYear}" max="${maximumYear}" value="${state.year}" aria-describedby="hijriJumpError"></div><button type="submit" class="secondary">${t("go")}</button><p id="hijriJumpError" class="ic-error" role="alert"${state.jumpError ? "" : " hidden"}>${escape(state.jumpError)}</p></form>${renderGrid()}<div class="ic-grid-legend"><span><i class="ic-legend-today"></i>${t("todayLegend")}</span><span><i class="ic-legend-event"></i>${t("eventLegend")}</span>${badge({ estimated: monthEstimated })}</div><p class="ic-grid-note">${t(monthEstimated ? "mixedMonth" : "officialMonth")}</p><p id="hijriGridHelp" class="sr-only">${t("keyboard")}</p></section><aside class="ic-date-panel" aria-label="${t("details")}"><div class="ic-selected-heading"><p class="ic-eyebrow">${t("selected")}</p><h3 id="hijriSelectedDate">${escape(formatHijri(selected.hijri))}</h3><p id="hijriSelectedGregorian">${escape(formatGregorian(selected.date, { weekday: "long", day: "numeric", month: "long", year: "numeric" }))}</p>${sourceLine(selected)}</div><div id="hijriDayEvents">${selected.events?.length ? selected.events.map(eventDetails).join("") : `<p class="ic-empty-copy">${t("noEvent")}</p>`}</div><div class="ic-month-events"><h4>${t("inMonth")}</h4><div id="islamicMonthEvents">${monthEvents.length ? monthEvents.map((event) => eventButton(event)).join("") : `<p class="ic-empty-copy">${t("noMonthEvent")}</p>`}</div></div></aside></div>${renderConverters()}<section class="ic-annual-card" aria-labelledby="islamicAnnualTitle"><div class="ic-section-heading"><div><p class="ic-eyebrow">${state.year} H</p><h3 id="islamicAnnualTitle">${t("annual")}</h3><p>${t("annualIntro")}</p></div><span class="ic-count">${annualCount}</span></div><details id="islamicYearPanel"${state.annualOpen ? " open" : ""}><summary>${t("showAnnual")}${icon("chevron")}</summary><div class="ic-year-filter"><label for="islamicEventFilter">${t("annualFilter")}</label><select id="islamicEventFilter"><option value="all"${state.filter === "all" ? " selected" : ""}>${t("allEvents")}</option><option value="celebration"${state.filter === "celebration" ? " selected" : ""}>${t("celebrations")}</option><option value="observance"${state.filter === "observance" ? " selected" : ""}>${t("observances")}</option></select></div><div id="islamicYearEvents" class="ic-year-events">${renderAnnual()}</div></details><p class="ic-scope-note">${t("scope")}</p></section></div>`;
+    host.innerHTML = `<div class="ic-view"><div class="ic-intro"><div><p class="ic-eyebrow">${t("eyebrow")}</p><h1 id="calendarHeading">${t("heading")}</h1><p>${t("intro")}</p></div><span class="ic-intro-mark" aria-hidden="true">${icon("moon")}</span></div><details id="calendarAccuracyNote" class="ic-accuracy-note"${state.accuracyOpen ? " open" : ""}><summary>${icon("calendar")}<span>${t("accuracyTitle")}</span>${icon("chevron")}</summary><p>${t("estimateNote")}</p></details><div class="ic-layout"><section class="ic-calendar-card" aria-labelledby="hijriMonthTitle"><div class="ic-month-toolbar"><div><p class="ic-eyebrow">${state.year} H</p><h2 id="hijriMonthTitle">${escape(monthName(state.month))} ${state.year} H</h2><p class="ic-month-range">${escape(formatGregorian(state.monthDays[0].date, { day: "numeric", month: "short", year: "numeric" }))} – ${escape(formatGregorian(state.monthDays.at(-1).date, { day: "numeric", month: "short", year: "numeric" }))}</p></div><div class="ic-month-actions"><button type="button" id="hijriPrevMonth" class="icon-button" aria-label="${t("previous")}"${state.year === minimumYear && state.month === 1 ? " disabled" : ""}>${icon("chevron")}</button><button type="button" id="hijriToday" class="secondary">${t("today")}</button><button type="button" id="hijriNextMonth" class="icon-button" aria-label="${t("next")}"${state.year === maximumYear && state.month === 12 ? " disabled" : ""}>${icon("chevron")}</button></div></div><form id="hijriJumpForm" class="ic-jump" novalidate><div><label for="hijriJumpMonth">${t("month")}</label><select id="hijriJumpMonth">${monthOptions(state.month)}</select></div><div><label for="hijriJumpYear">${t("year")}</label><input id="hijriJumpYear" type="number" inputmode="numeric" required min="${minimumYear}" max="${maximumYear}" value="${state.year}" aria-describedby="hijriJumpError"></div><button type="submit" class="secondary">${t("go")}</button><p id="hijriJumpError" class="ic-error" role="alert"${state.jumpError ? "" : " hidden"}>${escape(state.jumpError)}</p></form>${renderGrid()}<div class="ic-grid-legend"><span><i class="ic-legend-today"></i>${t("todayLegend")}</span><span><i class="ic-legend-event"></i>${t("eventLegend")}</span>${badge({ estimated: monthEstimated })}</div><p class="ic-grid-note">${t(monthEstimated ? "mixedMonth" : "officialMonth")}</p><p id="hijriGridHelp" class="sr-only">${t("keyboard")}</p></section><aside class="ic-date-panel" aria-label="${t("details")}"><div class="ic-selected-heading"><p class="ic-eyebrow">${t("selected")}</p><h3 id="hijriSelectedDate">${escape(formatHijri(selected.hijri))}</h3><p id="hijriSelectedGregorian">${escape(formatGregorian(selected.date, { weekday: "long", day: "numeric", month: "long", year: "numeric" }))}</p>${sourceLine(selected)}</div><div id="hijriDayEvents">${selected.events?.length ? selected.events.map(eventDetails).join("") : `<p class="ic-empty-copy">${t("noEvent")}</p>`}</div><div class="ic-month-events"><h4>${t("inMonth")}</h4><div id="islamicMonthEvents">${monthEvents.length ? monthEvents.map((event) => eventButton(event)).join("") : `<p class="ic-empty-copy">${t("noMonthEvent")}</p>`}</div></div></aside></div>${renderConverters()}<section class="ic-annual-card" aria-labelledby="islamicAnnualTitle"><div class="ic-section-heading"><div><p class="ic-eyebrow">${state.year} H</p><h2 id="islamicAnnualTitle">${t("annual")}</h2><p>${t("annualIntro")}</p></div><span class="ic-count">${annualCount}</span></div><details id="islamicYearPanel"${state.annualOpen ? " open" : ""}><summary>${t("showAnnual")}${icon("chevron")}</summary><div class="ic-year-filter"><label for="islamicEventFilter">${t("annualFilter")}</label><select id="islamicEventFilter"><option value="all"${state.filter === "all" ? " selected" : ""}>${t("allEvents")}</option><option value="celebration"${state.filter === "celebration" ? " selected" : ""}>${t("celebrations")}</option><option value="observance"${state.filter === "observance" ? " selected" : ""}>${t("observances")}</option></select></div><div id="islamicYearEvents" class="ic-year-events">${renderAnnual()}</div></details><p class="ic-scope-note">${t("scope")}</p></section></div>`;
     host
       .querySelector(".ic-intro")
       .insertAdjacentHTML("afterend", renderJumpLinks());
@@ -508,10 +545,9 @@ export function createCalendarView({ getLanguage = () => "ms" } = {}) {
     const converterSection = host.querySelector(".ic-converter");
     converterSection.id = "islamicConverterSection";
     converterSection.tabIndex = -1;
-    converterSection.insertAdjacentHTML(
-      "afterend",
-      renderGuides() + renderProphets(),
-    );
+    host
+      .querySelector(".ic-annual-card")
+      .insertAdjacentHTML("afterend", renderGuides() + renderMuhammad());
     host
       .querySelector(".ic-selected-heading")
       .insertAdjacentHTML("afterend", renderFasting(selected));
@@ -561,6 +597,7 @@ export function createCalendarView({ getLanguage = () => "ms" } = {}) {
       ["gregorianConvertResult", state.fromHijri, "gregorian"],
     ]) {
       $(id).hidden = !result;
+      $(`${id}Placeholder`).hidden = Boolean(result);
       $(id).innerHTML = conversionOutput(result, direction);
       const hijri = direction === "hijri" ? result : result?.hijri;
       for (const key of ["day", "month", "year"]) {
@@ -648,10 +685,50 @@ export function createCalendarView({ getLanguage = () => "ms" } = {}) {
     updateConversionResults();
   }
 
+  function setDirection(direction, focus = false) {
+    if (!["gregorian", "hijri"].includes(direction)) return;
+    state.direction = direction;
+    for (const value of ["gregorian", "hijri"]) {
+      const active = direction === value;
+      $(`${value}DirectionTab`).setAttribute("aria-selected", String(active));
+      $(`${value}DirectionTab`).tabIndex = active ? 0 : -1;
+      $(`${value}ConvertPanel`).hidden = !active;
+    }
+    if (focus) $(`${direction}DirectionTab`).focus();
+  }
+
+  function useToday(direction) {
+    const now = civilDate();
+    const date = now < minimum ? minimum : now > maximum ? maximum : now;
+    const hijri = calendar.toHijri(date);
+    if (direction === "gregorian") {
+      state.inputs.gregorianInput = date;
+      $("gregorianInput").value = date;
+      state.fromGregorian = { ...hijri, date };
+      state.gregorianError = "";
+    } else {
+      for (const [field, value] of [
+        ["hijriInputDay", hijri.day],
+        ["hijriInputMonth", hijri.month],
+        ["hijriInputYear", hijri.year],
+      ]) {
+        state.inputs[field] = String(value);
+        $(field).value = String(value);
+      }
+      state.fromHijri = { ...calendar.toGregorian(hijri), hijri };
+      state.hijriError = "";
+    }
+    updateConversionResults();
+  }
+
   function onClick(event) {
     const button = event.target.closest("button");
     if (!button || !host.contains(button)) return;
-    if (button.dataset.calendarSection) {
+    if (button.dataset.convertDirection)
+      setDirection(button.dataset.convertDirection);
+    else if (button.dataset.converterToday)
+      useToday(button.dataset.converterToday);
+    else if (button.dataset.calendarSection) {
       const section = $(button.dataset.calendarSection);
       section?.scrollIntoView({ block: "start", behavior: "auto" });
       section?.focus({ preventScroll: true });
@@ -665,14 +742,6 @@ export function createCalendarView({ getLanguage = () => "ms" } = {}) {
 
   function onInput(event) {
     const id = event.target.id;
-    if (id === "islamicProphetSearch") {
-      readInputs();
-      state.prophetSearch = event.target.value;
-      $("islamicProphetList").innerHTML = renderProphetCards();
-      $("prophetResultCount").textContent =
-        `${filteredProphets().length} / ${references.PROPHETS?.length || 25}`;
-      return;
-    }
     if (!(id in state.inputs)) return;
     state.inputs[id] = event.target.value;
     if (id === "gregorianInput") {
@@ -700,6 +769,19 @@ export function createCalendarView({ getLanguage = () => "ms" } = {}) {
   }
 
   function onKey(event) {
+    if (event.target.dataset.convertDirection) {
+      const keys = {
+        ArrowLeft: state.direction === "gregorian" ? "hijri" : "gregorian",
+        ArrowRight: state.direction === "gregorian" ? "hijri" : "gregorian",
+        Home: "gregorian",
+        End: "hijri",
+      };
+      if (keys[event.key]) {
+        event.preventDefault();
+        setDirection(keys[event.key], true);
+      }
+      return;
+    }
     const date = event.target.dataset.date;
     if (!date) return;
     const weekday = (utcDate(date).getUTCDay() + 6) % 7;

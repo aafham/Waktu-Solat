@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v20";
+const CACHE_VERSION = "v21";
 const APP_CACHE = `waktu-solat-app-${CACHE_VERSION}`;
 const APP_SHELL = [
   "./",

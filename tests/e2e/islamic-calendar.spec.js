@@ -7,6 +7,13 @@ async function jumpToHijriMonth(page, month, year) {
 }
 
 async function convertHijri(page, day, month, year) {
+  await page.locator("#hijriDirectionTab").click();
+  await expect(page.locator("#hijriDirectionTab")).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await expect(page.locator("#gregorianConvertPanel")).toBeHidden();
+  await expect(page.locator("#hijriConvertPanel")).toBeVisible();
   await page.locator("#hijriInputDay").fill(String(day));
   await page.locator("#hijriInputMonth").selectOption(String(month));
   await page.locator("#hijriInputYear").fill(String(year));
@@ -83,6 +90,12 @@ test("date converter matches the official Malaysia Eid date in both directions",
   page,
 }) => {
   await boot(page, { path: "/#kalendar" });
+  await expect(page.locator("#gregorianDirectionTab")).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await expect(page.locator("#gregorianConvertPanel")).toBeVisible();
+  await expect(page.locator("#hijriConvertPanel")).toBeHidden();
   await page.locator("#gregorianInput").fill("2026-03-21");
   await page.locator("#gregorianConvertBtn").click();
   await expect(page.locator("#hijriConvertResult")).toContainText(
@@ -94,6 +107,12 @@ test("date converter matches the official Malaysia Eid date in both directions",
     /21.*Mac.*2026/i,
   );
   await expect(page.locator("#hijriConvertError")).not.toBeVisible();
+  await page.locator("#gregorianDirectionTab").click();
+  await expect(page.locator("#hijriConvertPanel")).toBeHidden();
+  await expect(page.locator("#gregorianInput")).toHaveValue("2026-03-21");
+  await expect(page.locator("#hijriConvertResult")).toContainText(
+    /1.*Syawal.*1447/i,
+  );
 });
 
 test("leap-day birthdays round-trip and invalid Hijri dates never silently roll forward", async ({
@@ -130,6 +149,7 @@ test("leap-day birthdays round-trip and invalid Hijri dates never silently roll 
   await expect(page.locator("#gregorianConvertResult")).not.toBeVisible();
   await convertHijri(page, 31, 9, 1447);
   await expect(page.locator("#hijriConvertError")).toBeVisible();
+  await page.locator("#gregorianDirectionTab").click();
   await page.locator("#gregorianInput").fill("");
   await page.locator("#gregorianConvertBtn").click();
   await expect(page.locator("#gregorianConvertError")).toBeVisible();
@@ -260,20 +280,19 @@ test("fasting reminders exclude Eid and Tashriq even when weekly or white-day fa
   await expect(sixDays).toContainText(/Boleh dilakukan berasingan/);
 });
 
-test("25 searchable prophet profiles distinguish authentic birth information from observance dates", async ({
+test("Muhammad reference distinguishes sourced birth information from the Malaysian observance date", async ({
   page,
 }) => {
   await boot(page, { path: "/#kalendar" });
   await page
-    .locator('[data-calendar-section="islamicProphetsSection"]')
+    .locator('[data-calendar-section="islamicMuhammadSection"]')
     .click();
-  await expect(page.locator("#islamicProphetsSection")).toBeFocused();
-  await expect(page.locator("#islamicProphetList details")).toHaveCount(25);
-  await expect(page.locator("#prophetResultCount")).toHaveText("25 / 25");
-
-  await page.locator("#islamicProphetSearch").fill("Muhammad");
-  await expect(page.locator("#islamicProphetList details")).toHaveCount(1);
-  const muhammad = page.locator('[data-reference-id="prophet-muhammad"]');
+  await expect(page.locator("#islamicMuhammadSection")).toBeFocused();
+  await expect(page.locator("#islamicMuhammadTitle")).toContainText(/Muhammad/);
+  await expect(page.locator("#islamicProphetSearch")).toHaveCount(0);
+  await expect(page.locator("#islamicProphetList")).toHaveCount(0);
+  await expect(page).toHaveURL(/#kalendar$/);
+  const muhammad = page.locator("#islamicMuhammadSection");
   await muhammad.locator("summary").click();
   await expect(muhammad.locator(".ic-birth-note")).toBeVisible();
   await expect(muhammad.locator(".ic-birth-note")).toContainText(/Isnin/);
@@ -290,28 +309,9 @@ test("25 searchable prophet profiles distinguish authentic birth information fro
   await expect(muhammad.locator(".ic-birth-note")).toBeVisible();
   await expect(muhammad.locator(".ic-birth-note")).toContainText(/Monday/);
   await expect(muhammad.locator(".ic-birth-note")).toContainText(/disputed/);
-
-  await page.locator("#islamicProphetSearch").fill("Isa");
-  const isa = page.locator('[data-reference-id="prophet-isa"]');
-  await expect(page.locator("#islamicProphetList details")).toHaveCount(1);
-  await isa.locator("summary").click();
-  await expect(isa.locator(".ic-birth-note")).toContainText(/not established/);
-  await expect(isa).toContainText(/no calendar day or month/);
   await expect(
-    isa.locator('a[href^="https://quran.com/"]').first(),
+    muhammad.locator('a[href^="https://quran.com/"]').first(),
   ).toBeVisible();
-  await page.locator("#islamicProphetSearch").fill("Musa");
-  const musa = page.locator('[data-reference-id="prophet-musa"]');
-  await musa.locator("summary").click();
-  await expect(musa).toContainText(/rescue/);
-  await expect(musa).toContainText(/not his birth/);
-  await page.locator("#islamicProphetSearch").fill("no matching prophet");
-  await expect(page.locator("#islamicProphetList details")).toHaveCount(0);
-  await expect(page.locator("#islamicProphetList")).toContainText(
-    /No matching names/,
-  );
-  await page.locator("#islamicProphetSearch").fill("");
-  await expect(page.locator("#islamicProphetList details")).toHaveCount(25);
 });
 
 for (const width of [320, 390]) {
@@ -345,14 +345,14 @@ for (const width of [320, 390]) {
       /21.*March.*2026/i,
     );
     await page
-      .locator('[data-calendar-section="islamicProphetsSection"]')
+      .locator('[data-calendar-section="islamicMuhammadSection"]')
       .click();
-    await expect(page.locator("#islamicProphetsSection")).toBeFocused();
+    await expect(page.locator("#islamicMuhammadSection")).toBeFocused();
     await page
       .locator('[data-reference-id="prophet-muhammad"] summary')
       .click();
     await expect(
-      page.locator('[data-reference-id="prophet-muhammad"] .ic-birth-note'),
+      page.locator("#islamicMuhammadSection .ic-birth-note"),
     ).toBeVisible();
     await expect
       .poll(() =>
@@ -394,15 +394,15 @@ test.describe("offline Islamic calendar", () => {
     await expect(page.locator("#hijriMonthTitle")).toHaveText(
       /Rabiulakhir.*1448/i,
     );
-    await expect(page.locator("#islamicProphetList details")).toHaveCount(25);
+    await expect(page.locator("#islamicMuhammadSection")).toBeVisible();
     await page
       .locator('[data-reference-id="prophet-muhammad"] summary')
       .click();
     await expect(
-      page.locator('[data-reference-id="prophet-muhammad"] .ic-birth-note'),
+      page.locator("#islamicMuhammadSection .ic-birth-note"),
     ).toBeVisible();
     await expect(
-      page.locator('[data-reference-id="prophet-muhammad"] .ic-birth-note'),
+      page.locator("#islamicMuhammadSection .ic-birth-note"),
     ).toContainText(/Isnin/);
     await jumpToHijriMonth(page, 9, 1447);
     await expect(page.locator("#islamicMonthEvents")).toContainText(/Nuzul/i);

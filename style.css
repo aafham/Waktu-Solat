@@ -1,11 +1,11 @@
 :root {
   color-scheme: light;
-  --bg: #f7f8fa;
+  --bg: #f5f6f3;
   --surface: #fff;
   --surface-soft: #f7f9f8;
   --text: #202c2a;
   --muted: #626f69;
-  --line: #e8edeb;
+  --line: #dfe6e0;
   --green: #17664e;
   --green-dark: #104c3c;
   --green-soft: #edf5f1;
@@ -3087,5 +3087,765 @@ body.dark .date-card {
   .event-countdown-upcoming ul {
     flex-direction: column;
     gap: 8px;
+  }
+}
+
+/* Shared rhythm and controls across the daily, monthly and compass views. */
+html {
+  scroll-padding-block: 24px 96px;
+}
+.app-shell {
+  max-width: 1510px;
+}
+.topbar {
+  height: 76px;
+  margin-bottom: 28px;
+}
+.topbar-actions {
+  gap: 10px;
+}
+.icon-button,
+.dialog-close {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+}
+.page-heading {
+  margin-bottom: 24px;
+}
+.page-heading h1 {
+  font-size: clamp(28px, 2.6vw, 36px);
+  letter-spacing: -1.25px;
+}
+.subtitle {
+  font-size: 14px;
+  line-height: 1.65;
+}
+.desktop-breadcrumb,
+.heading-date,
+.timezone {
+  font-size: 12px;
+}
+.nav-label {
+  margin-top: 44px;
+  letter-spacing: 1.4px;
+}
+.nav-item {
+  min-height: 50px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+.nav-item.active {
+  box-shadow: none;
+  border-radius: 12px;
+}
+.sidebar-bottom {
+  padding-top: 20px;
+}
+.primary,
+.secondary {
+  min-height: 44px;
+  font-size: 13px;
+  border-radius: 11px;
+}
+.text-button {
+  min-height: 40px;
+  font-size: 12px;
+}
+.location-bar {
+  padding: 18px 20px;
+  gap: 14px;
+}
+.location-title strong {
+  font-size: 15px;
+}
+.location-copy #locationMeta,
+.location-copy .location-coordinates,
+.location-map-link {
+  font-size: 12px;
+}
+.location-copy > p {
+  max-width: none;
+  white-space: normal;
+  overflow: visible;
+}
+.location-bar .favorite-button {
+  width: 40px;
+  height: 40px;
+}
+.location-bar #manualToggle {
+  font-size: 12px;
+  min-height: 44px;
+}
+.location-context {
+  font-size: 11px;
+  margin: 10px 2px 18px;
+}
+.location-context p {
+  max-height: none;
+  overflow: visible;
+}
+.location-feedback {
+  font-size: 12px;
+  padding: 12px 14px;
+}
+.hero-grid {
+  gap: 18px;
+  margin-bottom: 28px;
+}
+.next-prayer {
+  min-height: 266px;
+  padding: 28px 30px;
+}
+.hero-content {
+  max-width: 78%;
+}
+.next-time {
+  font-size: 12px;
+  border-radius: 7px;
+  padding: 5px 9px;
+}
+.countdown-caption,
+.next-foot {
+  font-size: 12px;
+}
+.countdown {
+  font-size: clamp(40px, 4.2vw, 58px);
+  letter-spacing: -0.5px;
+}
+.date-card {
+  border-top-width: 2px;
+}
+.section-heading h2 {
+  font-size: 19px;
+  letter-spacing: -0.5px;
+}
+.section-heading h2 + p,
+.section-heading .text-button {
+  font-size: 12px;
+}
+.prayer-card {
+  padding: 20px 16px;
+  border-radius: 16px;
+}
+.prayer-name {
+  font-size: 14px;
+}
+.prayer-time {
+  font-size: 28px;
+  margin-top: 9px;
+}
+.prayer-time small {
+  font-size: 11px;
+}
+.prayer-status {
+  font-size: 11px;
+  margin-top: 9px;
+}
+.schedule-foot {
+  font-size: 11px;
+  line-height: 1.65;
+}
+.event-countdown {
+  border-top-width: 2px;
+  margin-top: 28px;
+}
+.event-countdown h2 {
+  font-size: 26px;
+}
+.event-countdown-date {
+  font-size: 13px;
+}
+.event-countdown-status {
+  font-size: 12px;
+}
+.event-countdown-note {
+  font-size: 11px;
+}
+.event-countdown-upcoming > span,
+.event-countdown-upcoming li {
+  font-size: 12px;
+}
+.qibla-shortcut h3,
+.source-card h3,
+.qibla-shortcut strong {
+  font-size: 14px;
+}
+.qibla-shortcut p,
+.source-card p,
+.install-strip {
+  font-size: 12px;
+}
+.footer {
+  font-size: 11px;
+  line-height: 1.75;
+}
+.footer a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* The monthly table stays inside its card; date and headings stay in view. */
+.schedule-open .page-heading {
+  display: none;
+}
+#scheduleView {
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+}
+.month-toolbar {
+  margin-bottom: 12px;
+  gap: 20px;
+}
+.month-toolbar h2,
+.month-toolbar h1 {
+  font-size: 26px;
+  letter-spacing: -0.7px;
+}
+.month-controls {
+  gap: 8px;
+}
+.month-controls .icon-button {
+  width: 44px;
+  height: 44px;
+}
+.month-controls .secondary {
+  min-width: 100px;
+}
+.table-hint,
+.month-status {
+  font-size: 12px;
+  line-height: 1.65;
+}
+.table-scroll {
+  max-height: 68dvh;
+  border-radius: 12px;
+  overscroll-behavior: contain;
+}
+.table-scroll table {
+  min-width: 610px;
+  font-size: 13px;
+}
+.table-scroll th,
+.table-scroll td {
+  padding: 15px 12px;
+}
+.table-scroll thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  box-shadow: 0 1px var(--line);
+}
+.table-scroll th:first-child,
+.table-scroll td:first-child {
+  position: sticky;
+  left: 0;
+  min-width: 96px;
+  background: var(--surface);
+  box-shadow: 1px 0 var(--line);
+}
+.table-scroll th:first-child {
+  z-index: 3;
+  background: var(--surface-soft);
+}
+.table-scroll tr.today td,
+.table-scroll tr[aria-current="date"] td {
+  background: var(--green-soft);
+}
+
+/* Qibla requests its own live GPS; keep prayer-zone controls on prayer views. */
+.qibla-open .location-bar,
+.qibla-open .location-context,
+.qibla-open .location-feedback {
+  display: none;
+}
+.qibla-layout {
+  padding: 32px;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.85fr);
+  gap: 40px;
+}
+.qibla-info h2 {
+  font-size: 28px;
+  line-height: 1.35;
+}
+.qibla-info > .muted,
+.qibla-status {
+  font-size: 14px;
+  line-height: 1.75;
+}
+.qibla-controls {
+  margin-top: 20px;
+}
+.qibla-help {
+  font-size: 12px;
+  line-height: 1.75;
+  margin-top: 18px;
+}
+.compass-area {
+  min-width: 0;
+  padding: 24px 18px;
+  border-radius: 16px;
+  background: var(--surface-soft);
+}
+.compass-caption,
+.angle + p {
+  font-size: 12px;
+}
+.qibla-distance {
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* Dialogs share readable labels and comfortably sized options. */
+dialog {
+  padding: 28px;
+  border-radius: 22px;
+}
+.dialog-heading h2 {
+  font-size: 24px;
+}
+.dialog-heading p,
+.settings-note,
+#installDialog > p {
+  font-size: 13px;
+}
+.dialog-heading {
+  align-items: center;
+}
+.dialog-close {
+  margin: 0;
+}
+.field-label,
+#locationDialog > label {
+  font-size: 13px;
+}
+input[type="search"],
+input[type="text"],
+select {
+  min-height: 46px;
+  font-size: 14px;
+  border-radius: 10px;
+}
+.zone-option {
+  flex-shrink: 0;
+  min-height: 64px;
+  padding: 13px;
+  border-radius: 11px;
+}
+.zone-option strong {
+  font-size: 14px;
+}
+.zone-option span,
+.zone-option small,
+.zone-option > span:first-child {
+  font-size: 12px;
+}
+.favorite-zones button {
+  min-height: 38px;
+  font-size: 12px;
+  border-radius: 8px;
+}
+.setting-row {
+  min-height: 76px;
+  padding: 18px 0;
+}
+.setting-row > span,
+.setting-row strong,
+.setting-row h3 {
+  font-size: 14px;
+}
+.setting-row p,
+.auto-location-setting p {
+  font-size: 12px;
+  line-height: 1.65;
+}
+.segmented button {
+  min-height: 40px;
+  min-width: 46px;
+  font-size: 13px;
+}
+.switch {
+  min-width: 46px;
+  width: 46px;
+  height: 30px;
+  padding: 5px;
+}
+.switch::before {
+  width: 20px;
+  height: 20px;
+}
+.switch[aria-checked="true"]::before {
+  transform: translateX(16px);
+}
+body.dark {
+  --bg: #121e1b;
+  --surface: #1b2a25;
+  --surface-soft: #23382f;
+  --line: #384d43;
+}
+
+@media (min-width: 761px) and (max-width: 1170px) {
+  .prayer-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .prayer-card {
+    min-height: 150px;
+  }
+  .next-prayer {
+    padding: 24px;
+  }
+  .hero-content {
+    max-width: 100%;
+  }
+  .countdown {
+    font-size: 42px;
+  }
+  .qibla-layout {
+    gap: 24px;
+    padding: 24px;
+    grid-template-columns: minmax(0, 1fr) 250px;
+  }
+  .compass-area {
+    padding: 20px 12px;
+  }
+  .compass-ring {
+    width: 210px;
+    height: 210px;
+  }
+}
+@media (max-width: 760px) {
+  body {
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
+  .app-shell {
+    padding: 0 20px;
+  }
+  .topbar {
+    height: 72px;
+    margin-bottom: 20px;
+  }
+  .topbar-actions {
+    gap: 8px;
+  }
+  .topbar-actions .icon-button {
+    width: 40px;
+    height: 40px;
+  }
+  .page-heading {
+    margin-bottom: 20px;
+  }
+  .page-heading h1 {
+    font-size: 28px;
+  }
+  .subtitle {
+    font-size: 13px;
+    margin-top: 6px;
+  }
+  .location-bar {
+    padding: 16px;
+    gap: 12px;
+  }
+  .location-bar .location-copy {
+    grid-column: 1 / -1;
+    padding-right: 48px;
+  }
+  .location-title strong {
+    font-size: 14px;
+  }
+  .location-bar .favorite-button {
+    justify-self: end;
+  }
+  .location-bar .locate-button,
+  .location-bar #manualToggle {
+    min-height: 44px;
+    font-size: 12px;
+  }
+  .location-bar #manualToggle {
+    min-width: 96px;
+  }
+  .location-context {
+    margin: 9px 0 14px;
+  }
+  .location-feedback {
+    font-size: 12px;
+    line-height: 1.65;
+    margin-bottom: 16px;
+  }
+  .hero-grid {
+    margin-bottom: 24px;
+  }
+  .next-prayer {
+    min-height: 240px;
+    padding: 22px;
+  }
+  .hero-content {
+    max-width: 100%;
+  }
+  .next-prayer-row {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .countdown {
+    font-size: clamp(38px, 11vw, 48px);
+  }
+  .mosque-art {
+    opacity: 0.18;
+  }
+  .date-card {
+    border-top: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 13px;
+  }
+  .section-heading {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .section-heading h2 {
+    font-size: 18px;
+  }
+  .section-heading h2 + p {
+    font-size: 11px;
+  }
+  .section-heading .text-button {
+    min-height: 44px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .prayer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .prayer-card {
+    min-height: 126px;
+    padding: 16px;
+  }
+  .prayer-card .icon {
+    position: absolute;
+    right: 13px;
+    top: 13px;
+    width: 27px;
+    height: 27px;
+    margin: 0;
+    padding: 5px;
+  }
+  .prayer-name {
+    font-size: 13px;
+    padding-right: 25px;
+  }
+  .prayer-time {
+    font-size: 29px;
+    margin-top: 11px;
+  }
+  .prayer-status {
+    font-size: 11px;
+    margin-top: 5px;
+  }
+  .event-countdown {
+    padding: 22px 20px;
+    gap: 18px;
+  }
+  .event-countdown h2 {
+    font-size: 25px;
+  }
+  .event-countdown-upcoming {
+    gap: 10px;
+  }
+  .event-countdown-upcoming ul {
+    width: 100%;
+    gap: 9px;
+  }
+  .event-countdown-upcoming li {
+    justify-content: space-between;
+  }
+  .support-grid {
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .qibla-shortcut,
+  .source-card {
+    min-height: 86px;
+    padding: 18px;
+  }
+  .install-strip {
+    padding: 16px;
+  }
+  .bottom-nav {
+    padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+    gap: 3px;
+  }
+  .bottom-nav button {
+    font-size: 11px;
+    min-height: 52px;
+    gap: 6px;
+  }
+  .bottom-nav .active svg {
+    box-shadow: none;
+    background: none;
+  }
+  .footer {
+    gap: 10px;
+    padding-bottom: 22px;
+  }
+  #scheduleView {
+    padding: 18px 14px;
+    border-radius: 16px;
+  }
+  .month-toolbar {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .month-toolbar h2,
+  .month-toolbar h1 {
+    font-size: 24px;
+  }
+  .month-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .month-controls .secondary {
+    flex: 1;
+    max-width: 180px;
+  }
+  .table-scroll {
+    max-height: 65dvh;
+  }
+  .table-scroll table {
+    font-size: 12px;
+  }
+  .table-scroll th,
+  .table-scroll td {
+    padding: 14px 11px;
+  }
+  .qibla-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 14px;
+  }
+  .qibla-info {
+    display: contents;
+  }
+  .qibla-info > .eyebrow,
+  .qibla-info h2,
+  .qibla-info > p[data-i18n="qiblaIntro"] {
+    display: none;
+  }
+  .qibla-indicator {
+    order: 0;
+    justify-self: start;
+    margin: 0;
+  }
+  .qibla-status {
+    order: 1;
+    font-size: 13px;
+    margin: 0;
+  }
+  .qibla-controls {
+    order: 2;
+    margin: 0;
+  }
+  .compass-area {
+    order: 3;
+    padding: 20px 12px;
+    margin-top: 4px;
+  }
+  .qibla-help {
+    order: 4;
+    margin: 0;
+    font-size: 12px;
+  }
+  .compass-ring {
+    width: 210px;
+    height: 210px;
+  }
+  dialog {
+    width: min(520px, calc(100vw - 24px));
+    padding: 24px;
+  }
+}
+@media (max-width: 540px) {
+  dialog {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - 20px);
+    margin: auto auto 0;
+    border-radius: 24px 24px 0 0;
+    padding: 24px 22px calc(24px + env(safe-area-inset-bottom));
+  }
+  input[type="search"],
+  input[type="text"],
+  select {
+    font-size: 16px;
+  }
+  .zone-list {
+    max-height: 38dvh;
+  }
+  .date-card #hijriSource {
+    font-size: 10px;
+    line-height: 1.5;
+  }
+}
+@media (max-width: 370px) {
+  .app-shell {
+    padding: 0 16px;
+  }
+  .topbar-actions {
+    gap: 5px;
+  }
+  .page-heading h1 {
+    font-size: 26px;
+  }
+  .location-bar {
+    padding: 13px;
+  }
+  .location-bar #manualToggle {
+    min-width: 90px;
+    font-size: 11px;
+  }
+  .prayer-card {
+    padding: 14px 12px;
+  }
+  .prayer-time {
+    font-size: 26px;
+  }
+  .prayer-card .icon {
+    right: 9px;
+  }
+  .bottom-nav {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  .bottom-nav button {
+    font-size: 10px;
+  }
+  .qibla-layout {
+    padding: 16px;
+  }
+  .compass-ring {
+    width: 196px;
+    height: 196px;
+  }
+  .event-countdown {
+    padding: 20px 16px;
+  }
+  .setting-row {
+    gap: 12px;
+  }
+}
+@media print {
+  #scheduleView {
+    border: 0;
+    padding: 0;
+  }
+  .table-scroll {
+    max-height: none;
+    overflow: visible;
+  }
+  .table-scroll th,
+  .table-scroll td {
+    position: static !important;
   }
 }

@@ -1,45 +1,18 @@
 /**
  * Brief educational notes, paraphrased from the linked Quran, hadith and
- * Malaysian religious authorities. These profiles are not calendar events:
- * no birthday is manufactured from an undated narrative.
+ * Malaysian religious authorities. The Mawlid observance is distinguished
+ * from the historically disputed exact birth date.
  */
 const bilingual = (ms, en) => ({ ms, en });
 const source = (label, url) => ({ label, url });
 const verse = (label, path) => source(label, `https://quran.com/${path}`);
 const hadith = (label, path) => source(label, `https://sunnah.com/${path}`);
-const unknownBirth = bilingual(
-  "Tarikh kelahiran yang tepat tidak ditetapkan oleh sumber sahih dalam rujukan ini.",
-  "An exact birth date is not established in the reliable sources cited here.",
-);
 const q = {
-  adam: verse("Al-Baqarah 2:31", "al-baqarah/31"),
-  idris: verse("Maryam 19:56", "maryam/56"),
-  nuh: verse("Nuh 71:1–3", "nuh/1"),
-  hud: verse("Al-A‘raf 7:65", "al-araf/65"),
-  salih: verse("Al-A‘raf 7:73", "al-araf/73"),
   kaaba: verse("Al-Baqarah 2:127", "al-baqarah/127"),
-  lut: verse("Al-An‘am 6:86", "al-anam/86"),
-  ishaq: verse("As-Saffat 37:112", "as-saffat/112"),
-  yaqub: verse("Al-Baqarah 2:133", "al-baqarah/133"),
-  yusuf: verse("Yusuf 12:4", "yusuf/4"),
-  ayyub: verse("Al-Anbiya’ 21:83–84", "al-anbya/83"),
-  shuayb: verse("Al-A‘raf 7:85", "al-araf/85"),
-  musa: verse("Maryam 19:51–53", "maryam/51"),
-  harun: verse("Maryam 19:53", "maryam/53"),
-  dhulkifl: verse("Al-Anbiya’ 21:85–86", "al-anbya/85"),
-  dawud: verse("An-Nisa’ 4:163", "an-nisa/163"),
-  sulayman: verse("An-Naml 27:15–16", "an-naml/16"),
-  ilyas: verse("As-Saffat 37:123", "as-saffat/123"),
-  ilyasa: verse("Al-An‘am 6:86", "al-anam/86"),
-  yunus: verse("As-Saffat 37:139", "as-saffat/139"),
-  zakariya: verse("Maryam 19:2–7", "maryam/2"),
-  yahya: verse("Maryam 19:12", "maryam/12"),
-  isa: verse("Maryam 19:30–34", "maryam/30"),
   muhammad: verse("Al-Ahzab 33:40", "al-ahzab/40"),
 };
 const mondayBirth = hadith("Sahih Muslim 1162e", "muslim:1162e");
 const ashuraRescue = hadith("Sahih al-Bukhari 2004", "bukhari:2004");
-const adamFriday = hadith("Sahih Muslim 854a", "muslim:854a");
 const mawlidDiscussion = source(
   "Mufti WP · Bayan Linnas 80",
   "https://www.muftiwp.gov.my/en/artikel/bayan-linnas/1048-bayan-linnas-siri-ke-80-hukum-menyambut-maulid-al-rasul",
@@ -49,279 +22,20 @@ const malaysiaCalendar = source(
   "https://www.e-solat.gov.my/index.php?pageId=26&siteId=24",
 );
 
-function prophet(id, ms, en, references, note, extra = {}) {
-  return {
-    id,
-    name: bilingual(ms, en),
-    quran: references,
-    birth: { ...unknownBirth },
-    note,
-    sources: references,
-    ...extra,
-  };
-}
-
-export const PROPHETS = [
-  prophet(
-    "adam",
-    "Adam",
-    "Adam",
-    [q.adam],
-    bilingual(
-      "Al-Quran menyebut Allah mengajar Adam nama-nama. Sahih Muslim menyebut penciptaan Adam pada hari Jumaat; ini bukan tarikh lahir tahunan.",
-      "The Quran describes Allah teaching Adam the names. Sahih Muslim mentions his creation on a Friday; this does not establish an annual birthday.",
-    ),
-    { sources: [q.adam, adamFriday] },
+export const MUHAMMAD_REFERENCE = {
+  id: "muhammad",
+  name: bilingual("Muhammad ﷺ", "Muhammad ﷺ"),
+  quran: [q.muhammad],
+  birth: bilingual(
+    "Hari Isnin disebut dalam Sahih Muslim 1162e. Tarikh hari dan bulan yang tepat diperselisihkan; 12 Rabiulawal ialah tarikh Maulidur Rasul dalam takwim Malaysia.",
+    "Monday is stated in Sahih Muslim 1162e. The exact calendar date is disputed; 12 Rabiulawal is Malaysia’s Mawlid observance.",
   ),
-  prophet(
-    "idris",
-    "Idris",
-    "Idris",
-    [q.idris],
-    bilingual(
-      "Disebut dalam Surah Maryam sebagai seorang yang benar dan seorang nabi.",
-      "Surah Maryam describes Idris as truthful and a prophet.",
-    ),
+  note: bilingual(
+    "Al-Quran menyebut baginda sebagai Rasul Allah dan penutup para nabi. Malaysia memperingati Maulidur Rasul pada 12 Rabiulawal; tarikh peringatan ini tidak menghapuskan perbezaan pendapat tentang tarikh lahir sejarah.",
+    "The Quran identifies him as Allah’s Messenger and the seal of the prophets. Malaysia observes Mawlid on 12 Rabiulawal; this observance does not resolve the historical disagreement about the exact birth date.",
   ),
-  prophet(
-    "nuh",
-    "Nuh",
-    "Nuh",
-    [q.nuh],
-    bilingual(
-      "Diutus untuk memberi peringatan kepada kaumnya dan menyeru mereka menyembah Allah.",
-      "Sent to warn his people and call them to worship Allah.",
-    ),
-  ),
-  prophet(
-    "hud",
-    "Hud",
-    "Hud",
-    [q.hud],
-    bilingual(
-      "Diutus kepada kaum ‘Ad dan menyeru mereka menyembah Allah Yang Esa.",
-      "Sent to the people of ‘Ad, calling them to worship Allah alone.",
-    ),
-  ),
-  prophet(
-    "salih",
-    "Saleh",
-    "Salih",
-    [q.salih],
-    bilingual(
-      "Diutus kepada kaum Thamud; ayat ini menyebut unta sebagai tanda bagi mereka.",
-      "Sent to Thamud; this verse identifies the she-camel as a sign for them.",
-    ),
-  ),
-  prophet(
-    "ibrahim",
-    "Ibrahim",
-    "Ibrahim",
-    [q.kaaba],
-    bilingual(
-      "Ibrahim dan Ismail meninggikan asas Kaabah sambil berdoa agar amalan mereka diterima. Ayat ini tidak menetapkan tarikh lahir atau tarikh tahunan pembinaannya.",
-      "Ibrahim and Ismail raised the foundations of the Kaaba and prayed for acceptance. The verse supplies no birthday or annual construction anniversary.",
-    ),
-  ),
-  prophet(
-    "lut",
-    "Lut",
-    "Lut",
-    [q.lut],
-    bilingual(
-      "Al-An‘am menyebut Lut bersama nabi-nabi yang menerima petunjuk dan kelebihan daripada Allah.",
-      "Al-An‘am names Lut among those guided and favoured by Allah.",
-    ),
-  ),
-  prophet(
-    "ismail",
-    "Ismail",
-    "Ismail",
-    [q.kaaba],
-    bilingual(
-      "Disebut bersama Ibrahim ketika meninggikan asas Kaabah. Hubungan ini bukan penetapan tarikh kelahiran pada musim haji.",
-      "Named alongside Ibrahim in raising the Kaaba’s foundations. This connection does not place his birthday in the Hajj season.",
-    ),
-  ),
-  prophet(
-    "ishaq",
-    "Ishak",
-    "Ishaq",
-    [q.ishaq],
-    bilingual(
-      "Al-Quran menyebut berita gembira tentang Ishaq, seorang nabi daripada golongan yang soleh.",
-      "The Quran records the glad news of Ishaq, a prophet among the righteous.",
-    ),
-  ),
-  prophet(
-    "yaqub",
-    "Yaakub",
-    "Yaqub",
-    [q.yaqub],
-    bilingual(
-      "Menjelang kewafatannya, Yaakub bertanya tentang pegangan anak-anaknya; mereka menegaskan penyembahan kepada Tuhan Yang Esa.",
-      "Near his death, Yaqub asked his children about their faith; they affirmed worship of the One God.",
-    ),
-  ),
-  prophet(
-    "yusuf",
-    "Yusuf",
-    "Yusuf",
-    [q.yusuf],
-    bilingual(
-      "Surah Yusuf bermula dengan kisah beliau menceritakan mimpi sebelas bintang, matahari dan bulan kepada bapanya.",
-      "Surah Yusuf opens his story with a dream of eleven stars, the sun and the moon, which he tells his father.",
-    ),
-  ),
-  prophet(
-    "ayyub",
-    "Ayub",
-    "Ayyub",
-    [q.ayyub],
-    bilingual(
-      "Al-Quran merakam doa Ayub ketika ditimpa kesusahan dan rahmat Allah yang menjawab doanya.",
-      "The Quran records Ayyub’s prayer in hardship and Allah’s merciful response.",
-    ),
-  ),
-  prophet(
-    "shuayb",
-    "Syuaib",
-    "Shuayb",
-    [q.shuayb],
-    bilingual(
-      "Diutus kepada Madyan; beliau menyeru tauhid serta kejujuran dalam sukatan dan timbangan.",
-      "Sent to Madyan, calling for worship of Allah and honesty in measures and weights.",
-    ),
-  ),
-  prophet(
-    "musa",
-    "Musa",
-    "Musa",
-    [q.musa],
-    bilingual(
-      "Al-Quran menyebut Musa sebagai rasul dan nabi. Hadis Asyura mengaitkan hari itu dengan penyelamatan Bani Israel bersama Musa, bukan kelahiran Musa.",
-      "The Quran identifies Musa as a messenger and prophet. The Ashura hadith concerns the rescue of the Children of Israel with Musa, not his birth.",
-    ),
-    { sources: [q.musa, ashuraRescue] },
-  ),
-  prophet(
-    "harun",
-    "Harun",
-    "Harun",
-    [q.harun],
-    bilingual(
-      "Surah Maryam menyebut Harun, saudara Musa, dianugerahkan kenabian sebagai rahmat Allah.",
-      "Surah Maryam names Harun, Musa’s brother, as a prophet granted through Allah’s mercy.",
-    ),
-  ),
-  prophet(
-    "dhulkifl",
-    "Zulkifli",
-    "Dhul-Kifl",
-    [q.dhulkifl],
-    bilingual(
-      "Disebut bersama Ismail dan Idris sebagai orang yang sabar. Nama dan riwayat tambahan yang tidak dipastikan tidak dijadikan fakta di sini.",
-      "Named with Ismail and Idris among the steadfast. Uncertain identifications and additional biographies are not presented as established facts here.",
-    ),
-  ),
-  prophet(
-    "dawud",
-    "Daud",
-    "Dawud",
-    [q.dawud],
-    bilingual(
-      "Al-Quran menyatakan bahawa Allah mengurniakan Zabur kepada Daud.",
-      "The Quran states that Allah gave Dawud the Zabur.",
-    ),
-  ),
-  prophet(
-    "sulayman",
-    "Sulaiman",
-    "Sulayman",
-    [q.sulayman],
-    bilingual(
-      "Sulaiman menggantikan Daud dan menyebut kurniaan pengetahuan tentang bahasa burung.",
-      "Sulayman succeeded Dawud and spoke of being taught the language of birds.",
-    ),
-  ),
-  prophet(
-    "ilyas",
-    "Ilyas",
-    "Ilyas",
-    [q.ilyas],
-    bilingual(
-      "Surah As-Saffat secara jelas menyebut Ilyas sebagai salah seorang rasul.",
-      "Surah As-Saffat explicitly names Ilyas as one of the messengers.",
-    ),
-  ),
-  prophet(
-    "ilyasa",
-    "Ilyasa‘",
-    "Al-Yasa‘",
-    [q.ilyasa],
-    bilingual(
-      "Disebut dalam Al-An‘am bersama Ismail, Yunus dan Lut sebagai penerima petunjuk dan kelebihan daripada Allah.",
-      "Named in Al-An‘am with Ismail, Yunus and Lut among those guided and favoured by Allah.",
-    ),
-  ),
-  prophet(
-    "yunus",
-    "Yunus",
-    "Yunus",
-    [q.yunus],
-    bilingual(
-      "Surah As-Saffat menyebut Yunus sebagai salah seorang rasul sebelum menceritakan kisahnya.",
-      "Surah As-Saffat identifies Yunus as one of the messengers before recounting his story.",
-    ),
-  ),
-  prophet(
-    "zakariya",
-    "Zakaria",
-    "Zakariya",
-    [q.zakariya],
-    bilingual(
-      "Surah Maryam merakam doa Zakaria dan berita gembira tentang seorang anak bernama Yahya.",
-      "Surah Maryam records Zakariya’s prayer and the glad news of a son named Yahya.",
-    ),
-  ),
-  prophet(
-    "yahya",
-    "Yahya",
-    "Yahya",
-    [q.yahya],
-    bilingual(
-      "Diperintahkan berpegang teguh kepada kitab dan diberikan hikmah sejak kecil.",
-      "Told to hold firmly to the Scripture and granted wisdom as a child.",
-    ),
-  ),
-  prophet(
-    "isa",
-    "Isa",
-    "Isa",
-    [q.isa],
-    bilingual(
-      "Surah Maryam merakam Isa, putera Maryam, menyatakan dirinya hamba Allah dan seorang nabi. Kisah kelahiran ini tidak memberikan tarikh hari dan bulan.",
-      "Surah Maryam records Isa, son of Maryam, declaring himself Allah’s servant and a prophet. This birth narrative supplies no calendar day or month.",
-    ),
-  ),
-  prophet(
-    "muhammad",
-    "Muhammad ﷺ",
-    "Muhammad ﷺ",
-    [q.muhammad],
-    bilingual(
-      "Al-Quran menyebut baginda sebagai Rasul Allah dan penutup para nabi. Malaysia memperingati Maulidur Rasul pada 12 Rabiulawal; tarikh peringatan ini tidak menghapuskan perbezaan pendapat tentang tarikh lahir sejarah.",
-      "The Quran identifies him as Allah’s Messenger and the seal of the prophets. Malaysia observes Mawlid on 12 Rabiulawal; this observance does not resolve the historical disagreement about the exact birth date.",
-    ),
-    {
-      birth: bilingual(
-        "Hari Isnin disebut dalam Sahih Muslim 1162e. Tarikh hari dan bulan yang tepat diperselisihkan; 12 Rabiulawal ialah tarikh Maulidur Rasul dalam takwim Malaysia.",
-        "Monday is stated in Sahih Muslim 1162e. The exact calendar date is disputed; 12 Rabiulawal is Malaysia’s Mawlid observance.",
-      ),
-      sources: [q.muhammad, mondayBirth, mawlidDiscussion, malaysiaCalendar],
-    },
-  ),
-];
+  sources: [q.muhammad, mondayBirth, mawlidDiscussion, malaysiaCalendar],
+};
 
 const localArafah = source(
   "Mufti WP · Penentuan hari Arafah",

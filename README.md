@@ -1,6 +1,6 @@
 # Waktu Solat Malaysia
 
-Aplikasi web untuk menyemak waktu solat di seluruh Malaysia, melihat lokasi semasa dan mencari arah kiblat. Reka bentuk ringkas dengan navigasi sisi pada desktop dan **navigasi bawah pada telefon**.
+Aplikasi web untuk menyemak waktu solat di seluruh Malaysia, melihat lokasi semasa dan mencari arah kiblat. Teks dan kawalan sentuhan yang lebih jelas, navigasi sisi pada desktop dan **navigasi bawah pada telefon**. Kad waktu solat menggunakan dua lajur pada skrin telefon.
 
 **[Buka aplikasi](https://waktu-solat-two.vercel.app/)** · [Repository GitHub](https://github.com/aafham/Waktu-Solat)
 
@@ -13,8 +13,8 @@ Aplikasi web untuk menyemak waktu solat di seluruh Malaysia, melihat lokasi sema
 - Carian negeri, daerah atau kod zon secara manual, serta lokasi kegemaran.
 - Kompas kiblat masa nyata, panduan pusing kiri/kanan dan jarak anggaran ke Kaabah.
 - Kiraan detik acara Islam yang bertukar sepanjang tahun, dengan keutamaan Aidilfitri semasa Ramadan.
-- Kalendar Hijrah 12 bulan, tarikh penting dan penukar Masihi ↔ Hijrah untuk tarikh peribadi atau perancangan.
-- Penanda puasa sunat, hari larangan puasa, panduan haji dan rujukan 25 rasul berserta dalil.
+- Kalendar Hijrah 12 bulan, tarikh penting dan penukar Masihi ↔ Hijrah dengan tab arah penukaran.
+- Penanda puasa sunat, hari larangan puasa, panduan haji dan rujukan ringkas Nabi Muhammad ﷺ berserta dalil.
 - Bahasa Melayu/English, format 12/24 jam dan tema cerah/gelap.
 - Pemasangan PWA, jadual tersimpan untuk offline dan pemulihan apabila sambungan kembali.
 
@@ -44,19 +44,19 @@ Tarikh daripada takwim Malaysia yang tersedia dilabelkan **takwim terbitan JAKIM
 
 Data yang disertakan meliputi **takwim Malaysia 2025–2026**, berdasarkan 25 permulaan bulan Hijrah. Aidilfitri 1447 turut mempunyai rujukan [pengisytiharan 19 Mac 2026](https://dmedia.penerangan.gov.my/upload/sm/19032026.1309983745.pdf). Tarikh tahun 2027 dan di luar liputan ini dilabel anggaran. Pengiraan sandaran menggunakan kalendar Hijrah sivil dengan kitaran 30 tahun; ia tidak bergantung pada algoritma Hijrah berbeza antara pelayar.
 
-### Puasa, haji dan rujukan 25 rasul
+### Puasa, haji dan rujukan Nabi Muhammad ﷺ
 
 - Puasa Isnin/Khamis, hari putih 13–15, Tasu‘a/Asyura, sembilan hari awal Zulhijjah dan Arafah ditandakan dengan rujukan. Enam hari Syawal ialah pilihan enam hari dalam tempoh selepas Aidilfitri, bukan enam tarikh tetap.
 - Aidilfitri serta 10–13 Zulhijjah mengatasi sebarang penanda puasa sunat. Ramadan ditandakan sebagai puasa wajib bagi yang diwajibkan, dengan keterangan berkaitan keadaan individu.
 - Tarwiyah, Arafah, Muzdalifah, Nahar dan Tasyrik diterangkan sebagai penanda ibadah. Tarikh Masihi dalam aplikasi mengikuti Malaysia; jemaah haji mengikuti pengisytiharan Arab Saudi dan pembimbing haji. [Penjelasan Mufti WP tentang Arafah](https://www.muftiwp.gov.my/ms/artikel/irsyad-hukum/edisi-haji-korban/5329-irsyad-al-fatwa-haji-dan-korban-siri-ke-61-polemik-masyarakat-terhadap-penentuan-hari-wukuf-di-arafah).
 - Sepuluh malam terakhir Ramadan dipaparkan sebagai tempoh mencari Lailatulqadar; tiada satu malam ditetapkan sebagai tarikh pasti. Nisfu Syaaban ialah penanda peringatan dengan penjelasan, bukan anjuran puasa khusus daripada aplikasi.
-- **25 rasul** boleh dicari mengikut nama. Setiap profil mempunyai rujukan al-Quran dan maklumat kelahiran yang dibezakan daripada kisah peristiwa. Tarikh lahir yang tidak disahkan tidak direka atau dijadikan acara tahunan.
+- Bahagian **Nabi Muhammad ﷺ** menyediakan keterangan ringkas tentang kelahiran dan Maulidur Rasul, dengan pautan al-Quran, hadis dan penjelasan Mufti WP.
 
-Hari Isnin bagi kelahiran Nabi Muhammad ﷺ mempunyai sandaran [Sahih Muslim 1162e](https://sunnah.com/muslim:1162e). **12 Rabiulawal** dilabel sebagai tarikh peringatan Maulidur Rasul di Malaysia; profil menjelaskan perbezaan pendapat tentang tarikh lahir sejarah. Penciptaan Adam pada Jumaat dan kisah penyelamatan Musa pada Asyura tidak dilabel sebagai hari lahir mereka.
+Hari Isnin bagi kelahiran Nabi Muhammad ﷺ mempunyai sandaran [Sahih Muslim 1162e](https://sunnah.com/muslim:1162e). **12 Rabiulawal** dilabel sebagai tarikh peringatan Maulidur Rasul di Malaysia; keterangannya menjelaskan perbezaan pendapat tentang tarikh lahir sejarah.
 
 ### Penukar tarikh
 
-Pilih **Masihi → Hijrah** untuk tarikh lahir, ulang tahun perkahwinan atau tarikh pilihan lain. Pilih **Hijrah → Masihi** untuk menukar semula. Masukkan tarikh yang sah dan semak keputusan serta label sumber/anggarannya. Hari yang tidak wujud dalam sesuatu bulan ditolak.
+Pilih tab **Masihi → Hijrah** untuk tarikh lahir, ulang tahun perkahwinan atau tarikh pilihan lain, atau tab **Hijrah → Masihi** untuk menukar semula. Satu borang dipaparkan pada satu masa. Masukkan tarikh yang sah, semak keputusan serta label sumber/anggarannya, kemudian tekan **Lihat dalam kalendar** untuk membuka hari tersebut. Hari yang tidak wujud dalam sesuatu bulan ditolak.
 
 Penukaran dilakukan sepenuhnya pada peranti. Tarikh yang dimasukkan tidak dihantar ke API atau disimpan sebagai rekod peribadi. Kalendar dan penukar juga boleh digunakan offline selepas fail aplikasi disimpan oleh pelayar.
 
@@ -126,7 +126,7 @@ Ujian pelayar meniru respons API dan bacaan sensor. **Koordinat simulasi tidak d
 | `qibla.js`                                         | Bearing, jarak, sensor kompas dan kitar hayat sesi               |
 | `islamic-calendar.js`, `islamic-calendar-data.js`  | Pengiraan Hijrah, takwim rasmi, peristiwa dan aturan puasa       |
 | `islamic-calendar-view.js`, `islamic-calendar.css` | Kalendar, penukar tarikh dan paparan rujukan responsif           |
-| `islamic-references.js`                            | Dalil puasa/haji dan profil 25 rasul dalam BM/EN                 |
+| `islamic-references.js`                            | Dalil puasa/haji dan rujukan Nabi Muhammad ﷺ dalam BM/EN         |
 | `event-countdown.js`                               | Kiraan detik peristiwa terdekat mengikut tarikh Malaysia         |
 | `service-worker.js`                                | Cache fail aplikasi dan pemulihan halaman offline                |
 | `manifest.json`, `icons/`                          | Metadata dan ikon PWA                                            |
@@ -162,14 +162,14 @@ Katalog zon disemak pada **23 September 2026**. Pemetaan daerah Kinta dibetulkan
 
 Hos sebagai laman statik di Vercel: preset **Other**, root `./`, tanpa arahan build. Push ke `main` mencetuskan production melalui integrasi GitHub Vercel. Workflow **Check application** menjalankan semakan sintaks, ujian modul dan ujian Chromium pada push/pull request.
 
-Apabila aset berubah, naikkan `CACHE_VERSION` dalam `service-worker.js` dan versi URL CSS/JavaScript dalam `index.html`. Versi shell semasa ialah **v20**, termasuk modul kalendar dan penukar tarikh. Hanya cache lama berawalan `waktu-solat-` dipadamkan semasa pengaktifan; respons API diurus oleh modul data.
+Apabila aset berubah, naikkan `CACHE_VERSION` dalam `service-worker.js` dan versi URL CSS/JavaScript dalam `index.html`. Versi shell semasa ialah **v21**, termasuk modul kalendar dan penukar tarikh. Hanya cache lama berawalan `waktu-solat-` dipadamkan semasa pengaktifan; respons API diurus oleh modul data.
 
-## Pengesahan versi 2.2
+## Pengesahan versi 2.3
 
 Semakan pada **23 September 2026**:
 
 - **94 ujian modul**: 29 data waktu/pemetaan zon, 14 lokasi, 18 kiblat, 10 service worker, 19 kalendar/aturan puasa dan 4 kiraan detik.
-- **34 ujian pelayar**: aliran lokasi, jadual, kiblat, tetapan dan offline; ditambah navigasi kalendar, penukaran dua hala, sempadan tarikh/ralat, pertukaran kiraan detik, puasa/haji, carian dan rujukan 25 rasul serta pemulihan paparan selepas kemas kini service worker.
+- **34 ujian pelayar**: aliran lokasi, jadual, kiblat, tetapan dan offline; ditambah navigasi kalendar, tab penukaran dua hala, sempadan tarikh/ralat, pertukaran kiraan detik, puasa/haji, rujukan Nabi Muhammad ﷺ serta pemulihan paparan selepas kemas kini service worker.
 - Penukaran pergi-balik bagi setiap hari dalam liputan takwim rasmi 2025–2026 diperiksa. Ujian memastikan Aidilfitri, Aidiladha dan hari Tasyrik mengatasi penandaan puasa sunat.
 - Paparan desktop **1440px** dan telefon **390px/320px** diperiksa untuk limpahan mendatar.
 - Simulasi peranti dalam zon masa New York mengesahkan penggunaan tarikh Malaysia dan pertukaran Subuh pada hujung bulan.
@@ -184,4 +184,4 @@ Semakan 60 zon mengesahkan muatan jadual JAKIM untuk bulan tersebut, bukan ketep
 - Peta masjid/surau berdekatan dengan maklumat sumber dan pautan navigasi.
 - Eksport jadual bulanan kepada PDF atau kalendar untuk perjalanan dan perkongsian keluarga.
 
-Cadangan ini belum termasuk dalam versi 2.2.
+Cadangan ini belum termasuk dalam versi 2.3.

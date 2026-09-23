@@ -186,7 +186,7 @@ const text = {
     gpsFallback:
       "Zon yang dipaparkan belum disahkan sebagai lokasi anda. Gunakan lokasi saya atau pilih zon.",
     gpsPermissionHelp:
-      "Benarkan akses lokasi dalam tetapan pelayar untuk pengesanan automatik. Anda masih boleh memilih zon secara manual.",
+      "Benarkan lokasi dalam tetapan pelayar atau pilih zon secara manual.",
     distanceKaaba: "Jarak anggaran ke Kaabah",
     realtimeQibla: "Panduan kompas masa nyata",
     qiblaStop: "Hentikan kompas",
@@ -198,7 +198,7 @@ const text = {
     prayerZone: "Zon waktu JAKIM",
     unconfirmedZone: "Jadual JAKIM dipaparkan · lokasi belum disahkan",
     gpsPreviousSchedule:
-      "Waktu yang dipaparkan masih untuk zon {zone}; zon ini belum disahkan bagi lokasi semasa.",
+      "Waktu masih untuk zon {zone}; lokasi semasa belum disahkan.",
     onMap: "Lihat lokasi pada peta",
     gpsAmbiguous:
       "Lokasi berada dalam kawasan yang mempunyai beberapa zon atau zon khas. Sahkan zon secara manual untuk waktu JAKIM yang betul.",
@@ -341,7 +341,7 @@ const text = {
     gpsFallback:
       "The displayed zone has not been confirmed as your location. Use My location or choose a zone.",
     gpsPermissionHelp:
-      "Allow location access in your browser settings for automatic detection. You can still select a zone manually.",
+      "Allow location in your browser settings or choose a zone manually.",
     distanceKaaba: "Approximate distance to the Kaaba",
     realtimeQibla: "Real-time compass guidance",
     qiblaStop: "Stop compass",
@@ -353,7 +353,7 @@ const text = {
     prayerZone: "JAKIM prayer zone",
     unconfirmedZone: "Displayed JAKIM schedule · location unconfirmed",
     gpsPreviousSchedule:
-      "The displayed times remain for zone {zone}; this zone has not been confirmed for your current location.",
+      "Times still use {zone}; your current location is unconfirmed.",
     onMap: "View location on map",
     gpsAmbiguous:
       "This area has multiple or special prayer zones. Confirm your zone manually for the correct JAKIM schedule.",
@@ -797,6 +797,8 @@ function setView(view, updateHash = true) {
   if (state.view === "qibla" && view !== "qibla") qibla.stop();
   state.view = view;
   document.body.classList.toggle("calendar-open", view === "calendar");
+  document.body.classList.toggle("qibla-open", view === "qibla");
+  document.body.classList.toggle("schedule-open", view === "schedule");
   for (const name of ["home", "schedule", "qibla", "calendar"])
     $(`${name}View`).hidden = name !== view;
   all(".main-nav [data-view],.bottom-nav [data-view]").forEach((button) => {
