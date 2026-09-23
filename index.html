@@ -21,7 +21,7 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Manrope:wght@400;500;600;650;700;750;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="style.css?v=2026-09-23" />
+    <link rel="stylesheet" href="style.css?v=2026-09-23-v2" />
   </head>
   <body>
     <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -188,6 +188,15 @@
               ><span id="zoneBadge" class="zone-badge">WLY01</span>
             </div>
             <p id="locationMeta">Lokasi lalai · Wilayah Persekutuan</p>
+            <p id="locationCoordinates" class="location-coordinates" hidden></p>
+            <a
+              id="currentLocationMap"
+              class="location-map-link"
+              target="_blank"
+              rel="noopener"
+              hidden
+              >Lihat lokasi pada peta</a
+            >
           </div>
           <button
             class="icon-button favorite-button"
@@ -195,12 +204,32 @@
             aria-label="Simpan lokasi kegemaran"
             aria-pressed="false"
           >
-            <svg class="icon"><use href="#i-star" /></svg></button
-          ><button class="text-button" id="manualToggle">
+            <svg class="icon"><use href="#i-star" /></svg>
+          </button>
+          <button id="locateBtn" class="primary locate-button">
+            <svg class="icon"><use href="#i-locate" /></svg
+            ><span data-i18n="myLocation">Lokasi saya</span>
+          </button>
+          <button class="text-button" id="manualToggle">
             <span data-i18n="changeLocation">Tukar lokasi</span
             ><svg class="icon"><use href="#i-chevron" /></svg>
           </button>
         </section>
+        <div class="location-context">
+          <span id="locationModeBadge" class="mode-badge" hidden>Auto</span>
+          <p id="prayerZoneName">
+            Zon waktu JAKIM · WLY01 — Kuala Lumpur, Putrajaya
+          </p>
+        </div>
+        <div
+          id="locationFeedback"
+          class="location-feedback"
+          role="status"
+          hidden
+        >
+          <svg class="icon" aria-hidden="true"><use href="#i-locate" /></svg
+          ><span id="locationFeedbackText"></span>
+        </div>
         <div id="statusBar" class="status-bar" role="status" hidden>
           <span id="statusText"></span
           ><button class="text-button" id="retryBtn" data-i18n="retry" hidden>
@@ -408,19 +437,33 @@
                 >Tidak aktif</span
               >
               <p id="qiblaStatus" class="qibla-status"></p>
-              <button id="compassBtn" class="primary">Aktifkan kompas</button>
+              <div class="qibla-controls">
+                <button id="compassBtn" class="primary">Aktifkan kompas</button
+                ><button id="qiblaStopBtn" class="secondary" hidden>
+                  Hentikan kompas
+                </button>
+              </div>
               <p class="small muted qibla-help" data-i18n="qiblaHelp">
                 Pegang telefon rata dan jauhkan daripada objek logam. Semak arah
                 dengan kompas yang dipercayai jika bacaan tidak stabil.
               </p>
             </div>
             <div class="compass-area">
+              <p class="compass-caption" data-i18n="realtimeQibla">
+                Panduan kompas masa nyata
+              </p>
               <div class="compass-ring">
                 <div class="compass-inner"></div>
-                <span class="direction north">N</span
-                ><span class="direction east">E</span
-                ><span class="direction south">S</span
-                ><span class="direction west">W</span>
+                <div
+                  id="qiblaDirections"
+                  class="compass-directions"
+                  aria-hidden="true"
+                >
+                  <span class="direction north">N</span
+                  ><span class="direction east">E</span
+                  ><span class="direction south">S</span
+                  ><span class="direction west">W</span>
+                </div>
                 <div class="compass-needle" id="qiblaNeedle">
                   <div class="needle-tip"></div>
                   <div class="needle-tail"></div>
@@ -431,6 +474,16 @@
               <p class="small muted" data-i18n="trueNorth">
                 mengikut arah jam dari utara benar
               </p>
+              <p
+                id="qiblaAlignment"
+                class="qibla-alignment"
+                aria-live="off"
+                hidden
+              ></p>
+              <div class="qibla-distance">
+                <span data-i18n="distanceKaaba">Jarak anggaran ke Kaabah</span
+                ><strong id="qiblaDistance">—</strong>
+              </div>
             </div>
           </div>
         </section>
@@ -441,11 +494,16 @@
             <a href="https://www.e-solat.gov.my/" target="_blank" rel="noopener"
               >JAKIM e-Solat</a
             ><span class="footer-dot">·</span
-            ><a
-              href="https://www.waktusolat.app/"
+            ><span data-i18n="locationFrom">Lokasi</span>:
+            <a href="https://www.waktusolat.app/" target="_blank" rel="noopener"
+              >Waktu Solat API</a
+            >
+            /
+            <a
+              href="https://www.bigdatacloud.com/"
               target="_blank"
               rel="noopener"
-              >Waktu Solat API</a
+              >BigDataCloud</a
             ></span
           >
         </footer>
@@ -487,7 +545,8 @@
         ><span data-i18n="detect">Kesan lokasi saya</span>
       </button>
       <p class="small muted" data-i18n="gpsPrivacy">
-        Lokasi dikongsi dengan API Waktu Solat untuk mengenal pasti zon anda.
+        Koordinat GPS dikongsi dengan BigDataCloud dan API Waktu Solat untuk
+        nama kawasan dan zon. Waktu solat daripada JAKIM.
       </p>
       <div id="gpsStatus" class="small" role="status"></div>
       <div id="favoritesSection" hidden>
@@ -518,6 +577,24 @@
           aria-label="Tutup"
         >
           <svg class="icon"><use href="#i-close" /></svg>
+        </button>
+      </div>
+      <div class="setting-row auto-location-setting">
+        <div>
+          <span data-i18n="autoLocation">Lokasi automatik</span>
+          <p class="small muted" data-i18n="autoLocationHelp">
+            Semak lokasi semasa apabila aplikasi dibuka atau aktif semula.
+            Pilihan zon manual menghentikan mod automatik.
+          </p>
+        </div>
+        <button
+          id="autoLocationToggle"
+          class="switch"
+          role="switch"
+          aria-checked="false"
+          aria-label="Lokasi automatik"
+        >
+          <span></span>
         </button>
       </div>
       <div class="setting-row">
@@ -574,6 +651,7 @@
           <svg class="icon"><use href="#i-close" /></svg>
         </button>
       </div>
+      <p id="installStatus" class="small" role="status"></p>
       <p data-i18n="installHelp">
         Dalam menu pelayar, pilih “Pasang aplikasi” atau “Tambah ke Skrin
         Utama”. Pada iPhone, buka dalam Safari, tekan Kongsi, kemudian Tambah ke
@@ -590,6 +668,6 @@
         <a href="https://www.e-solat.gov.my/">Buka JAKIM e-Solat</a>.
       </p></noscript
     >
-    <script type="module" src="script.js?v=2026-09-23"></script>
+    <script type="module" src="script.js?v=2026-09-23-v2"></script>
   </body>
 </html>

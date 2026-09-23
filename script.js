@@ -10,6 +10,11 @@ import {
 } from "./prayer-data.js";
 import { ZONE_DATA } from "./zones.js";
 import { createQibla } from "./qibla.js";
+import {
+  createLocationController,
+  requestPosition,
+  reverseGeocodePosition,
+} from "./location-service.js";
 
 const $ = (id) => document.getElementById(id);
 const all = (selector) => document.querySelectorAll(selector);
@@ -87,7 +92,8 @@ const text = {
     qiblaHelp:
       "Pegang telefon rata dan jauhkan daripada objek logam. Semak arah dengan kompas yang dipercayai jika bacaan tidak stabil.",
     trueNorth: "mengikut arah jam dari utara benar",
-    dataFrom: "Sumber data",
+    dataFrom: "Waktu",
+    locationFrom: "Lokasi",
     schedule: "Jadual",
     qiblaShort: "Kiblat",
     yourLocation: "LOKASI ANDA",
@@ -95,7 +101,7 @@ const text = {
     close: "Tutup",
     detect: "Kesan lokasi saya",
     gpsPrivacy:
-      "Lokasi dikongsi dengan API Waktu Solat untuk mengenal pasti zon anda.",
+      "Koordinat GPS dikongsi dengan BigDataCloud dan API Waktu Solat untuk nama kawasan dan zon. Waktu solat daripada JAKIM.",
     favorites: "Lokasi kegemaran",
     orChoose: "atau pilih secara manual",
     searchLocation: "Cari daerah atau kod zon",
@@ -149,6 +155,38 @@ const text = {
       "Pelayar ini tidak menyokong lokasi. Sila pilih zon secara manual.",
     gpsOutside: "Tiada zon Malaysia ditemui untuk lokasi ini.",
     labels: ["Subuh", "Syuruk", "Zohor", "Asar", "Maghrib", "Isyak"],
+    myLocation: "Lokasi saya",
+    autoLocation: "Lokasi automatik",
+    autoLocationHelp:
+      "Semak lokasi semasa apabila aplikasi dibuka atau aktif semula. Pilihan zon manual menghentikan mod automatik.",
+    autoActive: "Auto aktif",
+    manualActive: "Zon manual",
+    gpsResolving: "Mengenal pasti zon solat anda…",
+    gpsSuccess:
+      "Zon mengikut lokasi semasa. Lokasi diperiksa semula semasa aplikasi aktif.",
+    gpsTimeout:
+      "Lokasi mengambil masa terlalu lama. Pastikan GPS aktif, kemudian cuba lagi atau pilih zon.",
+    gpsLowAccuracy:
+      "Bacaan lokasi terlalu umum untuk memilih zon dengan yakin. Cuba di luar bangunan atau pilih zon secara manual.",
+    gpsFallback:
+      "Zon yang dipaparkan belum disahkan sebagai lokasi anda. Gunakan lokasi saya atau pilih zon.",
+    gpsPermissionHelp:
+      "Benarkan akses lokasi dalam tetapan pelayar untuk pengesanan automatik. Anda masih boleh memilih zon secara manual.",
+    distanceKaaba: "Jarak anggaran ke Kaabah",
+    realtimeQibla: "Panduan kompas masa nyata",
+    qiblaStop: "Hentikan kompas",
+    installFailed:
+      "Pemasangan tidak dapat dimulakan. Gunakan menu pelayar untuk memasang aplikasi.",
+    installed: "Aplikasi telah dipasang",
+    autoPaused: "Auto dijeda",
+    currentGps: "Lokasi GPS semasa",
+    prayerZone: "Zon waktu JAKIM",
+    unconfirmedZone: "Jadual JAKIM dipaparkan · lokasi belum disahkan",
+    gpsPreviousSchedule:
+      "Waktu yang dipaparkan masih untuk zon {zone}; zon ini belum disahkan bagi lokasi semasa.",
+    onMap: "Lihat lokasi pada peta",
+    gpsAmbiguous:
+      "Lokasi berada dalam kawasan yang mempunyai beberapa zon atau zon khas. Sahkan zon secara manual untuk waktu JAKIM yang betul.",
   },
   en: {
     skip: "Skip to content",
@@ -195,7 +233,8 @@ const text = {
     qiblaHelp:
       "Hold your phone flat and away from metal objects. Check an established compass if readings are unstable.",
     trueNorth: "clockwise from true north",
-    dataFrom: "Data sources",
+    dataFrom: "Prayer times",
+    locationFrom: "Location",
     schedule: "Schedule",
     qiblaShort: "Qibla",
     yourLocation: "YOUR LOCATION",
@@ -203,7 +242,7 @@ const text = {
     close: "Close",
     detect: "Detect my location",
     gpsPrivacy:
-      "Your location is shared with the Waktu Solat API to identify your prayer zone.",
+      "GPS coordinates are shared with BigDataCloud and the Waktu Solat API for place names and zones. Prayer times come from JAKIM.",
     favorites: "Favorite locations",
     orChoose: "or choose manually",
     searchLocation: "Search district or zone code",
@@ -258,6 +297,38 @@ const text = {
       "This browser does not support location. Please choose a zone manually.",
     gpsOutside: "No Malaysian prayer zone was found for this location.",
     labels: ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"],
+    myLocation: "My location",
+    autoLocation: "Automatic location",
+    autoLocationHelp:
+      "Check your current location when the app opens or becomes active again. Choosing a manual zone stops automatic mode.",
+    autoActive: "Auto on",
+    manualActive: "Manual zone",
+    gpsResolving: "Finding your prayer zone…",
+    gpsSuccess:
+      "Zone based on your current location. Your location is rechecked while the app is active.",
+    gpsTimeout:
+      "Getting your location took too long. Check that GPS is enabled, then retry or choose a zone.",
+    gpsLowAccuracy:
+      "This location reading is too approximate to choose a zone confidently. Try outdoors or select a zone manually.",
+    gpsFallback:
+      "The displayed zone has not been confirmed as your location. Use My location or choose a zone.",
+    gpsPermissionHelp:
+      "Allow location access in your browser settings for automatic detection. You can still select a zone manually.",
+    distanceKaaba: "Approximate distance to the Kaaba",
+    realtimeQibla: "Real-time compass guidance",
+    qiblaStop: "Stop compass",
+    installFailed:
+      "Installation could not start. Use your browser menu to install the app.",
+    installed: "App installed",
+    autoPaused: "Auto paused",
+    currentGps: "Current GPS location",
+    prayerZone: "JAKIM prayer zone",
+    unconfirmedZone: "Displayed JAKIM schedule · location unconfirmed",
+    gpsPreviousSchedule:
+      "The displayed times remain for zone {zone}; this zone has not been confirmed for your current location.",
+    onMap: "View location on map",
+    gpsAmbiguous:
+      "This area has multiple or special prayer zones. Confirm your zone manually for the correct JAKIM schedule.",
   },
 };
 const savedZone = read("ws_lastZone").toUpperCase();
@@ -275,6 +346,12 @@ const state = {
   format: read("ws_timeFormat") === "24" ? "24" : "12",
   zone: zoneMeta(savedZone) ? savedZone : "WLY01",
   locationSource: zoneMeta(savedZone) ? "savedLocation" : "defaultLocation",
+  locationMode:
+    read("ws_locationMode") || (zoneMeta(savedZone) ? "manual" : "auto"),
+  locationStatus: { status: "idle" },
+  locationConfirmed: false,
+  position: null,
+  place: null,
   view: "home",
   days: [],
   monthDays: [],
@@ -296,11 +373,142 @@ const dateFormat = (date, options) =>
   new Intl.DateTimeFormat(locale(), { timeZone: TIME_ZONE, ...options }).format(
     date,
   );
-const qibla = createQibla({ getLanguage: () => state.lang });
+const qibla = createQibla({
+  getLanguage: () => state.lang,
+  getPosition: requestPosition,
+});
 let dailyRequest = 0,
   monthRequest = 0,
-  gpsRequest = 0,
   installPrompt = null;
+let dialogLocationSnapshot = null;
+const locationController = createLocationController({
+  resolveZone: resolveGpsZone,
+  getPlace: (position, options) =>
+    reverseGeocodePosition(position, { ...options, language: state.lang }),
+  onPosition: (position, place) => {
+    state.position = position;
+    state.place = place;
+    state.locationConfirmed = false;
+    renderLocation();
+  },
+  onState: (status) => {
+    state.locationStatus = status;
+    if (status.status === "locating") state.locationConfirmed = false;
+    // A completed failure keeps the real GPS reading visible for the user.
+    if (status.status === "error") dialogLocationSnapshot = null;
+    renderLocation();
+  },
+  onZone: (code) => {
+    if (!zoneMeta(code))
+      throw Object.assign(new Error("Unknown prayer zone"), {
+        code: "outside-malaysia",
+      });
+    state.locationMode = "auto";
+    state.locationConfirmed = true;
+    save("ws_locationMode", "auto");
+    dialogLocationSnapshot = null;
+    if ($("locationDialog").open) $("locationDialog").close();
+    if (code === state.zone && state.days.length && !state.error) {
+      state.locationSource = "gpsLocation";
+      save("ws_lastZone", code);
+      renderLocation();
+    } else useZone(code, "gpsLocation");
+  },
+});
+
+function renderLocationFeedback() {
+  const status = state.locationStatus;
+  const busy = ["locating", "resolving"].includes(status.status);
+  let key =
+    status.status === "locating"
+      ? "detecting"
+      : status.status === "resolving"
+        ? "gpsResolving"
+        : "";
+  if (status.status === "error") {
+    key =
+      status.code === 1
+        ? "gpsPermissionHelp"
+        : status.code === 3
+          ? "gpsTimeout"
+          : status.code === "low-accuracy"
+            ? "gpsLowAccuracy"
+            : status.code === "unsupported"
+              ? "gpsUnsupported"
+              : [
+                    "outside-malaysia",
+                    "unknown-zone",
+                    "OUTSIDE_MALAYSIA",
+                  ].includes(status.code)
+                ? "gpsOutside"
+                : status.code === "AMBIGUOUS_ZONE"
+                  ? "gpsAmbiguous"
+                  : "gpsError";
+  } else if (status.status === "success" && state.locationMode === "auto")
+    key = "gpsSuccess";
+  else if (
+    !busy &&
+    (state.locationSource === "defaultLocation" ||
+      (state.locationMode === "auto" && !state.locationConfirmed))
+  )
+    key = "gpsFallback";
+  const message = key
+    ? t(key) +
+      (status.status === "error" && state.locationMode === "auto"
+        ? ` ${t("gpsPreviousSchedule").replace("{zone}", state.zone)}`
+        : "")
+    : "";
+  $("locationFeedback").hidden = !key;
+  $("locationFeedback").dataset.state = status.status;
+  $("locationFeedbackText").textContent = message;
+  $("gpsStatus").textContent = message;
+  for (const id of ["detectBtn", "locateBtn"]) {
+    $(id).disabled = busy;
+    $(id).setAttribute("aria-busy", String(busy));
+  }
+  $("locationModeBadge").textContent = t(
+    state.locationMode === "auto"
+      ? status.status === "error"
+        ? "autoPaused"
+        : "autoActive"
+      : "manualActive",
+  );
+  $("locationModeBadge").hidden =
+    state.locationSource === "defaultLocation" && !busy;
+  $("autoLocationToggle").setAttribute(
+    "aria-checked",
+    String(state.locationMode === "auto"),
+  );
+  $("autoLocationToggle").setAttribute("aria-label", t("autoLocation"));
+}
+
+function chooseManualZone(code) {
+  locationController.cancel();
+  state.locationMode = "manual";
+  state.locationStatus = { status: "idle" };
+  state.locationConfirmed = false;
+  state.position = null;
+  state.place = null;
+  dialogLocationSnapshot = null;
+  save("ws_locationMode", "manual");
+  $("locationDialog").close();
+  useZone(code, "manualLocation");
+  renderLocationFeedback();
+}
+
+function cancelDialogLocation() {
+  if (!dialogLocationSnapshot) return;
+  locationController.cancel();
+  Object.assign(state, dialogLocationSnapshot);
+  dialogLocationSnapshot = null;
+  save("ws_locationMode", state.locationMode);
+  renderLocation();
+}
+
+function closeDialog(dialog) {
+  if (dialog.id === "locationDialog") cancelDialogLocation();
+  dialog.close();
+}
 
 function setStatus() {
   const key = state.busy
@@ -318,11 +526,32 @@ function setStatus() {
 }
 function renderLocation() {
   const zone = zoneMeta(state.zone);
-  $("locationName").textContent = zone?.name || state.zone;
-  $("locationName").title = zone?.name || state.zone;
+  const place = state.place;
+  const actualLocation = state.position && state.locationMode === "auto";
+  const placeName = place
+    ? [...new Set([place.locality, place.city].filter(Boolean))].join(", ")
+    : t("currentGps");
+  $("locationName").textContent = actualLocation
+    ? placeName || t("currentGps")
+    : zone?.name || state.zone;
+  $("locationName").title = $("locationName").textContent;
   $("zoneBadge").textContent = state.zone;
-  $("locationMeta").textContent =
-    `${t(state.locationSource)} · ${zone?.state || "Malaysia"}`;
+  $("locationMeta").textContent = actualLocation
+    ? [place?.state, place?.country].filter(Boolean).join(", ") ||
+      t("currentGps")
+    : `${t(state.locationSource)} · ${zone?.state || "Malaysia"}`;
+  $("prayerZoneName").textContent =
+    `${t(state.locationMode === "auto" && !state.locationConfirmed ? "unconfirmedZone" : "prayerZone")} · ${state.zone} — ${zone?.name || "Malaysia"}`;
+  $("locationCoordinates").hidden = !actualLocation;
+  $("currentLocationMap").hidden = !actualLocation;
+  if (actualLocation) {
+    const { latitude, longitude, accuracy } = state.position.coords;
+    $("locationCoordinates").textContent =
+      `${latitude.toFixed(5)}, ${longitude.toFixed(5)} · GPS ±${Math.round(accuracy)} m`;
+    $("currentLocationMap").href =
+      `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=17/${latitude}/${longitude}`;
+    $("currentLocationMap").textContent = t("onMap");
+  }
   const favored = state.favorites.includes(state.zone);
   $("favoriteBtn").setAttribute("aria-pressed", String(favored));
   $("favoriteBtn").setAttribute(
@@ -331,6 +560,7 @@ function renderLocation() {
   );
   $("favoriteBtn").title = t(favored ? "removeFavorite" : "saveFavorite");
   $("manualToggle").setAttribute("aria-label", t("changeLocation"));
+  renderLocationFeedback();
 }
 function renderDates(now = new Date()) {
   $("gregorianDate").textContent = dateFormat(now, {
@@ -533,6 +763,7 @@ async function useZone(code, source = "manualLocation", force = false) {
 }
 function setView(view, updateHash = true) {
   if (!["home", "schedule", "qibla"].includes(view)) view = "home";
+  if (state.view === "qibla" && view !== "qibla") qibla.stop();
   state.view = view;
   for (const name of ["home", "schedule", "qibla"])
     $(`${name}View`).hidden = name !== view;
@@ -652,45 +883,33 @@ function openDialog(id) {
     $("stateSelect").value = "";
     renderZones();
   }
+  if (id === "installDialog") $("installStatus").textContent = "";
   $(id).showModal();
   if (id === "locationDialog") $("locationSearch").focus();
 }
-async function detectLocation() {
-  if (!navigator.geolocation) {
-    $("gpsStatus").textContent = t("gpsUnsupported");
+async function detectLocation({ automatic = false } = {}) {
+  if (
+    automatic &&
+    (state.locationMode !== "auto" ||
+      document.hidden ||
+      state.locationStatus.code === 1)
+  )
     return;
-  }
-  const request = ++gpsRequest;
-  $("detectBtn").disabled = true;
-  $("gpsStatus").textContent = t("detecting");
-  try {
-    const position = await new Promise((resolve, reject) =>
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: true,
-        timeout: 12000,
-        maximumAge: 0,
-      }),
-    );
-    if (request !== gpsRequest) return;
-    const code = await resolveGpsZone(
-      position.coords.latitude,
-      position.coords.longitude,
-    );
-    if (request !== gpsRequest) return;
-    if (!zoneMeta(code)) {
-      $("gpsStatus").textContent = t("gpsOutside");
-      return;
+  if (!automatic) {
+    if ($("locationDialog").open && !dialogLocationSnapshot) {
+      dialogLocationSnapshot = {
+        locationMode: state.locationMode,
+        locationSource: state.locationSource,
+        locationStatus: state.locationStatus,
+        locationConfirmed: state.locationConfirmed,
+        position: state.position,
+        place: state.place,
+      };
     }
-    $("locationDialog").close();
-    useZone(code, "gpsLocation");
-  } catch (error) {
-    if (request === gpsRequest)
-      $("gpsStatus").textContent = t(
-        error?.code === 1 ? "gpsDenied" : "gpsError",
-      );
-  } finally {
-    if (request === gpsRequest) $("detectBtn").disabled = false;
+    state.locationMode = "auto";
+    save("ws_locationMode", "auto");
   }
+  await locationController.detect({ automatic });
 }
 function setTheme(dark) {
   document.body.classList.toggle("dark", dark);
@@ -758,11 +977,24 @@ function applyLanguage() {
 }
 async function installApp() {
   $("settingsDialog").close();
+  if (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    navigator.standalone === true
+  ) {
+    openDialog("installDialog");
+    $("installStatus").textContent = t("installed");
+    return;
+  }
   if (installPrompt) {
     const prompt = installPrompt;
     installPrompt = null;
-    await prompt.prompt();
-    await prompt.userChoice;
+    try {
+      await prompt.prompt();
+      await prompt.userChoice;
+    } catch {
+      openDialog("installDialog");
+      $("installStatus").textContent = t("installFailed");
+    }
   } else openDialog("installDialog");
 }
 all("[data-view]").forEach((button) =>
@@ -772,7 +1004,7 @@ all(".settings-trigger").forEach((button) =>
   button.addEventListener("click", () => openDialog("settingsDialog")),
 );
 all(".dialog-close").forEach((button) =>
-  button.addEventListener("click", () => button.closest("dialog").close()),
+  button.addEventListener("click", () => closeDialog(button.closest("dialog"))),
 );
 all("dialog").forEach((dialog) =>
   dialog.addEventListener("click", (event) => {
@@ -784,25 +1016,42 @@ all("dialog").forEach((dialog) =>
         event.clientY < rect.top ||
         event.clientY > rect.bottom
       )
-        dialog.close();
+        closeDialog(dialog);
     }
   }),
 );
-$("locationDialog").addEventListener("close", () => {
-  ++gpsRequest;
-  $("detectBtn").disabled = false;
-});
+// Escape cancellation runs before the queued close event, so a fast API reply
+// cannot complete the cancelled selection in between those two browser events.
+$("locationDialog").addEventListener("cancel", cancelDialogLocation);
+$("locationDialog").addEventListener("close", cancelDialogLocation);
 $("manualToggle").addEventListener("click", () => openDialog("locationDialog"));
 $("locationSearch").addEventListener("input", renderZones);
 $("stateSelect").addEventListener("change", renderZones);
 $("locationDialog").addEventListener("click", (event) => {
   const button = event.target.closest("[data-zone]");
   if (button) {
-    $("locationDialog").close();
-    useZone(button.dataset.zone);
+    chooseManualZone(button.dataset.zone);
   }
 });
-$("detectBtn").addEventListener("click", detectLocation);
+$("detectBtn").addEventListener("click", () => detectLocation());
+$("locateBtn").addEventListener("click", () => detectLocation());
+$("autoLocationToggle").addEventListener("click", () => {
+  if (state.locationMode === "auto") {
+    locationController.cancel();
+    state.locationMode = "manual";
+    state.locationSource = "manualLocation";
+    state.locationStatus = { status: "idle" };
+    state.locationConfirmed = false;
+    state.position = null;
+    state.place = null;
+    dialogLocationSnapshot = null;
+    save("ws_locationMode", "manual");
+    renderLocation();
+  } else {
+    $("settingsDialog").close();
+    detectLocation();
+  }
+});
 $("favoriteBtn").addEventListener("click", () => {
   state.favorites = state.favorites.includes(state.zone)
     ? state.favorites.filter((code) => code !== state.zone)
@@ -862,6 +1111,7 @@ window.addEventListener("online", () => {
   setStatus();
   if (state.error) useZone(state.zone, state.locationSource);
   if (state.monthError && state.view === "schedule") showMonth();
+  detectLocation({ automatic: true });
 });
 const viewFromHash = () =>
   ({ "#jadual": "schedule", "#kiblat": "qibla" })[location.hash] || "home";
@@ -872,7 +1122,10 @@ document.querySelector(".skip-link").addEventListener("click", (event) => {
   $("main").scrollIntoView();
 });
 document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) tick(true);
+  if (!document.hidden) {
+    tick(true);
+    detectLocation({ automatic: true });
+  }
 });
 setTheme(
   read("ws_theme")
@@ -883,6 +1136,21 @@ applyLanguage();
 setView(viewFromHash(), false);
 useZone(state.zone, state.locationSource);
 setInterval(tick, 1000);
+detectLocation({ automatic: true });
+setInterval(() => detectLocation({ automatic: true }), 5 * 60 * 1000);
+window.addEventListener("pagehide", () => {
+  locationController.cancel();
+  if (["locating", "resolving"].includes(state.locationStatus.status)) {
+    state.locationStatus = { status: "idle" };
+    renderLocation();
+  }
+});
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) {
+    tick(true);
+    detectLocation({ automatic: true });
+  }
+});
 if ("serviceWorker" in navigator) {
   const hadController = Boolean(navigator.serviceWorker.controller);
   let reloading = false;

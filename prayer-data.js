@@ -1,3 +1,5 @@
+import { ZONE_DATA } from "./zones.js";
+
 /** Prayer times are always interpreted in Malaysia time, independent of the device. */
 export const TIME_ZONE = "Asia/Kuala_Lumpur";
 export const PRAYER_KEYS = [
@@ -33,8 +35,13 @@ const MONTHS = [
   "Dec",
 ];
 const DAY_MS = 86_400_000;
-const CACHE_VERSION = 2;
-const CACHE_PREFIX = "ws_month_v2_";
+const CACHE_VERSION = 3;
+const CACHE_PREFIX = "ws_month_v3_";
+const ZONES = new Map(
+  ZONE_DATA.flatMap(({ state, zones }) =>
+    zones.map((zone) => [zone.code, { ...zone, state }]),
+  ),
+);
 const inFlight = new Map();
 const dateFormatter = new Intl.DateTimeFormat("en-CA", {
   timeZone: TIME_ZONE,
@@ -109,7 +116,7 @@ function normalizeZone(zone) {
   const code = String(zone || "")
     .trim()
     .toUpperCase();
-  if (!/^[A-Z]{3}\d{2}$/.test(code)) throw new Error("Kod zon tidak sah.");
+  if (!ZONES.has(code)) throw new Error("Kod zon tidak sah.");
   return code;
 }
 
@@ -225,6 +232,7 @@ function readCache(zone, monthKey) {
     if (
       !entry ||
       entry.version !== CACHE_VERSION ||
+      entry.source !== "JAKIM" ||
       entry.zone !== zone ||
       entry.month !== monthKey ||
       !Number.isFinite(entry.savedAt) ||
@@ -247,6 +255,7 @@ function writeCache(zone, monthKey, days) {
       `${CACHE_PREFIX}${zone}_${monthKey}`,
       JSON.stringify({
         version: CACHE_VERSION,
+        source: "JAKIM",
         zone,
         month: monthKey,
         savedAt: Date.now(),
@@ -277,32 +286,19 @@ async function fetchJson(url, timeoutMs = 8000) {
 
 async function fetchMonth(zone, monthKey, force) {
   const cached = readCache(zone, monthKey);
-  // The public API asks consumers to reuse monthly data for at least 24 hours.
+  // Monthly schedules are stable; reuse verified direct-JAKIM data for 24 hours.
   if (!force && cached && Date.now() - cached.savedAt < DAY_MS) {
     return { days: cached.days, source: "cache", cached: true };
   }
   const [year, month] = monthKey.split("-").map(Number);
-  const providers = [
-    {
-      source: "JAKIM",
-      url: `https://www.e-solat.gov.my/index.php?r=esolatApi/takwimsolat&zone=${zone}&period=month&year=${year}&month=${month}`,
-    },
-    {
-      source: "Waktu Solat API",
-      url: `https://api.waktusolat.app/v2/solat/${zone}?year=${year}&month=${month}`,
-    },
-  ];
-  for (const provider of providers) {
+  const url = `https://www.e-solat.gov.my/index.php?r=esolatApi/takwimsolat&zone=${zone}&period=month&year=${year}&month=${month}`;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
     try {
-      const days = normalizeMonth(
-        await fetchJson(provider.url),
-        zone,
-        monthKey,
-      );
+      const days = normalizeMonth(await fetchJson(url), zone, monthKey);
       writeCache(zone, monthKey, days);
-      return { days, source: provider.source, cached: false };
+      return { days, source: "JAKIM", cached: false };
     } catch {
-      // A blocked request, API outage, or invalid response should try the next source.
+      // Retry the official source once. Never substitute another provider's times.
     }
   }
   if (cached) return { days: cached.days, source: "cache", cached: true };
@@ -389,7 +385,152 @@ export function getPrayerState(days, now = new Date()) {
   return { next, current, progress };
 }
 
-export async function resolveGpsZone(lat, lon) {
+const ISO_STATES = [
+  "Johor",
+  "Kedah",
+  "Kelantan",
+  "Melaka",
+  "Negeri Sembilan",
+  "Pahang",
+  "Pulau Pinang",
+  "Perak",
+  "Perlis",
+  "Selangor",
+  "Terengganu",
+  "Sabah",
+  "Sarawak",
+  "Wilayah Persekutuan",
+  "Wilayah Persekutuan",
+  "Wilayah Persekutuan",
+];
+
+function placeName(value) {
+  return String(value || "")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\b(?:bandar|pekan|daerah|district|city)\b/g, " ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function stateName(place) {
+  const iso = String(place?.stateCode || "")
+    .toUpperCase()
+    .match(/^MY-(\d{2})$/);
+  if (iso) return ISO_STATES[Number(iso[1]) - 1] || null;
+  const simplify = (value) =>
+    placeName(value)
+      .replace(/\b(?:darul|indera)\b.*$/, "")
+      .replace(/\b(?:negeri|state|of)\b/g, " ")
+      .trim()
+      .replace(/\s+/g, " ");
+  const name = simplify(place?.state);
+  if (
+    /^(?:federal territory(?: of)? |wilayah persekutuan |w p )?(?:kuala lumpur|putrajaya|labuan)$/.test(
+      name,
+    ) ||
+    name === "wilayah persekutuan"
+  ) {
+    return "Wilayah Persekutuan";
+  }
+  if (name === "penang") return "Pulau Pinang";
+  if (name === "malacca") return "Melaka";
+  return (
+    ZONE_DATA.find((group) => simplify(group.state) === name)?.state || null
+  );
+}
+
+function isSpecialZone(code) {
+  return /^(?:Puncak|Gunung|Bukit Larut|Genting|Cameron|Zon Khas|Pulau Aur|Pulau Tioman)/i.test(
+    ZONES.get(code)?.name || "",
+  );
+}
+
+function zoneError(code, message, cause) {
+  const error = new Error(message, cause ? { cause } : undefined);
+  error.code = code;
+  return error;
+}
+
+/** Use exact locality names within a verified Malaysian state, never nearest-town distance. */
+function localityZone(place) {
+  if (
+    String(place?.countryCode || "")
+      .trim()
+      .toUpperCase() !== "MY"
+  )
+    return null;
+  const state = stateName(place);
+  const candidates = ZONE_DATA.find((group) => group.state === state)?.zones;
+  if (!candidates) return null;
+  const match = (names, districtLevel) => {
+    const wanted = new Set(
+      names
+        .map((name) => placeName(typeof name === "object" ? name?.name : name))
+        .filter(Boolean),
+    );
+    return candidates.filter(
+      (zone) =>
+        (!districtLevel || !isSpecialZone(zone.code)) &&
+        zone.name
+          .split(/[(),]|\s+dan\s+|\s*&\s*/i)
+          .some((name) => wanted.has(placeName(name))),
+    );
+  };
+  const local = match([place.city, place.locality], false);
+  if (local.length > 1)
+    throw zoneError(
+      "AMBIGUOUS_ZONE",
+      "Lokasi merangkumi beberapa zon. Sila pilih zon secara manual.",
+    );
+  if (local.length === 1)
+    return { zone: local[0].code, state, specificity: "locality" };
+  const district = match(
+    [
+      place.district,
+      ...(Array.isArray(place.administrative) ? place.administrative : []),
+    ],
+    true,
+  );
+  if (district.length > 1)
+    throw zoneError(
+      "AMBIGUOUS_ZONE",
+      "Daerah merangkumi beberapa zon. Sila pilih zon secara manual.",
+    );
+  if (district.length === 1)
+    return { zone: district[0].code, state, specificity: "district" };
+  if (candidates.length === 1)
+    return { zone: candidates[0].code, state, specificity: "state" };
+  return null;
+}
+
+function hasUnresolvedSpecialDistrict(place) {
+  const state = stateName(place);
+  const names = new Set(
+    [
+      place?.district,
+      ...(Array.isArray(place?.administrative) ? place.administrative : []),
+    ]
+      .map((name) => placeName(typeof name === "object" ? name?.name : name))
+      .filter(Boolean),
+  );
+  return (
+    ZONE_DATA.find((group) => group.state === state)?.zones.some(
+      (zone) =>
+        /^Zon Khas Daerah /i.test(zone.name) &&
+        zone.name
+          .split(/[(),]/)
+          .some((name) =>
+            names.has(placeName(name).replace(/^zon khas\s+|^mukim\s+/g, "")),
+          ),
+    ) || false
+  );
+}
+
+/** Optional place metadata must come from reverse geocoding this same GPS position. */
+export async function resolveGpsZone(lat, lon, place) {
   if (
     typeof lat !== "number" ||
     typeof lon !== "number" ||
@@ -400,8 +541,68 @@ export async function resolveGpsZone(lat, lon) {
   ) {
     throw new Error("Koordinat lokasi tidak sah.");
   }
-  const payload = await fetchJson(
-    `https://api.waktusolat.app/zones/${lat}/${lon}`,
+  const country = String(place?.countryCode || "")
+    .trim()
+    .toUpperCase();
+  if (country && country !== "MY") {
+    throw zoneError(
+      "OUTSIDE_MALAYSIA",
+      "Lokasi ini di luar Malaysia. Sila pilih zon Malaysia secara manual.",
+    );
+  }
+  const matched = localityZone(place);
+  let zone = null,
+    failure;
+  try {
+    const payload = await fetchJson(
+      `https://api.waktusolat.app/zones/${lat}/${lon}`,
+    );
+    zone = normalizeZone(payload?.zone);
+    // The upstream polygon uses an obsolete Perak zone for Kinta (verified 2026-09-23).
+    // Current authority: https://mufti.perak.gov.my/component/content/article/waktu-solat-2026?catid=2
+    // Ipoh and Batu Gajah in Kinta use PRK02. This corrects a district, not guessed coordinates.
+    if (
+      payload.state === "PRK" &&
+      placeName(payload.district) === "kinta" &&
+      zone === "PRK01"
+    )
+      zone = "PRK02";
+  } catch (error) {
+    failure = error;
+  }
+  if (matched && (!zone || zone === matched.zone)) return matched.zone;
+  if (matched && zone !== matched.zone) {
+    // A broad reverse-geocoded town must not silently replace a mountain/island zone.
+    if (matched.specificity === "locality" && !isSpecialZone(zone))
+      return matched.zone;
+    throw zoneError(
+      "AMBIGUOUS_ZONE",
+      "Zon dan lokasi tidak sepadan. Sila sahkan zon secara manual.",
+    );
+  }
+  if (zone) {
+    const verifiedState = country === "MY" ? stateName(place) : null;
+    if (verifiedState && verifiedState !== ZONES.get(zone).state) {
+      throw zoneError(
+        "AMBIGUOUS_ZONE",
+        "Negeri dan zon tidak sepadan. Sila sahkan zon secara manual.",
+      );
+    }
+    if (
+      country === "MY" &&
+      !isSpecialZone(zone) &&
+      hasUnresolvedSpecialDistrict(place)
+    ) {
+      throw zoneError(
+        "AMBIGUOUS_ZONE",
+        "Daerah ini mempunyai zon khas. Sila sahkan zon secara manual.",
+      );
+    }
+    return zone;
+  }
+  throw zoneError(
+    "ZONE_NOT_FOUND",
+    "Zon tidak dapat dikenal pasti. Cuba lagi atau pilih zon secara manual.",
+    failure,
   );
-  return normalizeZone(payload?.zone);
 }

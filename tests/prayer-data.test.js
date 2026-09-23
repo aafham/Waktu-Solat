@@ -101,7 +101,8 @@ function storage(t, entries = {}) {
 
 function cacheEntry(zone = "WLY01", month = "2026-09", age = 0) {
   return JSON.stringify({
-    version: 2,
+    version: 3,
+    source: "JAKIM",
     zone,
     month,
     days: schedule(month),
@@ -233,13 +234,13 @@ test("loadMonth requests explicit period, normalizes response and caches by zone
   assert.equal(result.source, "JAKIM");
   assert.equal(result.cached, false);
   assert.deepEqual(result.days, schedule());
-  assert.ok(values.has("ws_month_v2_WLY01_2026-09"));
+  assert.ok(values.has("ws_month_v3_WLY01_2026-09"));
 });
 
 test("valid fresh cache avoids repeated API requests, while force explicitly refreshes", async (t) => {
   storage(t, {
-    ws_month_v2_WLY01_2026_09: "legacy cache is ignored",
-    "ws_month_v2_WLY01_2026-09": cacheEntry(),
+    ws_month_v3_WLY01_2026_09: "legacy cache is ignored",
+    "ws_month_v3_WLY01_2026-09": cacheEntry(),
   });
   const request = t.mock.method(globalThis, "fetch", async () => ok(jakim()));
   assert.equal((await loadMonth("WLY01", "2026-09")).source, "cache");
@@ -251,39 +252,37 @@ test("valid fresh cache avoids repeated API requests, while force explicitly ref
   assert.equal(request.mock.callCount(), 1);
 });
 
-test("CORS/network failure at JAKIM falls back to validated alternative API", async (t) => {
+test("a transient JAKIM network failure retries the official source only", async (t) => {
   storage(t);
   const urls = [];
   t.mock.method(globalThis, "fetch", async (url) => {
     urls.push(url);
-    if (url.includes("e-solat.gov.my")) throw new TypeError("Failed to fetch");
-    return ok(alternative());
+    assert.equal(new URL(url).hostname, "www.e-solat.gov.my");
+    if (urls.length === 1) throw new TypeError("Failed to fetch");
+    return ok(jakim());
   });
   const result = await loadMonth("WLY01", "2026-09");
-  assert.equal(result.source, "Waktu Solat API");
+  assert.equal(result.source, "JAKIM");
   assert.deepEqual(result.days, schedule());
   assert.equal(urls.length, 2);
-  assert.match(urls[1], /\/v2\/solat\/WLY01\?year=2026&month=9/);
+  assert.equal(urls[0], urls[1]);
 });
 
-test("HTTP error and malformed primary data both trigger fallback", async (t) => {
+test("HTTP errors and wrong-zone JAKIM data never fall back to third-party prayer times", async (t) => {
   storage(t);
   let primaryIsMalformed = false;
   t.mock.method(globalThis, "fetch", async (url) => {
-    if (!url.includes("e-solat.gov.my")) return ok(alternative());
+    assert.equal(new URL(url).hostname, "www.e-solat.gov.my");
     return primaryIsMalformed ? ok(jakim("SGR01")) : { ok: false, status: 503 };
   });
-  assert.equal((await loadMonth("WLY01", "2026-09")).source, "Waktu Solat API");
+  await assert.rejects(loadMonth("WLY01", "2026-09"));
   primaryIsMalformed = true;
-  assert.equal(
-    (await loadMonth("WLY01", "2026-09", { force: true })).source,
-    "Waktu Solat API",
-  );
+  await assert.rejects(loadMonth("WLY01", "2026-09", { force: true }));
 });
 
 test("offline failure can use expired same-zone same-month data but never another zone/year", async (t) => {
   storage(t, {
-    "ws_month_v2_WLY01_2026-09": cacheEntry("WLY01", "2026-09", 172800000),
+    "ws_month_v3_WLY01_2026-09": cacheEntry("WLY01", "2026-09", 172800000),
   });
   t.mock.method(globalThis, "fetch", async () => {
     throw new Error("offline");
@@ -294,16 +293,16 @@ test("offline failure can use expired same-zone same-month data but never anothe
 });
 
 test("corrupt storage, mismatched metadata, and incomplete cached schedules cannot leak into display", async (t) => {
-  const values = storage(t, { "ws_month_v2_WLY01_2026-09": "{broken" });
+  const values = storage(t, { "ws_month_v3_WLY01_2026-09": "{broken" });
   t.mock.method(globalThis, "fetch", async () => {
     throw new Error("offline");
   });
   await assert.rejects(loadMonth("WLY01", "2026-09"));
-  values.set("ws_month_v2_WLY01_2026-09", cacheEntry("SGR01"));
+  values.set("ws_month_v3_WLY01_2026-09", cacheEntry("SGR01"));
   await assert.rejects(loadMonth("WLY01", "2026-09"));
   const incomplete = JSON.parse(cacheEntry());
   incomplete.days.pop();
-  values.set("ws_month_v2_WLY01_2026-09", JSON.stringify(incomplete));
+  values.set("ws_month_v3_WLY01_2026-09", JSON.stringify(incomplete));
   await assert.rejects(loadMonth("WLY01", "2026-09"));
 });
 
@@ -357,5 +356,212 @@ test("invalid zone/month input does not issue a request", async (t) => {
   });
   await assert.rejects(loadMonth("WLY01&zone=SGR01", "2026-09"));
   await assert.rejects(loadMonth("WLY01", "2026-13"));
+  await assert.rejects(loadMonth("XYZ01", "2026-09"));
   assert.equal(request.mock.callCount(), 0);
+});
+
+test("legacy and non-JAKIM cache provenance cannot satisfy official-only prayer times", async (t) => {
+  const values = storage(t, { "ws_month_v2_WLY01_2026-09": cacheEntry() });
+  t.mock.method(globalThis, "fetch", async () => {
+    throw new Error("offline");
+  });
+  await assert.rejects(loadMonth("WLY01", "2026-09"));
+  const entry = JSON.parse(cacheEntry());
+  entry.source = "Waktu Solat API";
+  values.set("ws_month_v3_WLY01_2026-09", JSON.stringify(entry));
+  await assert.rejects(loadMonth("WLY01", "2026-09"));
+  delete entry.source;
+  values.set("ws_month_v3_WLY01_2026-09", JSON.stringify(entry));
+  await assert.rejects(loadMonth("WLY01", "2026-09"));
+});
+
+test("Kinta uses current Perak zone 2 instead of the obsolete upstream polygon code", async (t) => {
+  t.mock.method(globalThis, "fetch", async () =>
+    ok({ zone: "PRK01", state: "PRK", district: "Kinta" }),
+  );
+  assert.equal(await resolveGpsZone(4.5975, 101.0901), "PRK02");
+  assert.equal(
+    await resolveGpsZone(4.5975, 101.0901, {
+      countryCode: "MY",
+      state: "Perak Darul Ridzuan",
+      city: "Ipoh",
+    }),
+    "PRK02",
+  );
+});
+
+test("country-verified coastal locality names recover missing Tawau and Semporna polygons", async (t) => {
+  t.mock.method(globalThis, "fetch", async () => ({ ok: false, status: 500 }));
+  assert.equal(
+    await resolveGpsZone(4.2443, 117.891, {
+      countryCode: "MY",
+      stateCode: "MY-12",
+      city: "Tawau",
+    }),
+    "SBH04",
+  );
+  assert.equal(
+    await resolveGpsZone(4.479, 118.6112, {
+      countryCode: "MY",
+      state: "Sabah",
+      locality: "Semporna",
+    }),
+    "SBH03",
+  );
+});
+
+test("outside-country metadata is rejected before any Malaysian zone request", async (t) => {
+  const request = t.mock.method(globalThis, "fetch", async () =>
+    ok({ zone: "JHR02" }),
+  );
+  for (const countryCode of ["SG", "ID", "TH", "BN"]) {
+    await assert.rejects(
+      resolveGpsZone(1.3521, 103.8198, {
+        countryCode,
+        state: "Johor",
+        city: "Johor Bahru",
+      }),
+      { code: "OUTSIDE_MALAYSIA" },
+    );
+  }
+  assert.equal(request.mock.callCount(), 0);
+});
+
+test("unknown-country or unknown-state place names cannot fabricate a GPS zone", async (t) => {
+  t.mock.method(globalThis, "fetch", async () => ({ ok: false, status: 500 }));
+  await assert.rejects(
+    resolveGpsZone(4.479, 118.6112, { locality: "Semporna", state: "Sabah" }),
+    { code: "ZONE_NOT_FOUND" },
+  );
+  await assert.rejects(
+    resolveGpsZone(4.479, 118.6112, {
+      countryCode: "MY",
+      locality: "Semporna",
+      state: "Unknown",
+    }),
+    { code: "ZONE_NOT_FOUND" },
+  );
+});
+
+test("exact locality matches respect state boundaries, federal territories and source naming", async (t) => {
+  t.mock.method(globalThis, "fetch", async () => {
+    throw new TypeError("network");
+  });
+  assert.equal(
+    await resolveGpsZone(5.2831, 115.2308, {
+      countryCode: "MY",
+      state: "Federal Territory of Labuan",
+      city: "Labuan",
+    }),
+    "WLY02",
+  );
+  assert.equal(
+    await resolveGpsZone(3.139, 101.6869, {
+      countryCode: "MY",
+      stateCode: "MY-14",
+      locality: "Kuala Lumpur",
+    }),
+    "WLY01",
+  );
+  assert.equal(
+    await resolveGpsZone(3.0738, 101.5183, {
+      countryCode: "MY",
+      state: "Selangor Darul Ehsan",
+      city: "Shah Alam",
+    }),
+    "SGR01",
+  );
+  await assert.rejects(
+    resolveGpsZone(3.0738, 101.5183, {
+      countryCode: "MY",
+      state: "Johor",
+      city: "Shah Alam",
+    }),
+    { code: "ZONE_NOT_FOUND" },
+  );
+});
+
+test("conflicting locality/district matches and special-zone conflicts require manual confirmation", async (t) => {
+  t.mock.method(globalThis, "fetch", async () =>
+    ok({ zone: "SBH06", state: "SBH", district: "Gunung Kinabalu" }),
+  );
+  await assert.rejects(
+    resolveGpsZone(6.075, 116.558, {
+      countryCode: "MY",
+      state: "Sabah",
+      city: "Ranau",
+    }),
+    { code: "AMBIGUOUS_ZONE" },
+  );
+  await assert.rejects(
+    resolveGpsZone(4.5975, 101.0901, {
+      countryCode: "MY",
+      state: "Perak",
+      city: "Ipoh",
+      locality: "Tapah",
+    }),
+    { code: "AMBIGUOUS_ZONE" },
+  );
+});
+
+test("broad districts cannot choose special island/highland zones and matching islands remain intact", async (t) => {
+  let zone = "PHG01";
+  t.mock.method(globalThis, "fetch", async () => ok({ zone }));
+  assert.equal(
+    await resolveGpsZone(2.79, 104.17, {
+      countryCode: "MY",
+      state: "Pahang",
+      district: "Rompin",
+    }),
+    "PHG01",
+  );
+  zone = "PHG02";
+  await assert.rejects(
+    resolveGpsZone(2.79, 104.17, {
+      countryCode: "MY",
+      state: "Pahang",
+      district: "Rompin",
+    }),
+    { code: "AMBIGUOUS_ZONE" },
+  );
+  zone = "JHR01";
+  await assert.rejects(
+    resolveGpsZone(2.46, 104.51, {
+      countryCode: "MY",
+      state: "Johor",
+      district: "Mersing",
+    }),
+    { code: "AMBIGUOUS_ZONE" },
+  );
+  assert.equal(
+    await resolveGpsZone(2.46, 104.51, {
+      countryCode: "MY",
+      state: "Johor",
+      locality: "Pulau Aur",
+      district: "Mersing",
+    }),
+    "JHR01",
+  );
+});
+
+test("a same-state polygon remains usable when locality names have no exact catalog match", async (t) => {
+  t.mock.method(globalThis, "fetch", async () =>
+    ok({ zone: "SGR01", state: "SGR", district: "Petaling" }),
+  );
+  assert.equal(
+    await resolveGpsZone(3.0738, 101.5183, {
+      countryCode: "MY",
+      state: "Selangor",
+      locality: "Seksyen 7",
+    }),
+    "SGR01",
+  );
+  await assert.rejects(
+    resolveGpsZone(3.0738, 101.5183, {
+      countryCode: "MY",
+      state: "Sabah",
+      locality: "Unknown",
+    }),
+    { code: "AMBIGUOUS_ZONE" },
+  );
 });

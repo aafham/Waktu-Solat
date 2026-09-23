@@ -1,60 +1,64 @@
 # Waktu Solat Malaysia
 
-Aplikasi web waktu solat Malaysia dengan paparan harian, jadual bulanan dan panduan kiblat. Susun atur desktop menggunakan navigasi sisi; pada telefon, navigasi bawah memudahkan pertukaran paparan.
+Aplikasi web untuk menyemak waktu solat di seluruh Malaysia, melihat lokasi semasa dan mencari arah kiblat. Reka bentuk ringkas dengan navigasi sisi pada desktop dan **navigasi bawah pada telefon**.
 
 **[Buka aplikasi](https://waktu-solat-two.vercel.app/)** · [Repository GitHub](https://github.com/aafham/Waktu-Solat)
 
 ## Ciri utama
 
-- Waktu Subuh, Syuruk, Zohor, Asar, Maghrib dan Isyak, dengan kiraan masa ke solat fardu seterusnya.
-- Tarikh dan pengiraan waktu menggunakan `Asia/Kuala_Lumpur`, termasuk apabila peranti berada dalam zon masa lain. Syuruk dipaparkan sebagai waktu matahari terbit dan dikecualikan daripada solat seterusnya.
-- Jadual bulanan dengan pilihan bulan, serta tarikh Hijrah daripada data jadual apabila tersedia.
-- Pengesanan zon melalui GPS atau dialog carian mengikut negeri, daerah dan kod zon.
-- Lokasi kegemaran untuk bertukar zon dengan cepat.
-- Tetapan Bahasa Melayu/English, format 12/24 jam dan tema cerah/gelap; pilihan disimpan dalam pelayar.
-- Status memuatkan, ralat, sumber data dan penggunaan data tersimpan, dengan pilihan cuba semula.
-- Pemasangan PWA dan paparan offline untuk jadual yang sudah dimuatkan.
+- Waktu Subuh, Syuruk, Zohor, Asar, Maghrib dan Isyak **terus daripada JAKIM**, meliputi 60 zon Malaysia.
+- Kiraan masa ke solat fardu seterusnya, jadual bulanan dan tarikh Hijrah daripada jadual apabila tersedia.
+- Lokasi automatik dengan nama kawasan semasa, koordinat peranti, anggaran ketepatan GPS dan pautan titik lokasi pada peta.
+- Nama lokasi sebenar dipaparkan **berasingan daripada zon waktu JAKIM**. Satu zon solat boleh merangkumi beberapa daerah.
+- Carian negeri, daerah atau kod zon secara manual, serta lokasi kegemaran.
+- Kompas kiblat masa nyata, panduan pusing kiri/kanan dan jarak anggaran ke Kaabah.
+- Bahasa Melayu/English, format 12/24 jam dan tema cerah/gelap.
+- Pemasangan PWA, jadual tersimpan untuk offline dan pemulihan apabila sambungan kembali.
 
-Pada kunjungan pertama, aplikasi menggunakan **WLY01 — Kuala Lumpur, Putrajaya** sebagai zon lalai dan melabelkannya dengan jelas. Pilih lokasi sendiri atau gunakan GPS untuk mendapatkan zon yang sesuai.
+Semua tarikh dan pengiraan waktu menggunakan `Asia/Kuala_Lumpur`, walaupun peranti menggunakan zon masa lain. Syuruk menandakan tamat Subuh dan tidak dikira sebagai solat fardu seterusnya. Selepas Isyak, kiraan masa menggunakan Subuh sebenar pada hari berikutnya, termasuk ketika bertukar bulan atau tahun. Jika jadual esok belum tersedia, aplikasi memaparkan keadaan tersebut tanpa meneka waktunya.
 
-## Cara guna
+## Lokasi semasa dan zon solat
 
-1. Buka aplikasi dan semak zon yang dipaparkan.
-2. Buka pemilih lokasi untuk mencari negeri, daerah atau kod zon, atau gunakan pengesanan GPS dan benarkan akses lokasi.
-3. Simpan zon sebagai kegemaran jika mahu menggunakannya semula.
-4. Semak waktu hari ini dan kiraan masa; buka jadual bulanan untuk melihat hari lain.
-5. Buka panduan kiblat dan aktifkan akses lokasi/sensor apabila diminta.
-6. Gunakan tetapan untuk menukar bahasa, format waktu dan tema.
+1. Pada kunjungan pertama, benarkan permintaan lokasi pelayar. Aplikasi meminta lokasi peranti dengan pilihan ketepatan tinggi.
+2. Selepas lokasi diperoleh, nama kawasan, koordinat dan anggaran ketepatan dipaparkan. **Lihat lokasi pada peta** membuka titik koordinat pada OpenStreetMap.
+3. Zon waktu JAKIM dipilih daripada pemetaan koordinat, dengan semakan nama kawasan/negeri apabila tersedia.
+4. Gunakan **Lokasi saya** untuk mengesan semula. Mod automatik menyemak lokasi semasa aplikasi aktif, paling kerap sekali setiap lima minit; semakan juga dicuba apabila aplikasi kembali aktif.
+5. **Tukar lokasi** membolehkan pilihan manual. Pilihan ini menghentikan mod automatik supaya permintaan GPS yang lambat tidak menimpa zon pilihan anda. Aktifkan semula melalui **Lokasi saya** atau tetapan.
 
-Selepas Isyak, kiraan masa menggunakan waktu Subuh sebenar pada hari berikutnya, termasuk ketika bertukar bulan atau tahun. Jika jadual hari berikutnya belum tersedia, aplikasi tidak meneka waktunya daripada jadual hari ini. Penanda Subuh tamat apabila masuk Syuruk.
+Sebelum pengesanan berjaya, zon lalai **WLY01 — Kuala Lumpur, Putrajaya** dilabelkan sebagai belum disahkan. Zon manual/tersimpan juga dikenal pasti dengan jelas. Pengguna sedia ada yang telah menyimpan zon manual mengekalkan pilihan tersebut.
 
-## Panduan kiblat
+Ketepatan lokasi bergantung pada peranti, isyarat dan izin pelayar. Angka **GPS ±… m** ialah anggaran ketepatan yang diberikan peranti, bukan jaminan lokasi tepat pada meter tertentu. Bacaan dengan ketidakpastian melebihi 5 km tidak digunakan untuk memilih zon secara automatik. Jika nama kawasan tidak dapat dimuatkan, koordinat sebenar masih dipaparkan. Kawasan yang mempunyai zon khas atau pemetaan bercanggah memerlukan pengesahan manual.
 
-Arah kiblat dikira daripada koordinat semasa sebagai sudut mengikut arah jam dari **utara benar**. Panduan yang bergerak bersama telefon hanya diaktifkan selepas bacaan kompas mutlak yang sah diterima. Bacaan orientasi relatif sahaja tidak mencukupi.
+## Kiblat masa nyata
 
-Jika sensor tidak tersedia, kebenaran ditolak atau tiada bacaan diterima, aplikasi memaparkan arah tetap yang dilabelkan dengan jelas. Gunakan rujukan utara untuk membaca arah tetap tersebut. Untuk panduan sensor, letakkan telefon mendatar dan jauhkan daripada gangguan magnet; aplikasi tidak mendakwa sensor telah dikalibrasi.
+Buka **Kiblat → Aktifkan kompas langsung**, kemudian benarkan akses lokasi dan sensor. Pegang telefon mendatar dan jauhkan daripada objek logam.
 
-GPS dan kompas memerlukan HTTPS atau `localhost`, sokongan pelayar/peranti dan kebenaran pengguna. **GPS serta ketepatan sensor pada telefon fizikal belum disahkan.** Ujian automatik meliputi pengiraan arah, kebenaran, bacaan mutlak/relatif dan keadaan sensor tidak tersedia.
+- Bearing ke Kaabah dikira daripada koordinat semasa, mengikut arah jam dari **utara benar**.
+- Bacaan orientasi mutlak yang sah menggerakkan anak panah ketika telefon diputar. Bacaan relatif sahaja tidak mengaktifkan kompas langsung.
+- Panduan kiri/kanan menunjukkan anggaran penjajaran; jarak ke Kaabah dikira pada peranti.
+- Bacaan WebKit yang menggunakan utara magnet dilabelkan dengan jelas. Penjajaran sensor ialah anggaran, sementara bearing angka berasaskan utara benar.
+- Perubahan lokasi dikemas kini sepanjang sesi kompas. Bacaan terlalu condong atau tidak boleh dipercayai tidak digunakan sebagai panduan langsung.
+- **Hentikan kompas**, keluar daripada paparan kiblat atau menyembunyikan aplikasi menghentikan sensor dan pemantauan lokasi.
+
+Jika sensor tiada, izin ditolak atau tiada bacaan mutlak diterima, aplikasi menunjukkan **arah tetap** dengan arahan menggunakan rujukan utara. Desktop tanpa sensor masih boleh melihat bearing dan jarak apabila lokasi tersedia.
+
+GPS dan kompas memerlukan HTTPS atau `localhost`, sokongan peranti/pelayar serta izin pengguna. **Ujian telefon fizikal dan ketepatan sensor di lapangan belum dilakukan.** Ujian automatik menggunakan bacaan terkawal untuk menyemak pengiraan dan tindak balas aplikasi; ia tidak menggantikan kalibrasi atau pengesahan kompas sebenar.
 
 ## Offline dan pemasangan
 
-Service worker menyimpan fail aplikasi setempat. Jadual disimpan berasingan menggunakan kunci **zon + tahun-bulan**, selepas semua tarikh dan waktu disahkan. Data yang sah digunakan semula selama 24 jam untuk mengurangkan permintaan API; tindakan muat semula data boleh meminta salinan baharu.
+Service worker menyimpan fail aplikasi. Jadual disimpan mengikut **zon + tahun-bulan**, selepas semua tarikh dan waktu disahkan. Cache versi 3 hanya menerima jadual yang mempunyai sumber **JAKIM**; cache format lama tidak digunakan.
 
-Apabila kedua-dua sumber API gagal, hanya jadual lengkap yang sah bagi zon dan bulan yang diminta boleh digunakan daripada simpanan. Simpanan untuk zon lain atau bulan/tahun lain tidak digunakan sebagai ganti. Sambungan internet diperlukan bagi jadual yang belum pernah dimuatkan. Kegunaan offline juga bergantung pada pelayar masih menyimpan data aplikasi.
+Data sah digunakan semula selama 24 jam untuk mengurangkan permintaan. **Muat semula data** dalam tetapan meminta salinan baharu tanpa memadam kegemaran atau pilihan pengguna. Jika JAKIM/rangkaian tidak dapat dicapai selepas cubaan semula, aplikasi hanya menggunakan jadual lengkap yang sah untuk zon dan bulan yang diminta. Zon atau bulan lain tidak dijadikan pengganti.
 
-Untuk memasang aplikasi:
+Jadual yang belum disimpan, pemetaan zon baharu dan nama kawasan memerlukan internet. Pengiraan bearing kiblat dibuat setempat, tetapi perolehan lokasi masih bergantung pada peranti.
 
-- Gunakan butang/panduan pemasangan dalam aplikasi jika pelayar menyediakannya.
-- Chrome atau Edge: buka menu pelayar dan pilih pilihan pemasangan aplikasi yang tersedia.
-- Safari pada iPhone/iPad: buka menu kongsi dan pilih **Add to Home Screen**.
-
-Pilihan pemasangan berbeza mengikut pelayar. Aplikasi ini **tidak menyediakan push azan atau peringatan latar belakang** apabila halaman ditutup.
+Gunakan butang **Pasang aplikasi** atau panduan menu pelayar dalam aplikasi. Pilihan pemasangan berbeza mengikut pelayar. Aplikasi belum menyediakan push azan atau peringatan apabila halaman ditutup.
 
 ## Jalankan secara lokal
 
-Projek menggunakan HTML, CSS dan JavaScript ES modules tanpa framework atau proses build. Tiada API key, environment variable atau pemasangan dependency diperlukan.
+Projek menggunakan HTML, CSS dan JavaScript ES modules, tanpa framework, proses build, API key atau dependency runtime.
 
-Prasyarat: Git dan Python 3 untuk pelayan fail statik; Node.js 20 atau lebih baharu untuk ujian.
+Prasyarat: Git, Python 3 untuk pelayan statik, dan Node.js 20+ untuk ujian.
 
 ```sh
 git clone https://github.com/aafham/Waktu-Solat.git
@@ -62,72 +66,84 @@ cd Waktu-Solat
 python -m http.server 8000
 ```
 
-Buka [localhost:8000](http://localhost:8000). Pada Windows, gunakan `py -m http.server 8000` jika arahan `python` tidak tersedia. Gunakan pelayan HTTP, bukan membuka `index.html` terus melalui `file://`, supaya modul dan service worker dapat berfungsi.
+Buka [localhost:8000](http://localhost:8000). Pada Windows, gunakan `py -m http.server 8000` jika perlu. Jangan buka `index.html` melalui `file://`; modul dan service worker memerlukan HTTP.
 
-Jalankan ujian:
+### Ujian
 
 ```sh
+npm ci
 npm test
+npx playwright install chromium
+npm run test:e2e
 ```
 
-Ujian menggunakan `node:test` tanpa dependency tambahan. Liputan meliputi zon masa Malaysia, tahun lompat dan pertukaran bulan/tahun, sempadan waktu solat, pengesahan respons/cache, kegagalan API, pengesanan zon GPS serta tingkah laku kompas. Ujian service worker turut menyemak modul offline, pemulihan halaman, pengasingan cache dan ralat storan. Respons API ditiru dalam ujian supaya ujian boleh dijalankan tanpa sambungan internet.
+`npm test` menggunakan `node:test`. Playwright ialah dependency pembangunan untuk ujian pelayar; konfigurasi ujian memulakan dan menutup pelayan sendiri pada `127.0.0.1:4173`.
+
+Ujian pelayar meniru respons API dan bacaan sensor. **Koordinat simulasi tidak dihantar kepada perkhidmatan luar.** Semua permintaan luar ditiru atau disekat, menjadikan ujian konsisten tanpa bergantung pada API langsung.
 
 ## Struktur fail
 
-| Fail                      | Kegunaan                                                           |
-| ------------------------- | ------------------------------------------------------------------ |
-| `index.html`              | Struktur halaman, navigasi dan dialog                              |
-| `style.css`               | Susun atur desktop/mudah alih, tema dan keadaan interaksi          |
-| `script.js`               | Paparan aplikasi, lokasi, kegemaran, jadual dan tetapan            |
-| `prayer-data.js`          | API, pengesahan jadual/cache, tarikh Malaysia dan solat seterusnya |
-| `zones.js`                | Senarai negeri dan zon untuk carian lokasi                         |
-| `qibla.js`                | Pengiraan arah kiblat, kebenaran dan pengendalian sensor           |
-| `service-worker.js`       | Cache fail aplikasi setempat dan pemulihan halaman offline         |
-| `manifest.json`, `icons/` | Metadata pemasangan dan ikon PWA                                   |
-| `tests/`                  | Ujian automatik modul data, kompas dan service worker              |
-| `package.json`            | Konfigurasi ES modules dan arahan ujian                            |
+| Fail                                 | Kegunaan                                                         |
+| ------------------------------------ | ---------------------------------------------------------------- |
+| `index.html`, `style.css`            | Halaman responsif, navigasi, dialog dan tema                     |
+| `script.js`                          | Paparan, jadual, tetapan, kegemaran dan aliran lokasi            |
+| `location-service.js`                | GPS, nama kawasan, pembatalan dan semakan lokasi automatik       |
+| `prayer-data.js`                     | JAKIM, pengesahan/cache jadual, tarikh Malaysia dan pemetaan zon |
+| `zones.js`                           | Katalog 60 zon dalam 14 kumpulan negeri/wilayah                  |
+| `qibla.js`                           | Bearing, jarak, sensor kompas dan kitar hayat sesi               |
+| `service-worker.js`                  | Cache fail aplikasi dan pemulihan halaman offline                |
+| `manifest.json`, `icons/`            | Metadata dan ikon PWA                                            |
+| `tests/*.test.js`                    | Ujian unit/integrasi modul                                       |
+| `tests/e2e/`, `playwright.config.js` | Ujian aliran pelayar dan susun atur responsif                    |
+| `.github/workflows/checks.yml`       | Semakan sintaks, unit dan pelayar pada GitHub Actions            |
 
 ## Sumber data dan privasi
 
-Jadual bulanan diminta daripada [JAKIM e-Solat](https://www.e-solat.gov.my/). Jika permintaan gagal, termasuk kerana rangkaian atau CORS, aplikasi mencuba [Waktu Solat API](https://api.waktusolat.app/), yang turut menggunakan data JAKIM. Kedua-dua respons dinormalkan kepada format jadual yang sama sebelum digunakan.
+| Tujuan                                      | Sumber                                                                                                               |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Semua waktu solat                           | [JAKIM e-Solat](https://www.e-solat.gov.my/)                                                                         |
+| Koordinat dan anggaran ketepatan            | Geolocation API peranti/pelayar                                                                                      |
+| Nama kawasan semasa                         | [BigDataCloud Client Reverse Geocoding](https://www.bigdatacloud.com/docs/article/why-is-reverse-geocoding-api-free) |
+| Pemetaan koordinat kepada zon               | [Waktu Solat API](https://api.waktusolat.app/docs)                                                                   |
+| Paparan titik lokasi selepas pautan ditekan | [OpenStreetMap](https://www.openstreetmap.org/)                                                                      |
 
 ```text
 https://www.e-solat.gov.my/index.php?r=esolatApi/takwimsolat&zone={ZONE}&period=month&year={YEAR}&month={MONTH}
-https://api.waktusolat.app/v2/solat/{ZONE}?year={YEAR}&month={MONTH}
 https://api.waktusolat.app/zones/{LAT}/{LON}
+https://api.bigdatacloud.net/data/reverse-geocode-client?latitude={LAT}&longitude={LON}&localityLanguage={LANG}
 ```
 
-Waktu dalam API JAKIM berupa rentetan masa; endpoint v2 menggunakan saat Unix yang ditukar kepada waktu Malaysia. Butiran endpoint tersedia dalam [dokumentasi Waktu Solat API](https://api.waktusolat.app/docs).
+**Waktu Solat API digunakan untuk pemetaan lokasi sahaja; jadual waktu diminta terus daripada JAKIM.** Jika JAKIM gagal, aplikasi mencuba semula JAKIM sebelum menggunakan cache JAKIM yang sah. Tiada pengiraan waktu solat setempat atau sumber waktu alternatif digunakan.
 
-Senarai manual dalam `zones.js` mengandungi **60 zon merentasi 14 kumpulan negeri/wilayah**, disemak terhadap [katalog zon Waktu Solat API](https://api.waktusolat.app/zones) pada **23 September 2026**. Nama daerah dikekalkan daripada respons sumber. Pemetaan yang diperbetulkan termasuk Sarawak, NGS03 (Port Dickson/Seremban), PHG07 (zon khas Rompin), Kelantan dan bahagian Tawau.
+Pengesanan lokasi menghantar koordinat semasa yang dibenarkan pengguna kepada perkhidmatan nama kawasan dan pemetaan zon. Endpoint BigDataCloud hanya dipanggil dari pelayar menggunakan bacaan lokasi peranti yang baru diperoleh; lihat [dasar penggunaan perkhidmatan percuma](https://www.bigdatacloud.com/docs/article/why-is-reverse-geocoding-api-free), termasuk penggunaan agregat IP/GPS oleh penyedia.
 
-Permintaan dibuat terus dari pelayar. Koordinat dihantar ke endpoint pemetaan zon apabila pengguna memilih pengesanan GPS; pengiraan sudut kiblat dibuat pada peranti. Pilihan lokasi, kegemaran, tetapan dan jadual tersimpan kekal dalam storan pelayar dan tidak disegerakkan antara peranti.
+Aplikasi tidak menyimpan koordinat tepat atau nama kawasan GPS dalam localStorage. Hanya kod zon terakhir, mod lokasi, kegemaran, bahasa, format waktu, tema dan jadual disimpan dalam pelayar. Pengiraan kiblat dibuat pada peranti. Tiada akaun atau penyegerakan antara peranti.
+
+Katalog zon disemak pada **23 September 2026**. Pemetaan daerah Kinta dibetulkan kepada **PRK02** mengikut [jadual pihak berkuasa Perak](https://mufti.perak.gov.my/component/content/article/waktu-solat-2026?catid=2). Padanan nama kawasan yang unik dalam negeri yang disahkan boleh membantu apabila endpoint GPS gagal; kawasan khas/bercanggah memerlukan pilihan manual.
 
 ## Deployment
 
-Projek boleh dihoskan sebagai laman statik di Vercel dengan preset **Other**, root directory `./` dan tanpa arahan build. URL aplikasi yang digunakan ialah [waktu-solat-two.vercel.app](https://waktu-solat-two.vercel.app/).
+Hos sebagai laman statik di Vercel: preset **Other**, root `./`, tanpa arahan build. Push ke `main` mencetuskan production melalui integrasi GitHub Vercel. Workflow **Check application** menjalankan semakan sintaks, ujian modul dan ujian Chromium pada push/pull request.
 
-Push ke branch `main` mencetuskan deployment production melalui integrasi GitHub Vercel. Workflow **Check application** turut menjalankan semakan sintaks dan `npm test` pada push serta pull request.
+Apabila aset berubah, naikkan `CACHE_VERSION` dalam `service-worker.js` dan versi URL CSS/JavaScript dalam `index.html`. Versi shell semasa ialah **v18**, termasuk modul lokasi baharu. Hanya cache lama berawalan `waktu-solat-` dipadamkan semasa pengaktifan; respons API diurus oleh modul data.
 
-Untuk kemas kini aset, naikkan `CACHE_VERSION` dalam `service-worker.js` dan versi URL `style.css`/`script.js` dalam `index.html`. URL berversi memastikan halaman baharu tidak digabungkan dengan skrip lama ketika service worker sedang dikemas kini. Service worker hanya menyimpan aset aplikasi yang disenaraikan; respons API diurus oleh modul data. Semasa pengaktifan, hanya cache lama dengan awalan `waktu-solat-` dipadamkan.
+## Pengesahan versi 2.1
 
-## Pengesahan semasa
+Semakan pada **23 September 2026**:
 
-Semakan modul pada **23 September 2026**:
+- **71 ujian modul**: 29 data waktu/pemetaan zon, 14 lokasi, 18 kiblat dan 10 service worker.
+- **22 ujian pelayar**: lokasi automatik/nama kawasan, pembatalan GPS dan pemulihan halaman, pilihan manual mengatasi permintaan lambat, kegemaran, BM/EN, 12/24 jam, tema, dialog/fokus, navigasi bawah, jadual bulanan, pemasangan, ralat/cuba semula, offline/pemulihan serta kompas langsung/arah tetap.
+- Paparan desktop **1440px** dan telefon **390px/320px** diperiksa untuk limpahan mendatar.
+- Simulasi peranti dalam zon masa New York mengesahkan penggunaan tarikh Malaysia dan pertukaran Subuh pada hujung bulan.
+- Permintaan langsung JAKIM untuk **kesemua 60 zon, September 2026** berjaya: 1,800 rekod hari-zon dan 10,800 waktu.
+- Audit endpoint GPS merangkumi 23 titik Malaysia dan 8 titik luar Malaysia. Audit menemui pemetaan Kinta lama serta kegagalan pesisir Tawau/Semporna; pembetulan daerah dan padanan nama kawasan diuji secara terkawal.
 
-- **36 ujian lulus:** 20 data waktu solat, 6 kiblat dan 10 service worker.
-- Permintaan langsung untuk WLY01, September 2026, mengembalikan 30 hari dan jadual yang sama daripada kedua-dua sumber API selepas penormalan.
-- Jadual Oktober 2026 berjaya dimuatkan dengan 31 hari.
-- Endpoint pemetaan GPS bagi koordinat Kuala Lumpur mengembalikan WLY01.
+Semakan 60 zon mengesahkan muatan jadual JAKIM untuk bulan tersebut, bukan ketepatan GPS pada setiap titik Malaysia. Lokasi berhampiran sempadan, zon khas, pulau atau kawasan dengan isyarat lemah masih perlu disemak berdasarkan zon yang dipaparkan.
 
-Semakan pelayar turut meliputi:
+## Cadangan seterusnya
 
-- Paparan desktop 1440px serta telefon 390px dan 320px tanpa limpahan mendatar halaman.
-- Carian lokasi, kegemaran, jadual September/Oktober, BM/EN dan format 12/24 jam.
-- Jadual tersimpan selepas muat semula offline; zon tanpa cache memaparkan ralat tanpa waktu daripada zon lain, kemudian pulih apabila sambungan kembali.
-- Simulasi 30 September, 21:00 MYT: Subuh esok menggunakan jadual 1 Oktober; jadual September kekal 30 baris selepas menukar bahasa dan format.
-- Dialog boleh ditutup dengan Escape, fokus kembali ke butang asal, dan pautan langkau mengekalkan paparan semasa.
-- Migrasi cache versi lama `v16` kepada `v17` selepas satu muat semula, tanpa ralat JavaScript.
-- Audit axe pada paparan cerah/gelap dan dialog lokasi tidak melaporkan pelanggaran automatik; kawasan hiasan tertentu masih memerlukan penilaian visual.
+- Peringatan sebelum masuk waktu, dengan pilihan sela masa dan sokongan push yang diuji pada peranti sebenar.
+- Peta masjid/surau berdekatan dengan maklumat sumber dan pautan navigasi.
+- Eksport jadual bulanan kepada PDF atau kalendar untuk perjalanan dan perkongsian keluarga.
 
-Semakan ini tidak menggantikan pengesahan semua zon atau ujian GPS dan sensor pada telefon fizikal.
+Cadangan ini belum termasuk dalam versi 2.1.

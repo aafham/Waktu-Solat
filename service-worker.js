@@ -1,4 +1,4 @@
-const CACHE_VERSION = "v17";
+const CACHE_VERSION = "v18";
 const APP_CACHE = `waktu-solat-app-${CACHE_VERSION}`;
 const APP_SHELL = [
   "./",
@@ -6,6 +6,7 @@ const APP_SHELL = [
   "./style.css",
   "./script.js",
   "./prayer-data.js",
+  "./location-service.js",
   "./qibla.js",
   "./zones.js",
   "./manifest.json",

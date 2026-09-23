@@ -1629,6 +1629,12 @@ dialog.qibla-dialog {
   border: 1px dashed #d1dcd5;
   border-radius: 50%;
 }
+.compass-directions {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+  transition: transform 0.22s linear;
+}
 .direction {
   position: absolute;
   color: var(--muted);
@@ -1734,7 +1740,7 @@ body.dark .primary,
 }
 body.dark .primary:hover,
 [data-theme="dark"] .primary:hover {
-  background: #4b8b6b;
+  background: #32694f;
 }
 body.dark .prayer-card.next,
 [data-theme="dark"] .prayer-card.next {
@@ -2515,5 +2521,429 @@ body.dark .needle-tail,
   }
   .prayer-card {
     break-inside: avoid;
+  }
+}
+
+/* Small visual refresh: clearer location controls and more prominent prayer times. */
+:root {
+  --bg: #f6f6f1;
+  --surface-soft: #f2f5f1;
+  --green: #17635d;
+  --green-dark: #114d48;
+  --green-soft: #e8f2ed;
+  --gold: #c6a763;
+}
+.topbar {
+  background: transparent;
+}
+.page-heading h1 {
+  letter-spacing: -1px;
+}
+.nav-item.active {
+  box-shadow: inset 3px 0 var(--green);
+  border-radius: 7px 11px 11px 7px;
+}
+.next-prayer {
+  background: linear-gradient(115deg, #124d48, #207268);
+  border-radius: 20px;
+  border: 1px solid #205e54;
+}
+.next-prayer:before {
+  opacity: 0.3;
+}
+.date-card {
+  border-top: 3px solid #c7b47e;
+  border-radius: 18px;
+}
+.prayer-card {
+  border-radius: 15px;
+  box-shadow: none;
+  text-align: left;
+  padding: 20px 17px 17px;
+}
+.prayer-card .icon {
+  padding: 6px;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--surface-soft);
+}
+.prayer-name {
+  color: var(--text);
+  font-size: 12px;
+}
+.prayer-time {
+  font-size: 25px;
+  letter-spacing: -0.7px;
+}
+.prayer-time small {
+  margin-left: 4px;
+  font-size: 10px;
+}
+.prayer-card.next {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: #fff;
+}
+.prayer-card.next .prayer-name,
+.prayer-card.next .prayer-time,
+.prayer-card.next .prayer-time small,
+.prayer-card.next .prayer-status {
+  color: #fff;
+}
+.prayer-card.next .icon {
+  background: #ffffff15;
+  color: #deefe6;
+}
+.prayer-card.current:not(.next) {
+  border-color: #a8bbb0;
+}
+.prayer-card.next .prayer-status:before {
+  background: #d1ba78;
+}
+.location-bar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+  gap: 13px;
+  padding: 16px 18px;
+  margin-bottom: 8px;
+  border-radius: 16px;
+  box-shadow: none;
+}
+.location-copy {
+  min-width: 0;
+}
+.location-title {
+  flex-wrap: wrap;
+  gap: 5px 9px;
+}
+.location-title strong {
+  font-size: 14px;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.45;
+}
+.location-copy #locationMeta {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  font-size: 11px;
+  margin-top: 4px;
+}
+.location-copy .location-coordinates {
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.location-map-link {
+  display: inline-block;
+  font-size: 10px;
+  color: var(--green);
+  margin-top: 4px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.locate-button {
+  padding: 10px 14px;
+  min-height: 42px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.location-bar #manualToggle {
+  margin: 0;
+  padding-left: 8px;
+  border-left: none;
+  min-width: auto;
+  font-size: 11px;
+}
+.location-context {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 9px 2px 17px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.location-context p {
+  line-height: 1.65;
+}
+.mode-badge {
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 5px;
+  font-size: 9px;
+  color: var(--green);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.location-feedback {
+  display: flex;
+  gap: 8px;
+  background: var(--green-soft);
+  color: var(--green-dark);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 17px;
+  font-size: 11px;
+  line-height: 1.65;
+}
+.location-feedback .icon {
+  margin-top: 1px;
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+.location-feedback[data-state="error"] {
+  background: #fbf3df;
+  color: #74591e;
+}
+.location-feedback[data-state="success"] {
+  padding: 0 2px;
+  margin-top: -7px;
+  background: transparent;
+  font-size: 10px;
+  color: var(--muted);
+}
+.auto-location-setting {
+  gap: 20px;
+}
+.auto-location-setting > div {
+  flex: 1;
+}
+.auto-location-setting p {
+  margin-top: 6px;
+  line-height: 1.6;
+  font-size: 11px;
+}
+.auto-location-setting .switch {
+  flex-shrink: 0;
+}
+.qibla-layout {
+  border-radius: 20px;
+}
+.compass-caption {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.7px;
+  margin-bottom: 21px;
+}
+.qibla-controls {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.qibla-controls > button {
+  min-height: 44px;
+}
+.qibla-alignment {
+  padding: 11px 12px;
+  background: var(--green-soft);
+  border-radius: 9px;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 18px;
+}
+.qibla-distance {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--line);
+  margin-top: 20px;
+  padding-top: 15px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.qibla-distance strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+body.dark {
+  --bg: #15221f;
+  --surface: #1c2d28;
+  --surface-soft: #243a32;
+  --green: #8dccb2;
+  --green-dark: #b8dfcc;
+  --green-soft: #263e34;
+  --line: #354b40;
+}
+body.dark .next-prayer {
+  background: linear-gradient(115deg, #154c43, #1d6657);
+  border-color: #3b7663;
+}
+body.dark .prayer-card.next {
+  background: #2e6652;
+  border-color: #75a48e;
+}
+body.dark .location-feedback[data-state="error"] {
+  background: #3e341f;
+  color: #eed99f;
+}
+body.dark .date-card {
+  border-top-color: #a69159;
+}
+@media (max-width: 1100px) and (min-width: 761px) {
+  .location-bar {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+  .location-bar .locate-button {
+    grid-column: 2;
+    justify-self: start;
+  }
+  .location-bar #manualToggle {
+    grid-column: 3;
+  }
+  .prayer-time {
+    font-size: 22px;
+  }
+  .prayer-card {
+    padding: 17px 12px;
+  }
+}
+@media (max-width: 760px) {
+  .page-heading {
+    margin-bottom: 16px;
+  }
+  .location-bar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px 12px;
+    padding: 15px;
+    margin-bottom: 7px;
+  }
+  .location-icon {
+    display: none;
+  }
+  .location-copy {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .location-title strong {
+    font-size: 13px;
+  }
+  .location-bar .favorite-button {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+  }
+  .location-bar .locate-button {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    min-height: 42px;
+    font-size: 12px;
+  }
+  .location-bar #manualToggle {
+    grid-column: 2;
+    grid-row: 2;
+    width: auto;
+    min-width: 88px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    justify-content: center;
+    padding: 8px;
+    font-size: 11px;
+  }
+  .location-bar #manualToggle span {
+    display: inline;
+  }
+  .location-bar #manualToggle .icon {
+    width: 13px;
+  }
+  .location-context {
+    gap: 6px;
+    margin: 9px 0 13px;
+    font-size: 10px;
+  }
+  .location-context p {
+    max-height: 3.3em;
+    overflow: auto;
+  }
+  .location-feedback {
+    font-size: 11px;
+    margin-bottom: 14px;
+  }
+  .location-feedback[data-state="success"] {
+    font-size: 10px;
+    margin-top: 0;
+  }
+  .next-prayer {
+    border-radius: 17px;
+  }
+  .prayer-grid {
+    gap: 9px;
+  }
+  .prayer-card {
+    padding: 13px 11px;
+    text-align: left;
+  }
+  .prayer-name {
+    font-size: 12px;
+  }
+  .prayer-time {
+    font-size: 23px;
+  }
+  .prayer-card .icon {
+    margin-bottom: 7px;
+    width: 31px;
+    height: 31px;
+  }
+  .bottom-nav {
+    display: flex;
+    background: var(--surface);
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+    box-shadow: 0 -4px 24px #12392a0a;
+    gap: 5px;
+  }
+  .bottom-nav button {
+    border-radius: 11px;
+    min-height: 48px;
+    padding: 6px 3px;
+    font-size: 10px;
+  }
+  .bottom-nav button.active {
+    background: var(--green-soft);
+    color: var(--green);
+  }
+  .bottom-nav button.active:after {
+    display: none;
+  }
+  .bottom-nav .icon {
+    width: 20px;
+    height: 20px;
+  }
+  .qibla-controls {
+    flex-direction: column;
+  }
+  .compass-caption {
+    margin-bottom: 17px;
+  }
+  .qibla-distance {
+    font-size: 11px;
+  }
+  .qibla-alignment {
+    font-size: 11px;
+  }
+}
+@media (max-width: 360px) {
+  .prayer-time {
+    font-size: 20px;
+  }
+  .location-title strong {
+    font-size: 12px;
+  }
+  .location-bar {
+    padding: 12px;
+  }
+  .location-bar #manualToggle {
+    min-width: 80px;
+    font-size: 10px;
+  }
+  .location-feedback {
+    font-size: 10px;
   }
 }

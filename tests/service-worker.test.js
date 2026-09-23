@@ -8,7 +8,7 @@ const source = await readFile(
   "utf8",
 );
 const scope = "https://example.test/solat/";
-const appCache = "waktu-solat-app-v17";
+const appCache = "waktu-solat-app-v18";
 const indexUrl = `${scope}index.html`;
 
 function worker({
@@ -121,6 +121,7 @@ test("installation saves the full ES-module shell at the service-worker scope be
     "index.html",
     "script.js",
     "prayer-data.js",
+    "location-service.js",
     "qibla.js",
     "zones.js",
     "style.css",
@@ -216,6 +217,7 @@ test("cached scripts, modules and styles load offline without network requests",
   for (const file of [
     "script.js",
     "prayer-data.js",
+    "location-service.js",
     "qibla.js",
     "zones.js",
     "style.css",
