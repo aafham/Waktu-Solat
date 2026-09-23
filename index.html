@@ -1,187 +1,595 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ms">
   <head>
-    <link rel='apple-touch-icon' href='icons/apple-touch-icon.png'>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Waktu Solat Malaysia</title>
-    <meta name="theme-color" content="#1f7a54" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="Waktu solat Malaysia mengikut zon JAKIM. Jadual harian dan bulanan, kiraan masa solat seterusnya dan arah kiblat."
+    />
+    <meta name="theme-color" content="#174f43" />
+    <title>Waktu Solat · Malaysia</title>
+    <link rel="icon" href="icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
     <link rel="manifest" href="manifest.json" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Karla:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Manrope:wght@400;500;600;650;700;750;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=2026-09-23" />
   </head>
   <body>
-    <main class="page">
-      <header class="hero">
-        <div>
-          <p class="eyebrow">Waktu Solat Malaysia</p>
-          <h1 id="heroTitle">Waktu Solat</h1>
-          <p class="lead">
-            Data rasmi JAKIM dengan pengesanan lokasi automatik, kiraan solat
-            seterusnya, dan kompas kiblat yang mudah digunakan.
+    <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <symbol id="i-moon" viewBox="0 0 24 24">
+          <path d="M20.5 14.3A8.5 8.5 0 0 1 9.7 3.5a8.5 8.5 0 1 0 10.8 10.8Z" />
+        </symbol>
+        <symbol id="i-grid" viewBox="0 0 24 24">
+          <rect x="3" y="3" width="7" height="7" rx="2" />
+          <rect x="14" y="3" width="7" height="7" rx="2" />
+          <rect x="3" y="14" width="7" height="7" rx="2" />
+          <rect x="14" y="14" width="7" height="7" rx="2" />
+        </symbol>
+        <symbol id="i-calendar" viewBox="0 0 24 24">
+          <rect x="3" y="5" width="18" height="16" rx="3" />
+          <path d="M7 3v4m10-4v4M3 11h18m-13 4h1m6 0h1m-8 3h1" />
+        </symbol>
+        <symbol id="i-compass" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="m16 8-2.5 5.5L8 16l2.5-5.5Z" />
+        </symbol>
+        <symbol id="i-pin" viewBox="0 0 24 24">
+          <path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z" />
+          <circle cx="12" cy="10" r="2.5" />
+        </symbol>
+        <symbol id="i-settings" viewBox="0 0 24 24">
+          <path
+            d="m9 3-.6 2.2-2 .9-2-.6L2 9.5l1.6 1.6v2L2 14.5l2.4 4 2-.6 2 .9L9 21h6l.6-2.2 2-.9 2 .6 2.4-4-1.6-1.4v-2L22 9.5l-2.4-4-2 .6-2-.9L15 3Z"
+          />
+          <circle cx="12" cy="12" r="3" />
+        </symbol>
+        <symbol id="i-arrow" viewBox="0 0 24 24">
+          <path d="M5 12h14m-5-5 5 5-5 5" />
+        </symbol>
+        <symbol id="i-chevron" viewBox="0 0 24 24">
+          <path d="m9 5 7 7-7 7" />
+        </symbol>
+        <symbol id="i-sun" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="4" />
+          <path
+            d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"
+          />
+        </symbol>
+        <symbol id="i-sunrise" viewBox="0 0 24 24">
+          <path
+            d="M3 17h18M5 21h14M7 17a5 5 0 0 1 10 0M12 3v7m-3-4 3-3 3 3M3 10l2 2m14 0 2-2"
+          />
+        </symbol>
+        <symbol id="i-sunset" viewBox="0 0 24 24">
+          <path
+            d="M3 17h18M5 21h14M7 17a5 5 0 0 1 10 0M12 3v7m-3-3 3 3 3-3M3 10l2 2m14 0 2-2"
+          />
+        </symbol>
+        <symbol id="i-star" viewBox="0 0 24 24">
+          <path
+            d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z"
+          />
+        </symbol>
+        <symbol id="i-locate" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="7" />
+          <circle cx="12" cy="12" r="2.5" />
+          <path d="M12 2v3m0 14v3M2 12h3m14 0h3" />
+        </symbol>
+        <symbol id="i-close" viewBox="0 0 24 24">
+          <path d="m6 6 12 12M6 18 18 6" />
+        </symbol>
+        <symbol id="i-check" viewBox="0 0 24 24">
+          <path d="m5 12 4 4L19 6" />
+        </symbol>
+        <symbol id="i-download" viewBox="0 0 24 24">
+          <path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5" />
+        </symbol>
+      </defs>
+    </svg>
+    <a class="skip-link" href="#main" data-i18n="skip">Langkau ke kandungan</a>
+    <aside class="sidebar">
+      <a class="brand" href="#hari-ini" aria-label="Waktu Solat"
+        ><span class="brand-mark"
+          ><svg class="icon"><use href="#i-moon" /></svg><i></i></span
+        ><span
+          >Waktu<span class="brand-light">Solat</span
+          ><small>M A L A Y S I A</small></span
+        ></a
+      >
+      <p class="nav-label" data-i18n="menu">RUANG HARIAN ANDA</p>
+      <nav class="main-nav" aria-label="Navigasi utama">
+        <button class="nav-item active" data-view="home" aria-current="page">
+          <svg class="icon"><use href="#i-grid" /></svg
+          ><span data-i18n="today">Hari ini</span
+          ><span class="nav-dot"></span></button
+        ><button class="nav-item" data-view="schedule">
+          <svg class="icon"><use href="#i-calendar" /></svg
+          ><span data-i18n="monthly">Jadual bulanan</span></button
+        ><button class="nav-item" data-view="qibla">
+          <svg class="icon"><use href="#i-compass" /></svg
+          ><span data-i18n="qibla">Arah kiblat</span>
+        </button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="side-note">
+          <span class="tiny-spark">✧</span>
+          <p data-i18n="sideNote">
+            Luangkan sejenak. Dekatkan diri kepada-Nya.
           </p>
         </div>
-        <div class="hero-card">
-          <div class="date-clock-row">
-            <div class="date-block">
-              <div>
-                <p class="label" id="gregorianLabel">Tarikh Masihi</p>
-                <p id="gregorianDate" class="value">&mdash;</p>
-              </div>
-              <div>
-                <p class="label" id="hijriLabel">Tarikh Hijrah</p>
-                <p id="hijriDate" class="value">&mdash;</p>
-              </div>
-            </div>
-            <div class="analog-clock" aria-label="Jam analog masa semasa" role="img">
-              <div class="clock-face">
-                <div class="clock-tick major top"></div>
-                <div class="clock-tick major right"></div>
-                <div class="clock-tick major bottom"></div>
-                <div class="clock-tick major left"></div>
-                <div class="hand hour" id="clockHour"></div>
-                <div class="hand minute" id="clockMinute"></div>
-                <div class="hand second" id="clockSecond"></div>
-                <div class="clock-center"></div>
-              </div>
-            </div>
-          </div>
-          <div class="toggle-row">
-            <div class="status-pill" id="locationStatus">Lokasi belum dipilih</div>
-            <button id="settingsBtn" class="icon-button" type="button" aria-label="Buka tetapan">
-              <span class="icon">&#9881;&#65039;</span>
-              <span class="icon-label" id="settingsBtnLabel">Tetapan</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <section class="controls">
-        <div class="location-card">
-          <div>
-            <p class="label">Lokasi Semasa</p>
-            <p id="locationName" class="location-name">Belum ditetapkan</p>
-            <p id="locationMeta" class="muted">Sila kesan lokasi atau pilih manual.</p>
-          </div>
-          <div class="button-row">
-            <button id="detectBtn" class="primary">Detect Lokasi Saya</button>
-            <button id="manualToggle" class="ghost">Pilih Lokasi Secara Manual</button>
-          </div>
-        </div>
-
-        <div id="manualPanel" class="manual-panel hidden">
-          <div class="field">
-            <label for="stateSelect">Negeri</label>
-            <select id="stateSelect">
-              <option value="">Pilih negeri</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="zoneSelect">Zon / Wilayah Solat</label>
-            <select id="zoneSelect" disabled>
-              <option value="">Pilih zon</option>
-            </select>
-          </div>
-          <button id="applyZone" class="primary">Papar Waktu Solat</button>
-          <p id="manualHint" class="muted small">
-            Senarai zon dimuat dari data rasmi JAKIM. Jika gagal dimuat, periksa
-            sambungan internet.
-          </p>
-        </div>
-      </section>
-
-      <section class="next-prayer">
-        <div>
-          <p class="label">Waktu Solat Seterusnya</p>
-          <h2 id="nextPrayerName">&mdash;</h2>
-          <p id="nextPrayerTime" class="muted">&mdash;</p>
-        </div>
-        <div class="countdown">
-          <p class="label">Kiraan Masa</p>
-          <p id="countdownValue" class="countdown-value">--:--:--</p>
-          <p id="currentTime" class="muted small">&mdash;</p>
-        </div>
-      </section>
-
-      <section class="prayer-grid" id="prayerGrid">
-        <!-- Cards injected by JS -->
-      </section>
-
-      <section class="qibla-card">
-        <div class="qibla-info">
-          <p class="label" id="qiblaLabel">Kompas Kiblat</p>
-          <h2 id="qiblaTitle">Arah Kaabah</h2>
-          <p id="qiblaStatus" class="muted">
-            Aktifkan kompas dan benarkan lokasi untuk ketepatan terbaik.
-          </p>
-          <div id="qiblaIndicator" class="qibla-indicator">ðŸ”´ Tidak aktif</div>
-          <div class="button-row">
-            <button id="compassBtn" class="primary">Aktifkan Kompas</button>
-          </div>
-          <p class="muted small" id="qiblaHelp">
-            Cara guna: Pegang telefon rata. Arah anak panah menunjuk ke Kaabah.
-          </p>
-        </div>
-        <div class="compass">
-          <div class="compass-ring">
-            <div class="compass-marker north">N</div>
-            <div class="compass-marker east">E</div>
-            <div class="compass-marker south">S</div>
-            <div class="compass-marker west">W</div>
-            <div class="needle" id="qiblaNeedle"></div>
-          </div>
-          <p class="angle-readout"><span id="qiblaAngle">&mdash;</span>&deg;</p>
-        </div>
-      </section>
-
-      <div id="settingsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-        <div class="modal-panel">
-          <div class="modal-header">
-            <h3 id="settingsTitle">Tetapan</h3>
-            <button id="settingsClose" class="icon-button" type="button" aria-label="Tutup tetapan">
-              <span class="icon">&#10005;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <label class="toggle lang-toggle">
-              <span id="langLabel">Bahasa</span>
-              <div class="segmented" id="langToggle" role="group" aria-label="Tukar bahasa">
-                <button id="langMs" class="segmented-btn" type="button" data-lang="ms">BM</button>
-                <button id="langEn" class="segmented-btn" type="button" data-lang="en">EN</button>
-              </div>
-            </label>
-            <button
-              id="themeToggle"
-              class="theme-toggle"
-              type="button"
-              role="switch"
-              aria-checked="false"
-              aria-label="Tukar mode gelap"
-            >
-              <span class="toggle-track">
-                <span class="toggle-thumb"></span>
-              </span>
-              <span class="toggle-text">Mode Gelap</span>
-            </button>
-            <button id="clearCacheBtn" class="ghost danger" type="button">
-              Reset Cache Aplikasi
-            </button>
-          </div>
+        <button class="nav-item settings-trigger">
+          <svg class="icon"><use href="#i-settings" /></svg
+          ><span data-i18n="settings">Tetapan</span>
+        </button>
+        <div class="sidebar-footer">
+          <span class="online-dot"></span
+          ><span data-i18n="madeFor">Untuk setiap waktu, setiap hari.</span>
         </div>
       </div>
-
-      <footer class="footer">
-        <p class="muted small">
-          Sumber data: JAKIM e-Solat dan Malaysia Waktu Solat API.
+    </aside>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="mobile-brand">
+          <svg class="icon"><use href="#i-moon" /></svg>Waktu<span>Solat</span>
+        </div>
+        <div class="desktop-breadcrumb">
+          <span data-i18n="appName">Waktu Solat Malaysia</span><span>/</span
+          ><strong id="breadcrumb">Hari ini</strong>
+        </div>
+        <div class="topbar-actions">
+          <span class="timezone">MYT <span>UTC +8</span></span
+          ><button
+            class="icon-button"
+            id="quickTheme"
+            data-i18n-aria="theme"
+            aria-label="Tukar tema"
+          >
+            <svg class="icon"><use href="#i-moon" /></svg></button
+          ><button
+            class="icon-button settings-trigger"
+            data-i18n-aria="settings"
+            aria-label="Tetapan"
+          >
+            <svg class="icon"><use href="#i-settings" /></svg>
+          </button>
+        </div>
+      </header>
+      <main id="main" tabindex="-1">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow" data-i18n="welcome">SELANGKAH LEBIH DEKAT</p>
+            <h1 id="pageTitle">Waktu solat hari ini<span>.</span></h1>
+            <p class="subtitle" id="pageSubtitle">
+              Jaga waktu, tenangkan hati.
+            </p>
+          </div>
+          <div class="heading-date">
+            <svg class="icon"><use href="#i-calendar" /></svg
+            ><span id="gregorianDate">—</span>
+          </div>
+        </div>
+        <section class="location-bar" aria-label="Lokasi">
+          <span class="location-icon"
+            ><svg class="icon"><use href="#i-pin" /></svg
+          ></span>
+          <div class="location-copy">
+            <div class="location-title">
+              <strong id="locationName">Kuala Lumpur, Putrajaya</strong
+              ><span id="zoneBadge" class="zone-badge">WLY01</span>
+            </div>
+            <p id="locationMeta">Lokasi lalai · Wilayah Persekutuan</p>
+          </div>
+          <button
+            class="icon-button favorite-button"
+            id="favoriteBtn"
+            aria-label="Simpan lokasi kegemaran"
+            aria-pressed="false"
+          >
+            <svg class="icon"><use href="#i-star" /></svg></button
+          ><button class="text-button" id="manualToggle">
+            <span data-i18n="changeLocation">Tukar lokasi</span
+            ><svg class="icon"><use href="#i-chevron" /></svg>
+          </button>
+        </section>
+        <div id="statusBar" class="status-bar" role="status" hidden>
+          <span id="statusText"></span
+          ><button class="text-button" id="retryBtn" data-i18n="retry" hidden>
+            Cuba semula
+          </button>
+        </div>
+        <div id="homeView" class="view">
+          <div class="hero-grid">
+            <section class="next-prayer" aria-labelledby="nextPrayerLabel">
+              <div class="hero-content">
+                <p class="hero-eyebrow">
+                  <span class="pulse-dot"></span
+                  ><span id="nextPrayerLabel" data-i18n="nextPrayer"
+                    >SOLAT SETERUSNYA</span
+                  >
+                </p>
+                <div class="next-prayer-row">
+                  <h2 id="nextPrayerName">—</h2>
+                  <span id="nextPrayerTime" class="next-time">—</span>
+                </div>
+                <p class="countdown-caption" data-i18n="timeRemaining">
+                  Masa berbaki menuju waktu solat
+                </p>
+                <div
+                  class="countdown"
+                  id="countdownValue"
+                  role="timer"
+                  aria-live="off"
+                  aria-label="Masa berbaki"
+                >
+                  --<span>:</span>--<span>:</span>--
+                </div>
+                <div class="countdown-units">
+                  <span data-i18n="hours">JAM</span
+                  ><span data-i18n="minutes">MINIT</span
+                  ><span data-i18n="seconds">SAAT</span>
+                </div>
+                <div class="prayer-progress">
+                  <div id="prayerProgress"></div>
+                </div>
+                <p class="next-foot" id="nextPrayerNote">
+                  Waktu tempatan Malaysia · MYT
+                </p>
+              </div>
+              <div class="mosque-art" aria-hidden="true">
+                <div class="art-orbit orbit-one"></div>
+                <div class="art-orbit orbit-two"></div>
+                <span class="art-star star-one">✦</span
+                ><span class="art-star star-two">✧</span
+                ><span class="art-crescent">☾</span>
+                <div class="minaret minaret-one"></div>
+                <div class="minaret minaret-two"></div>
+                <div class="mosque-dome"></div>
+                <div class="mosque-body"><i></i><i></i><i></i></div>
+                <div class="art-ground"></div>
+              </div>
+            </section>
+            <section class="date-card">
+              <div class="date-card-top">
+                <span data-i18n="todayDate">TARIKH HARI INI</span
+                ><svg class="icon"><use href="#i-calendar" /></svg>
+              </div>
+              <p id="dateWeekday">—</p>
+              <div class="date-number" id="dateNumber">—</div>
+              <p id="dateMonth">—</p>
+              <div class="date-divider"></div>
+              <p class="hijri-date" id="hijriDate">—</p>
+              <p class="small muted" id="hijriSource">—</p>
+              <div class="live-clock">
+                <span class="online-dot"></span><span id="currentTime">—</span
+                ><span>MYT</span>
+              </div>
+            </section>
+          </div>
+          <section class="daily-section" aria-labelledby="dailyTitle">
+            <div class="section-heading">
+              <div>
+                <h2 id="dailyTitle" data-i18n="dailySchedule">
+                  Jadual waktu solat
+                </h2>
+                <p class="small muted" data-i18n="allTimes">
+                  Waktu tempatan Malaysia (UTC +8)
+                </p>
+              </div>
+              <button class="text-button" data-view="schedule">
+                <span data-i18n="viewMonthly">Lihat bulanan</span
+                ><svg class="icon"><use href="#i-arrow" /></svg>
+              </button>
+            </div>
+            <div class="prayer-grid" id="prayerGrid" aria-busy="true"></div>
+            <div class="schedule-foot">
+              <span
+                ><span class="legend-dot"></span
+                ><span data-i18n="upNext">Solat seterusnya</span></span
+              ><span class="small muted" data-i18n="sunriseNote"
+                >Syuruk menandakan berakhirnya waktu Subuh.</span
+              >
+            </div>
+          </section>
+          <div class="support-grid">
+            <button class="qibla-shortcut" data-view="qibla">
+              <span class="shortcut-icon"
+                ><svg class="icon"><use href="#i-compass" /></svg></span
+              ><span
+                ><strong data-i18n="findQibla">Satu arah, satu tujuan.</strong
+                ><span data-i18n="qiblaShortcut"
+                  >Cari arah kiblat dari lokasi anda</span
+                ></span
+              ><svg class="icon"><use href="#i-arrow" /></svg>
+            </button>
+            <div class="source-card">
+              <span class="source-icon"
+                ><svg class="icon"><use href="#i-check" /></svg
+              ></span>
+              <div>
+                <strong data-i18n="trustedTimes"
+                  >Waktu berpandukan JAKIM</strong
+                >
+                <p id="dataSource" class="small muted">—</p>
+              </div>
+            </div>
+          </div>
+          <div class="install-strip">
+            <div>
+              <svg class="icon"><use href="#i-download" /></svg
+              ><span data-i18n="installPitch"
+                >Waktu solat, sentiasa dekat dengan anda.</span
+              >
+            </div>
+            <button class="text-button install-trigger">
+              <span data-i18n="install">Pasang aplikasi</span
+              ><svg class="icon"><use href="#i-arrow" /></svg>
+            </button>
+          </div>
+        </div>
+        <section
+          id="scheduleView"
+          class="view"
+          hidden
+          aria-labelledby="monthTitle"
+        >
+          <div class="month-toolbar">
+            <div>
+              <p class="eyebrow" data-i18n="monthly">Jadual bulanan</p>
+              <h2 id="monthTitle">—</h2>
+            </div>
+            <div class="month-controls">
+              <button
+                id="prevMonth"
+                class="icon-button"
+                data-i18n-aria="previousMonth"
+                aria-label="Bulan sebelumnya"
+              >
+                <svg class="icon flip"><use href="#i-chevron" /></svg></button
+              ><button id="thisMonth" class="secondary" data-i18n="thisMonth">
+                Bulan ini</button
+              ><button
+                id="nextMonth"
+                class="icon-button"
+                data-i18n-aria="nextMonth"
+                aria-label="Bulan seterusnya"
+              >
+                <svg class="icon"><use href="#i-chevron" /></svg>
+              </button>
+            </div>
+          </div>
+          <p class="small muted table-hint" data-i18n="scrollTable">
+            Leret jadual ke kiri atau kanan untuk melihat semua waktu.
+          </p>
+          <div id="monthStatus" role="status" class="month-status" hidden></div>
+          <button id="monthRetry" class="secondary" data-i18n="retry" hidden>
+            Cuba semula
+          </button>
+          <div
+            class="table-scroll"
+            tabindex="0"
+            role="region"
+            aria-label="Jadual waktu solat bulanan"
+          >
+            <table>
+              <caption id="monthCaption" class="sr-only">
+                Jadual bulanan
+              </caption>
+              <thead id="monthHead"></thead>
+              <tbody id="monthBody"></tbody>
+            </table>
+          </div>
+        </section>
+        <section
+          id="qiblaView"
+          class="view"
+          hidden
+          aria-labelledby="qiblaTitle"
+        >
+          <div class="qibla-layout">
+            <div class="qibla-info">
+              <p class="eyebrow" data-i18n="qibla">Arah kiblat</p>
+              <h2 id="qiblaTitle" data-i18n="towardsKaaba">
+                Menghadap satu arah.
+              </h2>
+              <p class="muted" data-i18n="qiblaIntro">
+                Dapatkan arah Kaabah berdasarkan lokasi semasa anda.
+              </p>
+              <span id="qiblaIndicator" class="qibla-indicator" role="status"
+                >Tidak aktif</span
+              >
+              <p id="qiblaStatus" class="qibla-status"></p>
+              <button id="compassBtn" class="primary">Aktifkan kompas</button>
+              <p class="small muted qibla-help" data-i18n="qiblaHelp">
+                Pegang telefon rata dan jauhkan daripada objek logam. Semak arah
+                dengan kompas yang dipercayai jika bacaan tidak stabil.
+              </p>
+            </div>
+            <div class="compass-area">
+              <div class="compass-ring">
+                <div class="compass-inner"></div>
+                <span class="direction north">N</span
+                ><span class="direction east">E</span
+                ><span class="direction south">S</span
+                ><span class="direction west">W</span>
+                <div class="compass-needle" id="qiblaNeedle">
+                  <div class="needle-tip"></div>
+                  <div class="needle-tail"></div>
+                </div>
+                <div class="compass-center"></div>
+              </div>
+              <p class="angle" id="qiblaAngle">—</p>
+              <p class="small muted" data-i18n="trueNorth">
+                mengikut arah jam dari utara benar
+              </p>
+            </div>
+          </div>
+        </section>
+        <footer class="footer">
+          <span>© <span id="year">2026</span> Waktu Solat</span
+          ><span
+            ><span data-i18n="dataFrom">Sumber data</span>:
+            <a href="https://www.e-solat.gov.my/" target="_blank" rel="noopener"
+              >JAKIM e-Solat</a
+            ><span class="footer-dot">·</span
+            ><a
+              href="https://www.waktusolat.app/"
+              target="_blank"
+              rel="noopener"
+              >Waktu Solat API</a
+            ></span
+          >
+        </footer>
+      </main>
+    </div>
+    <nav class="bottom-nav" aria-label="Navigasi mudah alih">
+      <button data-view="home" class="active" aria-current="page">
+        <svg class="icon"><use href="#i-grid" /></svg
+        ><span data-i18n="today">Hari ini</span></button
+      ><button data-view="schedule">
+        <svg class="icon"><use href="#i-calendar" /></svg
+        ><span data-i18n="schedule">Jadual</span></button
+      ><button data-view="qibla">
+        <svg class="icon"><use href="#i-compass" /></svg
+        ><span data-i18n="qiblaShort">Kiblat</span></button
+      ><button class="settings-trigger">
+        <svg class="icon"><use href="#i-settings" /></svg
+        ><span data-i18n="settings">Tetapan</span>
+      </button>
+    </nav>
+    <dialog id="locationDialog" aria-labelledby="locationDialogTitle">
+      <div class="dialog-heading">
+        <div>
+          <p class="eyebrow" data-i18n="yourLocation">LOKASI ANDA</p>
+          <h2 id="locationDialogTitle" data-i18n="chooseLocation">
+            Pilih lokasi solat
+          </h2>
+        </div>
+        <button
+          class="icon-button dialog-close"
+          data-i18n-aria="close"
+          aria-label="Tutup"
+        >
+          <svg class="icon"><use href="#i-close" /></svg>
+        </button>
+      </div>
+      <button id="detectBtn" class="primary full-width">
+        <svg class="icon"><use href="#i-locate" /></svg
+        ><span data-i18n="detect">Kesan lokasi saya</span>
+      </button>
+      <p class="small muted" data-i18n="gpsPrivacy">
+        Lokasi dikongsi dengan API Waktu Solat untuk mengenal pasti zon anda.
+      </p>
+      <div id="gpsStatus" class="small" role="status"></div>
+      <div id="favoritesSection" hidden>
+        <p class="field-label" data-i18n="favorites">Lokasi kegemaran</p>
+        <div id="favoriteZones" class="favorite-zones"></div>
+      </div>
+      <div class="dialog-divider">
+        <span data-i18n="orChoose">atau pilih secara manual</span>
+      </div>
+      <label for="locationSearch" data-i18n="searchLocation"
+        >Cari daerah atau kod zon</label
+      ><input
+        id="locationSearch"
+        type="search"
+        placeholder="Contoh: Shah Alam, SGR01"
+        autocomplete="off"
+      /><label for="stateSelect" data-i18n="state">Negeri</label
+      ><select id="stateSelect"></select>
+      <p id="zoneCount" class="small muted"></p>
+      <div id="zoneList" class="zone-list"></div>
+    </dialog>
+    <dialog id="settingsDialog" aria-labelledby="settingsTitle">
+      <div class="dialog-heading">
+        <h2 id="settingsTitle" data-i18n="settings">Tetapan</h2>
+        <button
+          class="icon-button dialog-close"
+          data-i18n-aria="close"
+          aria-label="Tutup"
+        >
+          <svg class="icon"><use href="#i-close" /></svg>
+        </button>
+      </div>
+      <div class="setting-row">
+        <span data-i18n="language">Bahasa</span>
+        <div class="segmented" aria-label="Language">
+          <button data-lang="ms" aria-pressed="true">BM</button
+          ><button data-lang="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <span data-i18n="darkMode">Mod gelap</span
+        ><button
+          id="themeToggle"
+          class="switch"
+          role="switch"
+          aria-checked="false"
+          aria-label="Mod gelap"
+        >
+          <span></span>
+        </button>
+      </div>
+      <div class="setting-row">
+        <span data-i18n="timeFormat">Format waktu</span>
+        <div class="segmented">
+          <button data-format="12" aria-pressed="true">12h</button
+          ><button data-format="24" aria-pressed="false">24h</button>
+        </div>
+      </div>
+      <div class="settings-note">
+        <p data-i18n="cacheHelp">
+          Data jadual disimpan untuk kegunaan offline. Muat semula data tanpa
+          memadam pilihan lokasi dan tetapan anda.
         </p>
-      </footer>
-    </main>
-
-    <script src="script.js"></script>
+        <button
+          id="refreshData"
+          class="secondary full-width"
+          data-i18n="refresh"
+        >
+          Muat semula data
+        </button>
+      </div>
+      <button class="text-button install-trigger" data-i18n="install">
+        Pasang aplikasi
+      </button>
+    </dialog>
+    <dialog id="installDialog" aria-labelledby="installTitle">
+      <div class="dialog-heading">
+        <h2 id="installTitle" data-i18n="install">Pasang aplikasi</h2>
+        <button
+          class="icon-button dialog-close"
+          data-i18n-aria="close"
+          aria-label="Tutup"
+        >
+          <svg class="icon"><use href="#i-close" /></svg>
+        </button>
+      </div>
+      <p data-i18n="installHelp">
+        Dalam menu pelayar, pilih “Pasang aplikasi” atau “Tambah ke Skrin
+        Utama”. Pada iPhone, buka dalam Safari, tekan Kongsi, kemudian Tambah ke
+        Skrin Utama.
+      </p>
+      <p class="small muted" data-i18n="offlineHelp">
+        Jadual yang pernah dimuat boleh dibuka semula tanpa internet. Lokasi
+        baharu dan bulan yang belum disimpan memerlukan sambungan.
+      </p>
+    </dialog>
+    <noscript
+      ><p class="noscript">
+        Sila aktifkan JavaScript untuk melihat waktu solat.
+        <a href="https://www.e-solat.gov.my/">Buka JAKIM e-Solat</a>.
+      </p></noscript
+    >
+    <script type="module" src="script.js?v=2026-09-23"></script>
   </body>
 </html>
