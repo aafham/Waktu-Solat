@@ -1192,13 +1192,14 @@ window.addEventListener("pageshow", (event) => {
   }
 });
 if ("serviceWorker" in navigator) {
-  const hadController = Boolean(navigator.serviceWorker.controller);
+  let hadController = Boolean(navigator.serviceWorker.controller);
   let reloading = false;
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (hadController && !reloading) {
       reloading = true;
       location.reload();
     }
+    hadController = true;
   });
   navigator.serviceWorker
     .register("./service-worker.js")

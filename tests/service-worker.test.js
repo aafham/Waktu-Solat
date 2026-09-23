@@ -8,7 +8,7 @@ const source = await readFile(
   "utf8",
 );
 const scope = "https://example.test/solat/";
-const appCache = "waktu-solat-app-v19";
+const appCache = "waktu-solat-app-v20";
 const indexUrl = `${scope}index.html`;
 
 function worker({

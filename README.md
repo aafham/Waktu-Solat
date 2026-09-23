@@ -162,14 +162,14 @@ Katalog zon disemak pada **23 September 2026**. Pemetaan daerah Kinta dibetulkan
 
 Hos sebagai laman statik di Vercel: preset **Other**, root `./`, tanpa arahan build. Push ke `main` mencetuskan production melalui integrasi GitHub Vercel. Workflow **Check application** menjalankan semakan sintaks, ujian modul dan ujian Chromium pada push/pull request.
 
-Apabila aset berubah, naikkan `CACHE_VERSION` dalam `service-worker.js` dan versi URL CSS/JavaScript dalam `index.html`. Versi shell semasa ialah **v19**, termasuk modul kalendar dan penukar tarikh. Hanya cache lama berawalan `waktu-solat-` dipadamkan semasa pengaktifan; respons API diurus oleh modul data.
+Apabila aset berubah, naikkan `CACHE_VERSION` dalam `service-worker.js` dan versi URL CSS/JavaScript dalam `index.html`. Versi shell semasa ialah **v20**, termasuk modul kalendar dan penukar tarikh. Hanya cache lama berawalan `waktu-solat-` dipadamkan semasa pengaktifan; respons API diurus oleh modul data.
 
 ## Pengesahan versi 2.2
 
 Semakan pada **23 September 2026**:
 
 - **94 ujian modul**: 29 data waktu/pemetaan zon, 14 lokasi, 18 kiblat, 10 service worker, 19 kalendar/aturan puasa dan 4 kiraan detik.
-- **33 ujian pelayar**: aliran lokasi, jadual, kiblat, tetapan dan offline; ditambah navigasi kalendar, penukaran dua hala, sempadan tarikh/ralat, pertukaran kiraan detik, puasa/haji serta carian dan rujukan 25 rasul.
+- **34 ujian pelayar**: aliran lokasi, jadual, kiblat, tetapan dan offline; ditambah navigasi kalendar, penukaran dua hala, sempadan tarikh/ralat, pertukaran kiraan detik, puasa/haji, carian dan rujukan 25 rasul serta pemulihan paparan selepas kemas kini service worker.
 - Penukaran pergi-balik bagi setiap hari dalam liputan takwim rasmi 2025–2026 diperiksa. Ujian memastikan Aidilfitri, Aidiladha dan hari Tasyrik mengatasi penandaan puasa sunat.
 - Paparan desktop **1440px** dan telefon **390px/320px** diperiksa untuk limpahan mendatar.
 - Simulasi peranti dalam zon masa New York mengesahkan penggunaan tarikh Malaysia dan pertukaran Subuh pada hujung bulan.
