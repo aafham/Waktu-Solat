@@ -4,6 +4,48 @@ Aplikasi web untuk menyemak waktu solat di seluruh Malaysia, melihat lokasi sema
 
 **[Buka aplikasi](https://waktu-solat-two.vercel.app/)** · [Repository GitHub](https://github.com/aafham/Waktu-Solat)
 
+## Ringkasan untuk pengguna
+
+```text
+WAKTU SOLAT MALAYSIA
+
+Semak waktu solat, cari arah kiblat dan rancang hari anda
+dengan kalendar Islam — melalui telefon, tablet atau desktop.
+
+FUNGSI UTAMA
+
+• Semak waktu solat daripada JAKIM untuk seluruh Malaysia,
+  jadual bulanan dan kiraan masa ke solat seterusnya.
+• Kesan lokasi semasa, pilih zon secara manual atau simpan
+  lokasi kegemaran. Lokasi GPS dan zon waktu JAKIM dipaparkan
+  secara berasingan supaya mudah disemak.
+• Gunakan kompas kiblat masa nyata pada peranti yang menyokong
+  sensor, dengan panduan arah dan jarak anggaran ke Kaabah.
+• Terokai kalendar Hijrah, perayaan Islam, puasa sunat penting,
+  hari larangan puasa, panduan haji dan rujukan Nabi Muhammad ﷺ.
+• Ikuti countdown acara Islam yang bertukar sepanjang tahun.
+  Semasa Ramadan, countdown mengutamakan Hari Raya Aidilfitri.
+• Tukar tarikh Masihi ↔ Hijrah untuk hari lahir, ulang tahun
+  perkahwinan atau apa-apa tarikh pilihan anda.
+• Pilih Bahasa Melayu atau English, tema cerah atau gelap,
+  serta format waktu 12 atau 24 jam.
+• Pasang sebagai aplikasi. Jadual tersimpan, kalendar dan
+  penukar tarikh boleh digunakan offline selepas dimuatkan.
+
+CARA MULA
+Buka laman, tekan “Lokasi saya” dan benarkan akses lokasi.
+Semak zon yang dipaparkan atau pilih lokasi secara manual.
+Pada telefon, gunakan navigasi bawah untuk bertukar bahagian.
+
+UNTUK MAKLUMAN
+Ketepatan GPS dan kompas bergantung pada peranti serta izin
+pengguna. Tarikh kalendar di luar liputan rasmi dilabel
+anggaran. Tarikh Ramadan dan hari raya tertakluk kepada
+pengisytiharan rasmi.
+
+Layari: https://waktu-solat-two.vercel.app/
+```
+
 ## Ciri utama
 
 - Waktu Subuh, Syuruk, Zohor, Asar, Maghrib dan Isyak **terus daripada JAKIM**, meliputi 60 zon Malaysia.
