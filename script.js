@@ -100,6 +100,22 @@ const text = {
     previousMonth: "Bulan sebelumnya",
     nextMonth: "Bulan seterusnya",
     thisMonth: "Bulan ini",
+    selectMonth: "Bulan",
+    selectYear: "Tahun",
+    viewSchedule: "Lihat jadual",
+    monthJumpHint:
+      "Pilih mana-mana bulan dan tahun. Jadual dipaparkan apabila tersedia daripada JAKIM.",
+    monthJumpInvalid: "Pilih bulan dan masukkan tahun antara 1900 hingga 9999.",
+    emptyPrayerTitle: "Jadual waktu solat belum dapat dipaparkan",
+    emptyPrayerContext: "{month} · Zon {zone}",
+    scheduleUnavailable:
+      "JAKIM belum memulangkan jadual yang sah bagi bulan dan tahun ini. Cuba semula kemudian atau semak bulan pilihan anda.",
+    scheduleInvalid:
+      "Respons jadual JAKIM tidak lengkap atau tidak sepadan dengan pilihan anda. Cuba muat semula; waktu yang tidak sah tidak akan dipaparkan.",
+    refreshError:
+      "Kemas kini gagal. Jadual JAKIM yang telah dimuat masih dipaparkan. Cuba semula apabila sambungan pulih.",
+    retryNext: "Muat Subuh esok",
+    loadingNext: "Memuatkan waktu Subuh esok…",
     scrollTable: "Leret jadual ke kiri atau kanan untuk melihat semua waktu.",
     towardsKaaba: "Menghadap satu arah.",
     qiblaIntro: "Dapatkan arah Kaabah berdasarkan lokasi semasa anda.",
@@ -254,6 +270,22 @@ const text = {
     previousMonth: "Previous month",
     nextMonth: "Next month",
     thisMonth: "This month",
+    selectMonth: "Month",
+    selectYear: "Year",
+    viewSchedule: "Show schedule",
+    monthJumpHint:
+      "Choose any month and year. Schedules appear when available from JAKIM.",
+    monthJumpInvalid: "Choose a month and enter a year from 1900 to 9999.",
+    emptyPrayerTitle: "Prayer times could not be displayed yet",
+    emptyPrayerContext: "{month} · Zone {zone}",
+    scheduleUnavailable:
+      "JAKIM has not returned a valid schedule for this month and year. Try again later or check your selected month.",
+    scheduleInvalid:
+      "The JAKIM response is incomplete or does not match your selection. Try reloading; invalid times will not be displayed.",
+    refreshError:
+      "The update failed. Previously loaded JAKIM times are still displayed. Try again when the connection recovers.",
+    retryNext: "Load tomorrow’s Fajr",
+    loadingNext: "Loading tomorrow’s Fajr…",
     scrollTable: "Scroll the table horizontally to see every prayer time.",
     towardsKaaba: "Towards the same direction.",
     qiblaIntro: "Find the bearing to the Kaaba using your current location.",
@@ -388,8 +420,13 @@ const state = {
   cached: false,
   busy: false,
   error: false,
+  errorCode: "",
+  missingMonths: [],
+  adjacentBusy: false,
   monthBusy: false,
   monthError: false,
+  monthErrorCode: "",
+  monthDataKey: "",
   monthCached: false,
   favorites,
   loadedDate: dateKey(),
@@ -540,6 +577,15 @@ function closeDialog(dialog) {
   dialog.close();
 }
 
+function scheduleError(code) {
+  return t(
+    code === "SCHEDULE_UNAVAILABLE"
+      ? "scheduleUnavailable"
+      : code === "INVALID_SCHEDULE"
+        ? "scheduleInvalid"
+        : "loadError",
+  );
+}
 function setStatus() {
   const key = state.busy
     ? "loading"
@@ -550,7 +596,14 @@ function setStatus() {
         : "";
   $("statusBar").hidden = !key;
   $("statusBar").classList.toggle("loading", state.busy);
-  $("statusText").textContent = key ? t(key) : "";
+  $("statusText").textContent =
+    state.error && !state.busy
+      ? state.days.some((day) => day.date === dateKey())
+        ? t("refreshError")
+        : scheduleError(state.errorCode)
+      : key
+        ? t(key)
+        : "";
   $("retryBtn").hidden = !state.error;
   $("prayerGrid").setAttribute("aria-busy", String(state.busy));
 }
@@ -694,12 +747,28 @@ function tick(force = false) {
     hour12: state.format !== "24",
   });
   if (state.loadedDate !== today) {
+    if (state.month === state.loadedDate.slice(0, 7))
+      state.month = today.slice(0, 7);
     state.loadedDate = today;
     renderDates(now);
     useZone(state.zone, state.locationSource);
   }
   const prayer = getPrayerState(state.days, now);
   const next = prayer.next;
+  const hasToday = state.days.some((day) => day.date === today);
+  const empty = !state.busy && !hasToday;
+  document.body.classList.toggle("prayer-empty", empty);
+  $("prayerEmptyState").hidden = !empty;
+  $("prayerEmptyTitle").textContent = t("emptyPrayerTitle");
+  $("prayerEmptyContext").textContent = t("emptyPrayerContext")
+    .replace("{month}", dateFormat(now, { month: "long", year: "numeric" }))
+    .replace("{zone}", state.zone);
+  $("prayerEmptyDescription").textContent = scheduleError(state.errorCode);
+  $("nextPrayerRetry").hidden = !hasToday || Boolean(next) || state.busy;
+  $("nextPrayerRetry").disabled = state.adjacentBusy;
+  $("nextPrayerRetry").textContent = t(
+    state.adjacentBusy ? "loadingNext" : "retryNext",
+  );
   $("nextPrayerName").textContent = next
     ? text[state.lang].labels[PRAYER_KEYS.indexOf(next.key)]
     : state.busy
@@ -722,11 +791,13 @@ function tick(force = false) {
     $("nextPrayerNote").textContent = t("allTimes");
   } else {
     $("countdownValue").innerHTML = "--<span>:</span>--<span>:</span>--";
-    $("nextPrayerNote").textContent = state.busy
-      ? t("loading")
-      : state.days.length
-        ? t("nextMissing")
-        : t("noNext");
+    $("nextPrayerNote").textContent = state.adjacentBusy
+      ? t("loadingNext")
+      : state.busy
+        ? t("loading")
+        : state.days.length
+          ? t("nextMissing")
+          : t("noNext");
   }
   $("prayerProgress").style.width = `${prayer.progress * 100}%`;
   const key = `${today}|${next?.key}|${next?.date}|${prayer.current?.key}|${state.busy}|${state.error}|${state.lang}|${state.format}`;
@@ -738,13 +809,17 @@ function tick(force = false) {
 async function useZone(code, source = "manualLocation", force = false) {
   if (!zoneMeta(code)) return;
   const request = ++dailyRequest;
+  const retained = code === state.zone ? state.days : [];
   ++monthRequest;
   state.zone = code;
   state.locationSource = source;
-  state.days = [];
-  state.monthDays = [];
+  state.days = retained;
+  if (state.monthDataKey !== `${code}_${state.month}`) state.monthDays = [];
   state.busy = true;
   state.error = false;
+  state.errorCode = "";
+  state.missingMonths = [];
+  state.adjacentBusy = false;
   state.loadedDate = dateKey();
   if (source !== "defaultLocation") save("ws_lastZone", code);
   renderLocation();
@@ -769,27 +844,65 @@ async function useZone(code, source = "manualLocation", force = false) {
     renderDates();
     tick(true);
     // Fetch adjacent months only when needed to cover midnight and tomorrow’s Fajr.
-    const neighbors = [
-      addDays(today, -1).slice(0, 7),
-      addDays(today, 1).slice(0, 7),
-    ].filter((key) => key !== month);
-    const adjacent = await Promise.allSettled(
-      neighbors.map((key) => loadMonth(code, key)),
-    );
-    if (request !== dailyRequest) return;
-    adjacent.forEach((result) => {
-      if (result.status === "fulfilled")
-        state.days = [...state.days, ...result.value.days];
-    });
-    tick(true);
-  } catch {
+    state.missingMonths = [
+      ...new Set(
+        [addDays(today, -1).slice(0, 7), addDays(today, 1).slice(0, 7)].filter(
+          (key) => key !== month,
+        ),
+      ),
+    ];
+    await retryAdjacentMonths();
+  } catch (error) {
     if (request !== dailyRequest) return;
     state.busy = false;
     state.error = true;
-    state.days = [];
-    $("dataSource").textContent = t("loadError");
+    state.errorCode = error.code || "NETWORK_ERROR";
+    $("dataSource").textContent = state.days.some((day) => day.date === today)
+      ? t("cached")
+      : scheduleError(state.errorCode);
     setStatus();
     tick(true);
+  }
+}
+async function retryAdjacentMonths(force = false) {
+  if (state.busy || state.adjacentBusy) return;
+  const today = dateKey(),
+    tomorrow = addDays(today, 1);
+  if (
+    state.days.some((day) => day.date === today) &&
+    !state.days.some((day) => day.date === tomorrow)
+  ) {
+    state.missingMonths = [
+      ...new Set([...state.missingMonths, tomorrow.slice(0, 7)]),
+    ];
+  }
+  if (!state.missingMonths.length) return;
+  const request = dailyRequest,
+    zone = state.zone,
+    months = [...state.missingMonths];
+  state.adjacentBusy = true;
+  tick(true);
+  try {
+    const results = await Promise.allSettled(
+      months.map((month) => loadMonth(zone, month, { force })),
+    );
+    if (request !== dailyRequest || zone !== state.zone) return;
+    state.missingMonths = months.filter(
+      (month, index) => results[index].status === "rejected",
+    );
+    const byDate = new Map(state.days.map((day) => [day.date, day]));
+    for (const result of results)
+      if (result.status === "fulfilled") {
+        for (const day of result.value.days) byDate.set(day.date, day);
+      }
+    state.days = [...byDate.values()].sort((a, b) =>
+      a.date.localeCompare(b.date),
+    );
+  } finally {
+    if (request === dailyRequest) {
+      state.adjacentBusy = false;
+      tick(true);
+    }
   }
 }
 function setView(view, updateHash = true) {
@@ -833,6 +946,26 @@ function renderMonth() {
   });
   $("monthCaption").textContent =
     `${t("monthly")} · ${state.zone} · ${$("monthTitle").textContent}`;
+  const sameMonth = $("monthJumpForm").dataset.month === state.month;
+  const draftMonth = $("monthJumpMonth").value;
+  $("monthJumpMonth").innerHTML = Array.from(
+    { length: 12 },
+    (_, index) =>
+      `<option value="${index + 1}">${escapeHtml(dateFormat(new Date(Date.UTC(2026, index, 15)), { month: "long" }))}</option>`,
+  ).join("");
+  $("monthJumpMonth").value = sameMonth
+    ? draftMonth
+    : String(Number(state.month.slice(5)));
+  if (!sameMonth) {
+    $("monthJumpYear").value = state.month.slice(0, 4);
+    $("monthJumpError").hidden = true;
+    $("monthJumpYear").removeAttribute("aria-invalid");
+  }
+  $("monthJumpForm").dataset.month = state.month;
+  if (!$("monthJumpError").hidden)
+    $("monthJumpError").textContent = t("monthJumpInvalid");
+  $("prevMonth").disabled = state.month === "1900-01";
+  $("nextMonth").disabled = state.month === "9999-12";
   $("monthHead").innerHTML =
     `<tr><th scope="col">${t("date")}</th>${text[state.lang].labels.map((name) => `<th scope="col">${name}</th>`).join("")}</tr>`;
   $("monthBody").innerHTML = state.monthDays
@@ -846,7 +979,9 @@ function renderMonth() {
   $("monthStatus").textContent = state.monthBusy
     ? t("loading")
     : state.monthError
-      ? t("loadError")
+      ? state.monthDays.length
+        ? t("refreshError")
+        : scheduleError(state.monthErrorCode)
       : state.monthCached
         ? t("monthCache")
         : "";
@@ -859,28 +994,34 @@ async function showMonth(force = false) {
   const request = ++monthRequest,
     zone = state.zone,
     month = state.month;
-  state.monthDays = [];
+  if (state.monthDataKey !== `${zone}_${month}`) state.monthDays = [];
   state.monthBusy = true;
   state.monthError = false;
+  state.monthErrorCode = "";
   state.monthCached = false;
+  $("monthJumpError").hidden = true;
+  $("monthJumpYear").removeAttribute("aria-invalid");
   renderMonth();
   try {
     const result = await loadMonth(zone, month, { force });
     if (request !== monthRequest) return;
     state.monthDays = result.days;
+    state.monthDataKey = `${zone}_${month}`;
     state.monthCached = result.cached;
     state.monthBusy = false;
     renderMonth();
-  } catch {
+  } catch (error) {
     if (request !== monthRequest) return;
     state.monthBusy = false;
     state.monthError = true;
+    state.monthErrorCode = error.code || "NETWORK_ERROR";
     renderMonth();
   }
 }
 function changeMonth(offset) {
   const [year, month] = state.month.split("-").map(Number);
   const value = new Date(Date.UTC(year, month - 1 + offset, 1));
+  if (value.getUTCFullYear() < 1900 || value.getUTCFullYear() > 9999) return;
   state.month = value.toISOString().slice(0, 7);
   showMonth();
 }
@@ -992,7 +1133,9 @@ function applyLanguage() {
   $("dataSource").textContent = state.busy
     ? t("loading")
     : state.error
-      ? t("loadError")
+      ? state.days.some((day) => day.date === dateKey())
+        ? t("cached")
+        : scheduleError(state.errorCode)
       : state.cached
         ? t("cached")
         : state.source
@@ -1126,9 +1269,37 @@ $("thisMonth").addEventListener("click", () => {
   state.month = dateKey().slice(0, 7);
   showMonth();
 });
+$("monthJumpForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const year = Number($("monthJumpYear").value),
+    month = Number($("monthJumpMonth").value);
+  if (
+    !Number.isInteger(year) ||
+    year < 1900 ||
+    year > 9999 ||
+    !Number.isInteger(month) ||
+    month < 1 ||
+    month > 12
+  ) {
+    $("monthJumpError").textContent = t("monthJumpInvalid");
+    $("monthJumpError").hidden = false;
+    $("monthJumpYear").setAttribute("aria-invalid", "true");
+    $("monthJumpYear").focus();
+    return;
+  }
+  state.month = `${year}-${String(month).padStart(2, "0")}`;
+  showMonth();
+});
 $("retryBtn").addEventListener("click", () =>
   useZone(state.zone, state.locationSource, true),
 );
+$("prayerEmptyRetry").addEventListener("click", () =>
+  useZone(state.zone, state.locationSource, true),
+);
+$("prayerChooseZone").addEventListener("click", () =>
+  openDialog("locationDialog"),
+);
+$("nextPrayerRetry").addEventListener("click", () => retryAdjacentMonths(true));
 $("monthRetry").addEventListener("click", () => showMonth(true));
 $("refreshData").addEventListener("click", () => {
   $("settingsDialog").close();
@@ -1147,10 +1318,15 @@ window.addEventListener("appinstalled", () => {
   $("installDialog").close();
 });
 window.addEventListener("offline", setStatus);
+function recoverPrayerData() {
+  if (state.error && !state.busy) useZone(state.zone, state.locationSource);
+  else retryAdjacentMonths();
+  if (state.monthError && !state.monthBusy && state.view === "schedule")
+    showMonth();
+}
 window.addEventListener("online", () => {
   setStatus();
-  if (state.error) useZone(state.zone, state.locationSource);
-  if (state.monthError && state.view === "schedule") showMonth();
+  recoverPrayerData();
   detectLocation({ automatic: true });
 });
 const viewFromHash = () =>
@@ -1166,6 +1342,7 @@ document.querySelector(".skip-link").addEventListener("click", (event) => {
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) {
     tick(true);
+    recoverPrayerData();
     detectLocation({ automatic: true });
   }
 });
@@ -1190,6 +1367,7 @@ window.addEventListener("pagehide", () => {
 window.addEventListener("pageshow", (event) => {
   if (event.persisted) {
     tick(true);
+    recoverPrayerData();
     detectLocation({ automatic: true });
   }
 });

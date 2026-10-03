@@ -15,7 +15,7 @@ dengan kalendar Islam — melalui telefon, tablet atau desktop.
 FUNGSI UTAMA
 
 • Semak waktu solat daripada JAKIM untuk seluruh Malaysia,
-  jadual bulanan dan kiraan masa ke solat seterusnya.
+  pilih jadual bulan/tahun dan lihat kiraan masa ke solat seterusnya.
 • Kesan lokasi semasa, pilih zon secara manual atau simpan
   lokasi kegemaran. Lokasi GPS dan zon waktu JAKIM dipaparkan
   secara berasingan supaya mudah disemak.
@@ -61,6 +61,20 @@ Layari: https://waktu-solat-two.vercel.app/
 - Pemasangan PWA, jadual tersimpan untuk offline dan pemulihan apabila sambungan kembali.
 
 Semua tarikh dan pengiraan waktu menggunakan `Asia/Kuala_Lumpur`, walaupun peranti menggunakan zon masa lain. Syuruk menandakan tamat Subuh dan tidak dikira sebagai solat fardu seterusnya. Selepas Isyak, kiraan masa menggunakan Subuh sebenar pada hari berikutnya, termasuk ketika bertukar bulan atau tahun. Jika jadual esok belum tersedia, aplikasi memaparkan keadaan tersebut tanpa meneka waktunya.
+
+## Jadual bulan dan tahun
+
+Buka **Jadual**, pilih bulan dan tahun, kemudian tekan **Lihat jadual**. Butang bulan sebelumnya/seterusnya serta **Bulan ini** kekal tersedia. Aplikasi meminta tarikh sebenar yang dipilih terus daripada JAKIM; tiada jadual yang dihadkan kepada September atau tahun 2026 dalam kod.
+
+Jadual sepanjang **Januari–Disember 2026 untuk semua 60 zon** telah disemak pada 3 Oktober 2026. Tahun seterusnya boleh dimuatkan apabila JAKIM menyediakan datanya, tanpa kemas kini kod tahunan. Pilihan tahun bukan jaminan data sudah diterbitkan: ketika semakan, permintaan Januari 2027 bagi WLY01 memulangkan `NO_RECORD!`. Aplikasi menerangkan keadaan ini dan menyediakan butang cuba semula, tanpa menggantikannya dengan jadual tahun lain.
+
+Halaman utama bertukar tarikh mengikut waktu Malaysia secara automatik. Jika muatan gagal, panel memaparkan bulan/zon serta tindakan **Cuba lagi** dan **Tukar lokasi**. Jadual sah yang sudah dimuatkan kekal dipaparkan semasa penyegaran. Jika Subuh esok belum berjaya dimuatkan pada hujung bulan/tahun, pengguna boleh mencuba semula; aplikasi turut mencuba apabila sambungan atau halaman kembali aktif.
+
+### Pembetulan Oktober 2026
+
+JAKIM memulangkan tarikh seperti `01-Okt-2026`, tetapi parser lama hanya mengenali `Oct`. Data Oktober sebenarnya tersedia; tarikh tersebut menyebabkan jadual ditolak. Parser kini menerima semua singkatan bulan Melayu dan Inggeris, termasuk `Mac`, `Mei`, `Ogos`, `Okt` dan `Dis`.
+
+Semakan juga mendapati endpoint `period=month` mengabaikan parameter `year`. Permintaan kini menggunakan `POST period=duration` dengan tarikh mula/akhir bulan yang lengkap. Semua respons disahkan mengikut zon, tahun, bulan, bilangan hari dan susunan waktu sebelum dipaparkan atau disimpan.
 
 ## Lokasi semasa dan zon solat
 
@@ -187,9 +201,12 @@ Ujian pelayar meniru respons API dan bacaan sensor. **Koordinat simulasi tidak d
 | Paparan titik lokasi selepas pautan ditekan | [OpenStreetMap](https://www.openstreetmap.org/)                                                                      |
 
 ```text
-https://www.e-solat.gov.my/index.php?r=esolatApi/takwimsolat&zone={ZONE}&period=month&year={YEAR}&month={MONTH}
-https://api.waktusolat.app/zones/{LAT}/{LON}
-https://api.bigdatacloud.net/data/reverse-geocode-client?latitude={LAT}&longitude={LON}&localityLanguage={LANG}
+POST https://www.e-solat.gov.my/index.php?r=esolatApi/takwimsolat&zone={ZONE}&period=duration
+Content-Type: application/x-www-form-urlencoded
+datestart={YYYY-MM-01}&dateend={YYYY-MM-LAST_DAY}
+
+GET https://api.waktusolat.app/zones/{LAT}/{LON}
+GET https://api.bigdatacloud.net/data/reverse-geocode-client?latitude={LAT}&longitude={LON}&localityLanguage={LANG}
 ```
 
 **Waktu Solat API digunakan untuk pemetaan lokasi sahaja; jadual waktu diminta terus daripada JAKIM.** Jika JAKIM gagal, aplikasi mencuba semula JAKIM sebelum menggunakan cache JAKIM yang sah. Tiada pengiraan waktu solat setempat atau sumber waktu alternatif digunakan.
@@ -204,21 +221,21 @@ Katalog zon disemak pada **23 September 2026**. Pemetaan daerah Kinta dibetulkan
 
 Hos sebagai laman statik di Vercel: preset **Other**, root `./`, tanpa arahan build. Push ke `main` mencetuskan production melalui integrasi GitHub Vercel. Workflow **Check application** menjalankan semakan sintaks, ujian modul dan ujian Chromium pada push/pull request.
 
-Apabila aset berubah, naikkan `CACHE_VERSION` dalam `service-worker.js` dan versi URL CSS/JavaScript dalam `index.html`. Versi shell semasa ialah **v21**, termasuk modul kalendar dan penukar tarikh. Hanya cache lama berawalan `waktu-solat-` dipadamkan semasa pengaktifan; respons API diurus oleh modul data.
+Apabila aset berubah, naikkan `CACHE_VERSION` dalam `service-worker.js` dan versi URL CSS/JavaScript dalam `index.html`. Versi shell semasa ialah **v22**, termasuk pembetulan jadual JAKIM dan pemilih bulan/tahun. Hanya cache lama berawalan `waktu-solat-` dipadamkan semasa pengaktifan; respons API diurus oleh modul data.
 
-## Pengesahan versi 2.3
+## Pengesahan versi 2.4
 
-Semakan pada **23 September 2026**:
+Semakan pada **3 Oktober 2026**:
 
-- **94 ujian modul**: 29 data waktu/pemetaan zon, 14 lokasi, 18 kiblat, 10 service worker, 19 kalendar/aturan puasa dan 4 kiraan detik.
-- **34 ujian pelayar**: aliran lokasi, jadual, kiblat, tetapan dan offline; ditambah navigasi kalendar, tab penukaran dua hala, sempadan tarikh/ralat, pertukaran kiraan detik, puasa/haji, rujukan Nabi Muhammad ﷺ serta pemulihan paparan selepas kemas kini service worker.
+- **102 ujian modul**: 37 data waktu/pemetaan zon, 14 lokasi, 18 kiblat, 10 service worker, 19 kalendar/aturan puasa dan 4 kiraan detik.
+- **43 ujian pelayar** meliputi aliran lokasi, jadual, kiblat, tetapan, offline, kalendar, penukaran tarikh, kiraan detik dan pemulihan service worker. Regresi tambahan menggunakan format bulan Melayu JAKIM, permintaan tarikh penuh, Oktober–Disember, tahun lompat, respons tahun salah, jadual belum tersedia, pertukaran Disember–Januari dan pemeliharaan input ketika menukar bahasa.
 - Penukaran pergi-balik bagi setiap hari dalam liputan takwim rasmi 2025–2026 diperiksa. Ujian memastikan Aidilfitri, Aidiladha dan hari Tasyrik mengatasi penandaan puasa sunat.
-- Paparan desktop **1440px** dan telefon **390px/320px** diperiksa untuk limpahan mendatar.
+- Paparan desktop **1440px** dan telefon **390px/320px** diperiksa untuk limpahan mendatar; lima butang navigasi bawah telefon kekal kelihatan. **15 audit aksesibiliti** bagi keadaan paparan yang disemak tidak menemui pelanggaran.
 - Simulasi peranti dalam zon masa New York mengesahkan penggunaan tarikh Malaysia dan pertukaran Subuh pada hujung bulan.
-- Permintaan langsung JAKIM untuk **kesemua 60 zon, September 2026** berjaya: 1,800 rekod hari-zon dan 10,800 waktu.
-- Audit endpoint GPS merangkumi 23 titik Malaysia dan 8 titik luar Malaysia. Audit menemui pemetaan Kinta lama serta kegagalan pesisir Tawau/Semporna; pembetulan daerah dan padanan nama kawasan diuji secara terkawal.
+- Permintaan langsung JAKIM untuk **kesemua 60 zon sepanjang 2026** berjaya: **720 jadual bulanan**, **21,900 rekod hari-zon** dan **131,400 waktu** disahkan tanpa kegagalan.
+- Audit endpoint GPS terdahulu pada 23 September merangkumi 23 titik Malaysia dan 8 titik luar Malaysia. Audit menemui pemetaan Kinta lama serta kegagalan pesisir Tawau/Semporna; pembetulan daerah dan padanan nama kawasan diuji secara terkawal.
 
-Semakan 60 zon mengesahkan muatan jadual JAKIM untuk bulan tersebut, bukan ketepatan GPS pada setiap titik Malaysia. Lokasi berhampiran sempadan, zon khas, pulau atau kawasan dengan isyarat lemah masih perlu disemak berdasarkan zon yang dipaparkan.
+Semakan 60 zon mengesahkan muatan jadual JAKIM sepanjang tahun 2026, bukan ketepatan GPS pada setiap titik Malaysia. Lokasi berhampiran sempadan, zon khas, pulau atau kawasan dengan isyarat lemah masih perlu disemak berdasarkan zon yang dipaparkan.
 
 ## Cadangan seterusnya
 
@@ -226,4 +243,4 @@ Semakan 60 zon mengesahkan muatan jadual JAKIM untuk bulan tersebut, bukan ketep
 - Peta masjid/surau berdekatan dengan maklumat sumber dan pautan navigasi.
 - Eksport jadual bulanan kepada PDF atau kalendar untuk perjalanan dan perkongsian keluarga.
 
-Cadangan ini belum termasuk dalam versi 2.3.
+Cadangan ini belum termasuk dalam versi 2.4.

@@ -41,11 +41,26 @@ function schedule(month = "2026-09") {
   );
 }
 
-function jakim(zone = "WLY01", month = "2026-09") {
-  const monthName = new Date(`${month}-01T00:00:00Z`).toLocaleString("en-US", {
-    timeZone: "UTC",
-    month: "short",
-  });
+const jakimMonthNames = [
+  "Jan",
+  "Feb",
+  "Mac",
+  "Apr",
+  "Mei",
+  "Jun",
+  "Jul",
+  "Ogos",
+  "Sep",
+  "Okt",
+  "Nov",
+  "Dis",
+];
+
+function jakim(
+  zone = "WLY01",
+  month = "2026-09",
+  monthName = jakimMonthNames[Number(month.slice(5)) - 1],
+) {
   return {
     status: "OK!",
     zone,
@@ -147,6 +162,43 @@ test("JAKIM strings and alternative API epoch seconds normalize to identical sch
   );
 });
 
+test("all 12 live JAKIM Malay month abbreviations normalize without device-locale parsing", () => {
+  for (let month = 1; month <= 12; month += 1) {
+    const key = `2026-${String(month).padStart(2, "0")}`;
+    assert.deepEqual(
+      normalizeMonth(jakim("WLY01", key), "WLY01", key),
+      schedule(key),
+    );
+  }
+});
+
+test("English aliases, mixed case and ISO dates remain supported, while unknown months are rejected", () => {
+  for (const [month, token] of [
+    [3, "Mar"],
+    [5, "MAY"],
+    [8, "aug"],
+    [10, "oCt"],
+    [12, "Dec"],
+  ]) {
+    const key = `2026-${String(month).padStart(2, "0")}`;
+    assert.deepEqual(
+      normalizeMonth(jakim("WLY01", key, token), "WLY01", key),
+      schedule(key),
+    );
+  }
+  const iso = jakim();
+  iso.prayerTime.forEach((day, index) => {
+    day.date = schedule()[index].date;
+  });
+  assert.deepEqual(normalizeMonth(iso, "WLY01", "2026-09"), schedule());
+  assert.throws(() =>
+    normalizeMonth(jakim("WLY01", "2026-10", "XYZ"), "WLY01", "2026-10"),
+  );
+  const invalid = jakim("WLY01", "2026-10");
+  invalid.prayerTime[0].date = "32-Okt-2026";
+  assert.throws(() => normalizeMonth(invalid, "WLY01", "2026-10"));
+});
+
 test("API validation rejects wrong zone, wrong year/month, and timestamps from another date", () => {
   assert.throws(() => normalizeMonth(jakim("SGR01"), "WLY01", "2026-09"));
   assert.throws(() => normalizeMonth(jakim(), "WLY01", "2027-09"));
@@ -226,7 +278,19 @@ test("month/year boundary uses tomorrow real data and never repeats today Subuh"
 test("loadMonth requests explicit period, normalizes response and caches by zone and year-month", async (t) => {
   const values = storage(t);
   t.mock.method(globalThis, "fetch", async (url, options) => {
-    assert.match(url, /zone=WLY01&period=month&year=2026&month=9/);
+    assert.equal(
+      url,
+      "https://www.e-solat.gov.my/index.php?r=esolatApi/takwimsolat&zone=WLY01&period=duration",
+    );
+    assert.equal(options.method, "POST");
+    assert.equal(
+      options.headers["Content-Type"],
+      "application/x-www-form-urlencoded",
+    );
+    assert.deepEqual(Object.fromEntries(new URLSearchParams(options.body)), {
+      datestart: "2026-09-01",
+      dateend: "2026-09-30",
+    });
     assert.ok(options.signal instanceof AbortSignal);
     return ok(jakim());
   });
@@ -235,6 +299,131 @@ test("loadMonth requests explicit period, normalizes response and caches by zone
   assert.equal(result.cached, false);
   assert.deepEqual(result.days, schedule());
   assert.ok(values.has("ws_month_v3_WLY01_2026-09"));
+});
+
+test("duration requests include the correct full month across leap dates and future years", async (t) => {
+  storage(t);
+  const months = [
+    "2024-02",
+    "2026-09",
+    "2026-10",
+    "2026-11",
+    "2026-12",
+    "2027-01",
+    "2028-02",
+  ];
+  const expectedEnds = [29, 30, 31, 30, 31, 31, 29];
+  let index = 0;
+  t.mock.method(globalThis, "fetch", async (url, options) => {
+    const month = months[index];
+    assert.equal(new URL(url).searchParams.get("period"), "duration");
+    assert.equal(options.method, "POST");
+    const body = new URLSearchParams(options.body);
+    assert.equal(body.get("datestart"), `${month}-01`);
+    assert.equal(body.get("dateend"), `${month}-${expectedEnds[index]}`);
+    index += 1;
+    return ok(jakim("WLY01", month));
+  });
+  for (const month of months) {
+    assert.deepEqual((await loadMonth("WLY01", month)).days, schedule(month));
+  }
+  assert.equal(index, months.length);
+});
+
+test("Malay September/October and December/January schedules support real next-day transitions", () => {
+  for (const [before, after] of [
+    ["2026-09", "2026-10"],
+    ["2026-12", "2027-01"],
+  ]) {
+    const previous = normalizeMonth(jakim("WLY01", before), "WLY01", before);
+    const next = normalizeMonth(jakim("WLY01", after), "WLY01", after);
+    next[0].times.subuh = "06:03";
+    const state = getPrayerState(
+      [...previous, ...next],
+      new Date(`${previous.at(-1).date}T23:59:59+08:00`),
+    );
+    assert.equal(state.next.date, `${after}-01`);
+    assert.equal(state.next.time, "06:03");
+  }
+});
+
+test("official NO_RECORD and empty schedules have an honest unavailable state without redundant retry", async (t) => {
+  const values = storage(t);
+  let payload = {
+    zone: "WLY01",
+    status: "NO_RECORD!",
+    periodType: "duration",
+    prayerTime: { data: ["No data available for the current request"] },
+  };
+  const request = t.mock.method(globalThis, "fetch", async () => ok(payload));
+  await assert.rejects(loadMonth("WLY01", "2027-01"), {
+    code: "SCHEDULE_UNAVAILABLE",
+  });
+  assert.equal(request.mock.callCount(), 1);
+  payload = { zone: "WLY01", status: "OK!", prayerTime: [] };
+  await assert.rejects(loadMonth("WLY01", "2027-01"), {
+    code: "SCHEDULE_UNAVAILABLE",
+  });
+  assert.equal(request.mock.callCount(), 2);
+  assert.equal(values.size, 0);
+});
+
+test("a server ignoring the requested year or month can never populate the requested cache", async (t) => {
+  const values = storage(t);
+  let payload = jakim("WLY01", "2026-01");
+  t.mock.method(globalThis, "fetch", async () => ok(payload));
+  await assert.rejects(loadMonth("WLY01", "2027-01"), {
+    code: "SCHEDULE_UNAVAILABLE",
+  });
+  payload = jakim("WLY01", "2026-09");
+  await assert.rejects(loadMonth("WLY01", "2026-10"), {
+    code: "SCHEDULE_UNAVAILABLE",
+  });
+  assert.equal(values.size, 0);
+});
+
+test("malformed JSON, wrong zone, corrupt rows and network failures retain distinct failure codes", async (t) => {
+  storage(t);
+  let mode = "network";
+  t.mock.method(globalThis, "fetch", async () => {
+    if (mode === "network") throw new TypeError("Failed to fetch");
+    if (mode === "http") return { ok: false, status: 503 };
+    if (mode === "json")
+      return {
+        ok: true,
+        json: async () => {
+          throw new SyntaxError("Unexpected token <");
+        },
+      };
+    if (mode === "zone") return ok(jakim("SGR01", "2026-10"));
+    const payload = jakim("WLY01", "2026-10");
+    payload.prayerTime.pop();
+    return ok(payload);
+  });
+  for (const value of ["network", "http", "json", "zone", "rows"]) {
+    mode = value;
+    await assert.rejects(loadMonth("WLY01", "2026-10"), {
+      code: ["network", "http"].includes(mode)
+        ? "NETWORK_ERROR"
+        : "INVALID_SCHEDULE",
+    });
+  }
+});
+
+test("unavailable official responses can still use verified same-zone same-month cache", async (t) => {
+  storage(t, {
+    "ws_month_v3_WLY01_2027-01": cacheEntry("WLY01", "2027-01", 172800000),
+  });
+  t.mock.method(globalThis, "fetch", async () =>
+    ok({
+      zone: "WLY01",
+      status: "NO_RECORD!",
+      prayerTime: { data: ["No data available for the current request"] },
+    }),
+  );
+  const result = await loadMonth("WLY01", "2027-01");
+  assert.equal(result.source, "cache");
+  assert.deepEqual(result.days, schedule("2027-01"));
 });
 
 test("valid fresh cache avoids repeated API requests, while force explicitly refreshes", async (t) => {

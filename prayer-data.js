@@ -20,20 +20,24 @@ const API_KEYS = {
   maghrib: "maghrib",
   isyak: "isha",
 };
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
+// JAKIM's ms_my response uses Mac, Mei, Ogos, Okt and Dis. Accept its
+// English variants too, without relying on the device's date parser/locale.
+const API_MONTHS = new Map(
+  [
+    ["jan"],
+    ["feb"],
+    ["mac", "mar"],
+    ["apr"],
+    ["mei", "may"],
+    ["jun"],
+    ["jul"],
+    ["ogos", "aug"],
+    ["sep"],
+    ["okt", "oct"],
+    ["nov"],
+    ["dis", "dec"],
+  ].flatMap((names, index) => names.map((name) => [name, index + 1])),
+);
 const DAY_MS = 86_400_000;
 const CACHE_VERSION = 3;
 const CACHE_PREFIX = "ws_month_v3_";
@@ -136,14 +140,19 @@ function parseApiDate(value) {
   if (validDateKey(value)) return value;
   const match =
     typeof value === "string" &&
-    value.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})$/);
+    value.match(/^(\d{1,2})-([A-Za-z]{3,4})-(\d{4})$/);
   if (!match) throw new Error("Tarikh API tidak sah.");
-  const month =
-    MONTHS.findIndex((name) => name.toLowerCase() === match[2].toLowerCase()) +
-    1;
+  const month = API_MONTHS.get(match[2].toLowerCase());
+  if (!month) throw new Error("Tarikh API tidak sah.");
   const key = `${match[3]}-${String(month).padStart(2, "0")}-${match[1].padStart(2, "0")}`;
   if (!validDateKey(key)) throw new Error("Tarikh API tidak sah.");
   return key;
+}
+
+function scheduleError(code, message, cause) {
+  const error = new Error(message, cause ? { cause } : undefined);
+  error.code = code;
+  return error;
 }
 
 /** Reject incomplete, mixed-month, duplicate-date, and invalid schedules before display/cache. */
@@ -153,12 +162,13 @@ export function validateMonthDays(days, monthKey) {
     throw new Error("Jadual bulan tidak lengkap.");
   const result = days
     .map((day) => {
-      if (
-        !day ||
-        !validDateKey(day.date) ||
-        !day.date.startsWith(`${monthKey}-`)
-      )
-        throw new Error("Bulan jadual tidak sepadan.");
+      if (!day || !validDateKey(day.date))
+        throw new Error("Tarikh jadual tidak sah.");
+      if (!day.date.startsWith(`${monthKey}-`))
+        throw scheduleError(
+          "SCHEDULE_UNAVAILABLE",
+          "Bulan jadual tidak sepadan.",
+        );
       const times = Object.fromEntries(
         PRAYER_KEYS.map((key) => [
           key,
@@ -197,6 +207,15 @@ export function normalizeMonth(payload, zone, monthKey) {
   monthLength(monthKey);
   if (!payload || normalizeZone(payload.zone) !== code)
     throw new Error("Zon jadual tidak sepadan.");
+  if (
+    payload.status === "NO_RECORD!" ||
+    (Array.isArray(payload.prayerTime) && payload.prayerTime.length === 0)
+  ) {
+    throw scheduleError(
+      "SCHEDULE_UNAVAILABLE",
+      "Jadual waktu solat tidak tersedia.",
+    );
+  }
   let days;
   if (Array.isArray(payload.prayerTime)) {
     days = payload.prayerTime.map((day) => ({
@@ -209,7 +228,10 @@ export function normalizeMonth(payload, zone, monthKey) {
   } else if (Array.isArray(payload.prayers)) {
     const [year, month] = monthKey.split("-").map(Number);
     if (Number(payload.year) !== year || Number(payload.month_number) !== month)
-      throw new Error("Bulan jadual tidak sepadan.");
+      throw scheduleError(
+        "SCHEDULE_UNAVAILABLE",
+        "Bulan jadual tidak sepadan.",
+      );
     days = payload.prayers.map((day) => ({
       date: `${monthKey}-${String(day.day).padStart(2, "0")}`,
       hijri: day.hijri,
@@ -219,6 +241,11 @@ export function normalizeMonth(payload, zone, monthKey) {
     }));
   } else {
     throw new Error("Jadual waktu solat tidak tersedia.");
+  }
+  // Check the requested year/month before the row count, so an API that ignores
+  // the requested range cannot masquerade as an available but shorter month.
+  if (days.some((day) => !day.date.startsWith(`${monthKey}-`))) {
+    throw scheduleError("SCHEDULE_UNAVAILABLE", "Bulan jadual tidak sepadan.");
   }
   return validateMonthDays(days, monthKey);
 }
@@ -267,14 +294,15 @@ function writeCache(zone, monthKey, days) {
   }
 }
 
-async function fetchJson(url, timeoutMs = 8000) {
+async function fetchJson(url, timeoutMs = 8000, options = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetch(url, {
+      ...options,
       signal: controller.signal,
       cache: "no-store",
-      headers: { Accept: "application/json" },
+      headers: { Accept: "application/json", ...options.headers },
     });
     if (!response.ok)
       throw new Error(`Pelayan memberi respons ${response.status}.`);
@@ -290,21 +318,45 @@ async function fetchMonth(zone, monthKey, force) {
   if (!force && cached && Date.now() - cached.savedAt < DAY_MS) {
     return { days: cached.days, source: "cache", cached: true };
   }
-  const [year, month] = monthKey.split("-").map(Number);
-  const url = `https://www.e-solat.gov.my/index.php?r=esolatApi/takwimsolat&zone=${zone}&period=month&year=${year}&month=${month}`;
+  // JAKIM's month/year periods ignore a year query parameter. Its duration
+  // endpoint accepts exact inclusive dates as a form POST, including the year.
+  const url = `https://www.e-solat.gov.my/index.php?r=esolatApi/takwimsolat&zone=${zone}&period=duration`;
+  const options = {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      datestart: `${monthKey}-01`,
+      dateend: `${monthKey}-${String(monthLength(monthKey)).padStart(2, "0")}`,
+    }).toString(),
+  };
+  let failure;
   for (let attempt = 0; attempt < 2; attempt += 1) {
+    let payload;
     try {
-      const days = normalizeMonth(await fetchJson(url), zone, monthKey);
+      payload = await fetchJson(url, 8000, options);
+    } catch (error) {
+      failure = scheduleError(
+        error instanceof SyntaxError ? "INVALID_SCHEDULE" : "NETWORK_ERROR",
+        "Respons JAKIM tidak dapat dibaca.",
+        error,
+      );
+      continue;
+    }
+    try {
+      const days = normalizeMonth(payload, zone, monthKey);
       writeCache(zone, monthKey, days);
       return { days, source: "JAKIM", cached: false };
-    } catch {
+    } catch (error) {
+      failure =
+        error.code === "SCHEDULE_UNAVAILABLE"
+          ? error
+          : scheduleError("INVALID_SCHEDULE", "Jadual JAKIM tidak sah.", error);
+      if (failure.code === "SCHEDULE_UNAVAILABLE") break;
       // Retry the official source once. Never substitute another provider's times.
     }
   }
   if (cached) return { days: cached.days, source: "cache", cached: true };
-  throw new Error(
-    "Jadual tidak dapat dimuatkan. Semak sambungan internet dan cuba lagi.",
-  );
+  throw failure;
 }
 
 export async function loadMonth(

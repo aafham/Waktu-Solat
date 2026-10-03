@@ -21,8 +21,8 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Manrope:wght@400;500;600;650;700;750;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="style.css?v=2026-09-23-v5" />
-    <link rel="stylesheet" href="islamic-calendar.css?v=2026-09-23-v5" />
+    <link rel="stylesheet" href="style.css?v=2026-10-03-v1" />
+    <link rel="stylesheet" href="islamic-calendar.css?v=2026-10-03-v1" />
   </head>
   <body>
     <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -242,6 +242,36 @@
           </button>
         </div>
         <div id="homeView" class="view">
+          <section
+            id="prayerEmptyState"
+            class="prayer-empty-state"
+            role="status"
+            aria-labelledby="prayerEmptyTitle"
+            hidden
+          >
+            <span class="prayer-empty-icon" aria-hidden="true">
+              <svg class="icon"><use href="#i-calendar" /></svg>
+            </span>
+            <div class="prayer-empty-copy">
+              <p id="prayerEmptyContext" class="prayer-empty-context"></p>
+              <h2 id="prayerEmptyTitle" data-i18n="emptyPrayerTitle">
+                Waktu solat belum tersedia
+              </h2>
+              <p id="prayerEmptyDescription"></p>
+            </div>
+            <div class="prayer-empty-actions">
+              <button id="prayerEmptyRetry" class="primary" data-i18n="retry">
+                Cuba semula
+              </button>
+              <button
+                id="prayerChooseZone"
+                class="secondary"
+                data-i18n="changeLocation"
+              >
+                Tukar lokasi
+              </button>
+            </div>
+          </section>
           <div class="hero-grid">
             <section class="next-prayer" aria-labelledby="nextPrayerLabel">
               <div class="hero-content">
@@ -278,6 +308,14 @@
                 <p class="next-foot" id="nextPrayerNote">
                   Waktu tempatan Malaysia · MYT
                 </p>
+                <button
+                  id="nextPrayerRetry"
+                  class="secondary next-prayer-retry"
+                  data-i18n="retryNext"
+                  hidden
+                >
+                  Muat Subuh esok
+                </button>
               </div>
               <div class="mosque-art" aria-hidden="true">
                 <div class="art-orbit orbit-one"></div>
@@ -457,6 +495,46 @@
               </button>
             </div>
           </div>
+          <form id="monthJumpForm" class="month-jump-form" novalidate>
+            <div class="month-jump-field">
+              <label for="monthJumpMonth" data-i18n="selectMonth">Bulan</label>
+              <select id="monthJumpMonth" required></select>
+            </div>
+            <div class="month-jump-field month-jump-year">
+              <label for="monthJumpYear" data-i18n="selectYear">Tahun</label>
+              <input
+                id="monthJumpYear"
+                type="number"
+                inputmode="numeric"
+                min="1900"
+                max="9999"
+                step="1"
+                required
+                aria-describedby="monthJumpHint monthJumpError"
+              />
+            </div>
+            <button
+              id="monthJumpSubmit"
+              type="submit"
+              class="secondary"
+              data-i18n="viewSchedule"
+            >
+              Lihat jadual
+            </button>
+            <p
+              id="monthJumpHint"
+              class="month-jump-hint"
+              data-i18n="monthJumpHint"
+            >
+              Pilih mana-mana bulan dan tahun untuk menyemak jadual.
+            </p>
+            <p
+              id="monthJumpError"
+              class="month-jump-error"
+              role="alert"
+              hidden
+            ></p>
+          </form>
           <p class="small muted table-hint" data-i18n="scrollTable">
             Leret jadual ke kiri atau kanan untuk melihat semua waktu.
           </p>
@@ -579,19 +657,30 @@
       </main>
     </div>
     <nav class="bottom-nav" aria-label="Navigasi mudah alih">
-      <button data-view="home" class="active" aria-current="page">
+      <button
+        type="button"
+        data-view="home"
+        aria-controls="homeView"
+        class="active"
+        aria-current="page"
+      >
         <svg class="icon"><use href="#i-grid" /></svg
         ><span data-i18n="today">Hari ini</span></button
-      ><button data-view="schedule">
+      ><button type="button" data-view="schedule" aria-controls="scheduleView">
         <svg class="icon"><use href="#i-calendar" /></svg
         ><span data-i18n="schedule">Jadual</span></button
-      ><button data-view="qibla">
+      ><button type="button" data-view="qibla" aria-controls="qiblaView">
         <svg class="icon"><use href="#i-compass" /></svg
         ><span data-i18n="qiblaShort">Kiblat</span></button
-      ><button data-view="calendar">
+      ><button type="button" data-view="calendar" aria-controls="calendarView">
         <svg class="icon"><use href="#i-moon" /></svg>
         <span data-i18n="calendarShort">Kalendar</span></button
-      ><button class="settings-trigger">
+      ><button
+        type="button"
+        class="settings-trigger"
+        aria-haspopup="dialog"
+        aria-controls="settingsDialog"
+      >
         <svg class="icon"><use href="#i-settings" /></svg
         ><span data-i18n="settings">Tetapan</span>
       </button>
@@ -740,6 +829,6 @@
         <a href="https://www.e-solat.gov.my/">Buka JAKIM e-Solat</a>.
       </p></noscript
     >
-    <script type="module" src="script.js?v=2026-09-23-v5"></script>
+    <script type="module" src="script.js?v=2026-10-03-v1"></script>
   </body>
 </html>
