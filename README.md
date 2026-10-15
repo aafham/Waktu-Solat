@@ -134,7 +134,7 @@ Buka **Kiblat → Aktifkan kompas langsung**, kemudian benarkan akses lokasi dan
 
 Jika sensor tiada atau izin ditolak, aplikasi menunjukkan **arah tetap** dengan arahan menggunakan rujukan utara. Jika izin telah diberikan tetapi bacaan belum sesuai, status kekal **menunggu/menstabilkan kompas** dan sensor terus mendengar selama paparan aktif. Desktop tanpa sensor masih boleh melihat bearing dan jarak apabila lokasi tersedia.
 
-GPS dan kompas memerlukan HTTPS atau `localhost`, sokongan peranti/pelayar serta izin pengguna. **Ujian telefon fizikal dan ketepatan sensor di lapangan belum dilakukan.** Ujian automatik menggunakan bacaan terkawal untuk menyemak pengiraan dan tindak balas aplikasi; ia tidak menggantikan kalibrasi atau pengesahan kompas sebenar.
+GPS dan kompas memerlukan HTTPS atau `localhost`, sokongan peranti/pelayar serta izin pengguna. **Pada 16 Oktober 2026, pengguna mengesahkan kompas dan bacaan hala telefon mengikuti putaran pada iPhone Safari selepas kemas kini.** Pengesahan ini meliputi tindak balas putaran; ketepatan arah di lapangan belum diukur. Ujian automatik menggunakan bacaan terkawal untuk menyemak pengiraan dan tindak balas aplikasi; ia tidak menggantikan kalibrasi atau pengesahan ketepatan kompas sebenar.
 
 ## Offline dan pemasangan
 
@@ -236,7 +236,7 @@ Semakan kompas pada **16 Oktober 2026**:
 - Ujian mengesahkan bahawa bacaan sah selepas menunggu atau kalibrasi melebihi 8 saat mengaktifkan semula panduan tanpa klik tambahan. Bacaan relatif tidak menimpa bacaan mutlak yang sah.
 - Putaran melalui utara, kedudukan skrin moden/legacy dan geometri telefon mengiring diperiksa. Animasi CSS tidak melambatkan jarum atau penanda arah dalam mod langsung.
 - Paparan kompas pada **320px, 390px dan 1440px**, keadaan menunggu/langsung/pemulihan/arah tetap serta tema cerah/gelap diperiksa. Tiada limpahan mendatar atau pelanggaran aksesibiliti ditemui dalam keadaan yang diaudit; lima butang navigasi bawah kekal kelihatan pada telefon.
-- Ujian kompas menggunakan GPS dan sensor simulasi; ketepatan sensor pada iPhone fizikal masih belum disahkan.
+- Ujian automatik kompas menggunakan GPS dan sensor simulasi. Pengguna turut mengesahkan putaran masa nyata berfungsi pada iPhone Safari selepas kemas kini; ketepatan arah fizikal masih belum diukur.
 
 ## Pengesahan versi 2.4
 
