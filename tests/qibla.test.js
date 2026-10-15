@@ -98,6 +98,69 @@ test("relative, invalid, steeply tilted and poor WebKit readings are rejected", 
   assert.equal(getHeading({ absolute: true, alpha: 0 }, NaN), null);
 });
 
+test("WebKit heading survives normal handheld tilt and respects screen-top geometry", () => {
+  // A 55-degree pitch still leaves a well-defined horizontal screen-top
+  // projection. It must not be rejected by the former 45-degree cutoff.
+  near(
+    getHeading({
+      webkitCompassHeading: 274.3,
+      webkitCompassAccuracy: 5,
+      beta: 55,
+      gamma: 15,
+    }),
+    274.3,
+  );
+  near(getHeading({ absolute: true, alpha: 90, beta: 55, gamma: 15 }), 270);
+  assert.equal(
+    getHeading({
+      webkitCompassHeading: 12,
+      webkitCompassAccuracy: 5,
+      beta: 90,
+      gamma: 0,
+    }),
+    null,
+  );
+  for (const [screenAngle, expected] of [
+    [0, 45],
+    [90, 135],
+    [180, 225],
+    [270, 315],
+    [-90, 315],
+  ]) {
+    near(
+      getHeading(
+        {
+          webkitCompassHeading: 45,
+          webkitCompassAccuracy: 5,
+          beta: 0,
+          gamma: 0,
+        },
+        screenAngle,
+      ),
+      expected,
+    );
+  }
+  // Independent geometric case: with pitch=roll=30 degrees, portrait top is
+  // horizontal north; at screen angle90, screen top follows the device X axis,
+  // whose horizontal components are east=sqrt(3)/2 and north=1/4.
+  const offset = (Math.atan2(Math.sqrt(3) / 2, 1 / 4) * 180) / Math.PI;
+  for (const alpha of [0, 90, 217]) {
+    near(
+      getHeading(
+        {
+          webkitCompassHeading: 45,
+          webkitCompassAccuracy: 5,
+          alpha,
+          beta: 30,
+          gamma: 30,
+        },
+        90,
+      ),
+      45 + offset,
+    );
+  }
+});
+
 test("alignment uses the shortest turn across the north boundary", () => {
   assert.deepEqual(getAlignment(1, 359), { direction: "aligned", degrees: 2 });
   assert.deepEqual(getAlignment(355, 10), { direction: "left", degrees: 15 });
@@ -308,7 +371,7 @@ test("iOS permission is invoked in the gesture before GPS; initial sensor event 
   });
 });
 
-test("relative alpha never activates guidance and sensor timeout clears tracking", async () => {
+test("relative alpha never activates guidance but a late WebKit heading recovers after the initial wait", async () => {
   await runFixture({}, async (fixture, qibla) => {
     await enableAt(fixture, qibla);
     fixture.sensor({ alpha: 23, absolute: false });
@@ -319,15 +382,101 @@ test("relative alpha never activates guidance and sensor timeout clears tracking
     fixture.advance(8000);
     assert.equal(
       fixture.elements.get("qiblaIndicator").dataset.state,
-      "static",
+      "waiting",
     );
     assert.match(
       fixture.elements.get("qiblaStatus").textContent,
-      /clockwise from true north/,
+      /reading.*listening/i,
     );
     assert.equal(fixture.elements.get("qiblaAlignment").hidden, true);
-    assert.equal(fixture.watches.size, 0);
+    assert.equal(fixture.watches.size, 1);
+    assert.equal(fixture.host.listeners.has("deviceorientation"), true);
+    assert.equal(fixture.elements.get("qiblaStopBtn").hidden, false);
+    fixture.sensor({ webkitCompassHeading: 292, webkitCompassAccuracy: 5 });
+    assert.equal(fixture.elements.get("qiblaIndicator").dataset.state, "live");
+    assert.equal(fixture.elements.get("qiblaAlignment").hidden, false);
+    assert.equal(
+      fixture.calls.filter(([name]) => name === "permission").length,
+      1,
+    );
+  });
+});
+
+test("WebKit recalibration can recover after an extended invalid-accuracy interval without another gesture", async () => {
+  await runFixture({}, async (fixture, qibla) => {
+    await enableAt(fixture, qibla);
+    fixture.sensor({ webkitCompassHeading: 292, webkitCompassAccuracy: 5 });
+    fixture.sensor({ webkitCompassHeading: 292, webkitCompassAccuracy: -1 });
+    assert.equal(fixture.elements.get("qiblaAlignment").hidden, true);
+    fixture.advance(9000);
+    assert.equal(
+      fixture.elements.get("qiblaIndicator").dataset.state,
+      "paused",
+    );
+    assert.equal(fixture.elements.get("qiblaNeedle").hidden, true);
+    assert.equal(fixture.elements.get("qiblaDirections").hidden, true);
+    fixture.sensor({ webkitCompassHeading: 292, webkitCompassAccuracy: 30 });
+    assert.equal(fixture.elements.get("qiblaAlignment").hidden, true);
+    fixture.advance(9000);
+    fixture.sensor({ webkitCompassHeading: 270, webkitCompassAccuracy: 5 });
+    assert.equal(fixture.elements.get("qiblaIndicator").dataset.state, "live");
+    assert.equal(fixture.elements.get("qiblaAlignment").hidden, false);
+    assert.equal(fixture.elements.get("qiblaNeedle").hidden, false);
+    assert.equal(fixture.elements.get("qiblaDirections").hidden, false);
+    assert.equal(fixture.watches.size, 1);
+    assert.equal(
+      fixture.calls.filter(([name]) => name === "permission").length,
+      1,
+    );
+  });
+});
+
+test("relative and empty parallel events do not erase an absolute reading on the generic event channel", async () => {
+  await runFixture({}, async (fixture, qibla) => {
+    await enableAt(fixture, qibla);
+    fixture.sensor({ absolute: true, alpha: 68, beta: 0, gamma: 0 });
+    const transform = fixture.elements.get("qiblaNeedle").style.transform;
+    for (const event of [
+      { absolute: false, alpha: 90, beta: 0, gamma: 0 },
+      { absolute: false, alpha: null, beta: null, gamma: null },
+    ]) {
+      fixture.sensor(event);
+      assert.equal(
+        fixture.elements.get("qiblaIndicator").dataset.state,
+        "live",
+      );
+      assert.equal(
+        fixture.elements.get("qiblaNeedle").style.transform,
+        transform,
+      );
+    }
+  });
+});
+
+test("backgrounding a recovering sensor session removes listeners and late readings cannot restart it", async () => {
+  await runFixture({}, async (fixture, qibla) => {
+    await enableAt(fixture, qibla);
+    fixture.advance(9000);
+    fixture.host.emit("pagehide");
     assert.equal(fixture.host.listeners.has("deviceorientation"), false);
+    assert.equal(
+      fixture.host.listeners.has("deviceorientationabsolute"),
+      false,
+    );
+    assert.equal(fixture.host.screen.orientation.listeners.size, 0);
+    assert.equal(fixture.watches.size, 0);
+    assert.equal(fixture.timers.size, 0);
+    const transform = fixture.elements.get("qiblaNeedle").style.transform;
+    fixture.sensor({ webkitCompassHeading: 292, webkitCompassAccuracy: 5 });
+    assert.equal(
+      fixture.elements.get("qiblaIndicator").dataset.state,
+      "static",
+    );
+    assert.equal(
+      fixture.elements.get("qiblaNeedle").style.transform,
+      transform,
+    );
+    assert.equal(fixture.elements.get("qiblaStopBtn").hidden, true);
   });
 });
 
@@ -359,6 +508,35 @@ test("live needle updates immediately, crosses north smoothly, and follows scree
   });
 });
 
+test("legacy iPhone orientationchange recomputes screen top from the retained WebKit reading", async () => {
+  await runFixture({}, async (fixture, qibla) => {
+    delete fixture.host.screen.orientation;
+    fixture.host.orientation = 0;
+    await enableAt(fixture, qibla, position(0, 39.826206));
+    fixture.sensor({
+      webkitCompassHeading: 90,
+      webkitCompassAccuracy: 5,
+      beta: 0,
+      gamma: 0,
+    });
+    fixture.host.orientation = -90;
+    fixture.host.emit("orientationchange");
+    assert.equal(
+      fixture.elements.get("qiblaAlignment").dataset.state,
+      "aligned",
+    );
+    fixture.host.orientation = 90;
+    fixture.host.emit("orientationchange");
+    assert.equal(fixture.elements.get("qiblaAlignment").dataset.state, "left");
+    const rotation = Number(
+      fixture.elements
+        .get("qiblaDirections")
+        .style.transform.match(/[-\d.]+/)[0],
+    );
+    near(((rotation % 360) + 360) % 360, 180);
+  });
+});
+
 test("cardinal labels rotate with the live heading and return to static north when stopped", async () => {
   await runFixture({}, async (fixture, qibla) => {
     await enableAt(fixture, qibla);
@@ -382,7 +560,7 @@ test("bad compass readings remove live alignment and recover when a valid readin
     fixture.sensor({ webkitCompassHeading: 292, webkitCompassAccuracy: -1 });
     assert.equal(
       fixture.elements.get("qiblaIndicator").dataset.state,
-      "static",
+      "paused",
     );
     assert.equal(fixture.elements.get("qiblaAlignment").hidden, true);
     assert.match(
@@ -402,11 +580,26 @@ test("bad compass readings remove live alignment and recover when a valid readin
     );
     assert.equal(
       fixture.elements.get("qiblaIndicator").dataset.state,
-      "static",
+      "paused",
     );
     assert.match(
       fixture.elements.get("qiblaStatus").textContent,
-      /Hold your phone flat/,
+      /nearly (vertical|upright).*automatic/i,
+    );
+  });
+});
+
+test("a broad WebKit accuracy estimate stays live without a falsely precise aligned cue", async () => {
+  await runFixture({}, async (fixture, qibla) => {
+    await enableAt(fixture, qibla);
+    fixture.sensor({ webkitCompassHeading: 292.54, webkitCompassAccuracy: 20 });
+    assert.equal(fixture.elements.get("qiblaIndicator").dataset.state, "live");
+    assert.equal(fixture.elements.get("qiblaAlignment").dataset.state, "near");
+    assert.match(fixture.elements.get("qiblaAccuracy").textContent, /20/);
+    fixture.sensor({ webkitCompassHeading: 292.54, webkitCompassAccuracy: 5 });
+    assert.equal(
+      fixture.elements.get("qiblaAlignment").dataset.state,
+      "aligned",
     );
   });
 });

@@ -34,9 +34,11 @@ jobs:
       - name: Test prayer data, compass and offline cache
         run: npm test
       - name: Install browser for integration tests
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit
       - name: Test browser flows and responsive navigation
         run: npm run test:e2e
+      - name: Test Safari compass contract in WebKit
+        run: npm run test:webkit
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

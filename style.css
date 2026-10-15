@@ -4092,3 +4092,469 @@ body.dark .month-jump-field input[aria-invalid="true"] {
     display: none !important;
   }
 }
+
+/* Live Qibla: the moving phone heading is distinct from the location bearing. */
+.qibla-open .page-heading {
+  display: none;
+}
+.qibla-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.95fr);
+  align-items: start;
+  gap: 36px;
+  padding: 32px;
+}
+.qibla-info h1 {
+  font-size: 30px;
+  line-height: 1.25;
+  letter-spacing: -0.8px;
+  margin: 8px 0 13px;
+}
+.qibla-info > .muted {
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+.qibla-state-summary {
+  min-width: 0;
+}
+.qibla-indicator {
+  margin: 0 0 10px;
+  padding: 6px 10px;
+  border-radius: 7px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.qibla-indicator[data-state="waiting"],
+.qibla-indicator[data-state="paused"],
+.qibla-indicator[data-state="static"] {
+  color: #755411;
+  background: #fff5df;
+  border-color: #ead9ad;
+}
+.qibla-indicator[data-state="error"] {
+  color: #913d34;
+  background: #fdf1ed;
+  border-color: #edc9c1;
+}
+.qibla-status {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+.qibla-controls {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 0;
+}
+.qibla-controls > button {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 46px;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 12px 13px;
+}
+.qibla-flat-hint {
+  margin: 13px 0 0;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.75;
+}
+.qibla-guide {
+  margin-top: 23px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+}
+.qibla-guide summary {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 9px 0;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.qibla-guide summary::-webkit-details-marker {
+  display: none;
+}
+.qibla-guide summary .icon {
+  width: 16px;
+  height: 16px;
+}
+.qibla-guide summary span {
+  flex: 1;
+}
+.qibla-guide summary .icon:last-child {
+  width: 13px;
+  height: 13px;
+}
+.qibla-guide[open] summary .icon:last-child {
+  transform: rotate(90deg);
+}
+.qibla-guide ol {
+  display: grid;
+  gap: 12px;
+  padding-left: 19px;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.qibla-guide li::marker {
+  color: var(--green);
+  font-weight: 600;
+}
+.qibla-guide .qibla-help {
+  margin: 16px 0 0;
+  padding: 12px;
+  border-radius: 9px;
+  background: var(--surface-soft);
+  font-size: 11px;
+  line-height: 1.8;
+}
+.compass-area {
+  padding: 20px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.qibla-alignment {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.6;
+}
+.qibla-alignment[data-state="aligned"] {
+  color: var(--green);
+  background: var(--green-soft);
+  border-color: #a8c9b7;
+}
+.qibla-alignment[data-state="near"] {
+  color: #755411;
+  background: #fff5df;
+  border-color: #ead9ad;
+}
+.compass-visual {
+  padding: 8px 0;
+}
+.compass-phone-top,
+.compass-top-marker,
+.compass-rotate-hint {
+  display: none;
+}
+.qibla-layout:has(#qiblaIndicator[data-state="live"]) .compass-phone-top {
+  display: block;
+  margin: 0 0 19px;
+  color: var(--text);
+  font-size: 10px;
+  line-height: 1.5;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+.qibla-layout:has(#qiblaIndicator[data-state="live"]) .compass-top-marker {
+  display: block;
+}
+.qibla-layout:has(#qiblaIndicator[data-state="live"]) .compass-rotate-hint {
+  display: block;
+  margin: 12px auto 0;
+  max-width: 265px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.7;
+}
+.compass-ring {
+  width: 248px;
+  height: 248px;
+  background: var(--surface);
+  border-color: var(--line);
+}
+.compass-top-marker {
+  position: absolute;
+  top: -9px;
+  left: calc(50% - 7px);
+  width: 14px;
+  height: 16px;
+  background: var(--green);
+  clip-path: polygon(50% 0, 100% 100%, 50% 75%, 0 100%);
+  z-index: 2;
+}
+.compass-inner {
+  border-color: var(--line);
+}
+.compass-placeholder {
+  position: absolute;
+  inset: 54px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.65;
+}
+.compass-placeholder .icon {
+  width: 30px;
+  height: 30px;
+  color: var(--green);
+}
+.compass-ring:has(.compass-needle:not([hidden])) .compass-placeholder,
+.compass-ring:has(.compass-needle[hidden]) .compass-center {
+  display: none;
+}
+.compass-ring:has(.compass-needle[data-mode="live"]) .direction {
+  visibility: visible;
+}
+.qibla-layout .compass-needle,
+.qibla-layout .compass-directions {
+  transition: none;
+}
+.qibla-layout:has(#qiblaAlignment[data-state="aligned"]) .compass-ring {
+  border-color: var(--green);
+}
+.qibla-readouts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+  text-align: left;
+}
+.qibla-readouts > div {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--surface);
+}
+.qibla-readouts span,
+.qibla-readouts small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.65;
+}
+.qibla-readouts strong {
+  display: block;
+  margin: 4px 0 3px;
+  color: var(--text);
+  font-family: "Manrope", "DM Sans", sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+}
+.qibla-layout:has(#qiblaIndicator[data-state="live"]) #qiblaHeading {
+  color: var(--green);
+}
+.qibla-sensor-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px 18px;
+  margin-top: 18px;
+  padding-top: 15px;
+  border-top: 1px solid var(--line);
+  text-align: left;
+}
+.qibla-sensor-meta > div {
+  display: block;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.qibla-sensor-meta span {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.qibla-sensor-meta strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.qibla-accuracy-note {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.7;
+  text-align: left;
+}
+body.dark .qibla-indicator[data-state="waiting"],
+body.dark .qibla-indicator[data-state="paused"],
+body.dark .qibla-indicator[data-state="static"],
+body.dark .qibla-alignment[data-state="near"] {
+  color: #efd493;
+  background: #3e3320;
+  border-color: #66562c;
+}
+body.dark .qibla-indicator[data-state="error"] {
+  color: #ffc3b7;
+  background: #3c2c27;
+  border-color: #704e42;
+}
+body.dark .qibla-alignment[data-state="aligned"] {
+  border-color: #4e8169;
+}
+@media (min-width: 761px) and (max-width: 1050px) {
+  .qibla-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(270px, 0.95fr);
+    padding: 24px;
+    gap: 24px;
+  }
+  .compass-area {
+    padding: 16px;
+  }
+  .compass-ring {
+    width: 220px;
+    height: 220px;
+  }
+  .qibla-info h1 {
+    font-size: 26px;
+  }
+}
+@media (max-width: 760px) {
+  .qibla-layout {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 20px;
+    gap: 12px;
+    border-radius: 17px;
+  }
+  .qibla-info {
+    display: contents;
+  }
+  .qibla-info h1 {
+    order: 0;
+    margin: 0;
+    font-size: 24px;
+    letter-spacing: -0.6px;
+  }
+  .qibla-state-summary {
+    order: 1;
+  }
+  .qibla-indicator {
+    font-size: 10px;
+    margin-bottom: 8px;
+  }
+  .qibla-status {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.65;
+  }
+  .qibla-controls {
+    order: 2;
+    margin: 0;
+    flex-direction: row;
+  }
+  .qibla-controls > button {
+    padding: 11px 9px;
+    font-size: 12px;
+  }
+  .qibla-flat-hint {
+    order: 3;
+    margin: -3px 0 0;
+    font-size: 11px;
+    line-height: 1.65;
+  }
+  .compass-area {
+    order: 4;
+    padding: 16px 14px;
+    margin: 0;
+  }
+  .qibla-guide {
+    order: 5;
+    margin: 0;
+    padding-top: 2px;
+  }
+  .qibla-alignment {
+    font-size: 13px;
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+  .compass-visual {
+    padding: 2px 0;
+  }
+  .qibla-layout:has(#qiblaIndicator[data-state="live"]) .compass-phone-top {
+    margin-bottom: 14px;
+  }
+  .qibla-layout:has(#qiblaIndicator[data-state="live"]) .compass-rotate-hint {
+    margin-top: 10px;
+  }
+  .compass-ring {
+    width: 200px;
+    height: 200px;
+  }
+  .compass-placeholder {
+    inset: 44px;
+  }
+  .qibla-readouts {
+    gap: 9px;
+    margin-top: 16px;
+  }
+  .qibla-readouts > div {
+    padding: 10px;
+  }
+  .qibla-readouts strong {
+    font-size: 23px;
+  }
+  .qibla-readouts small {
+    font-size: 9px;
+  }
+  .qibla-sensor-meta {
+    gap: 10px;
+    margin-top: 15px;
+    padding-top: 12px;
+  }
+}
+@media (max-width: 360px) {
+  .qibla-layout {
+    padding: 16px;
+    gap: 12px;
+  }
+  .qibla-info h1 {
+    font-size: 23px;
+  }
+  .compass-area {
+    padding: 15px 12px;
+  }
+  .compass-ring {
+    width: 190px;
+    height: 190px;
+  }
+  .compass-inner {
+    inset: 32px;
+  }
+  .compass-placeholder {
+    inset: 37px;
+    font-size: 10px;
+  }
+  .qibla-readouts {
+    gap: 7px;
+  }
+  .qibla-readouts > div {
+    padding: 9px 8px;
+  }
+  .qibla-readouts strong {
+    font-size: 21px;
+  }
+  .qibla-sensor-meta {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+  }
+}

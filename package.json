@@ -1,11 +1,12 @@
 {
   "name": "waktu-solat",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.js",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:webkit": "playwright test tests/e2e/qibla.spec.js --grep \"WebKit compass contract\" --browser=webkit --workers=2"
   },
   "engines": {
     "node": ">=20"

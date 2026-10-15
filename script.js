@@ -117,11 +117,29 @@ const text = {
     retryNext: "Muat Subuh esok",
     loadingNext: "Memuatkan waktu Subuh esok…",
     scrollTable: "Leret jadual ke kiri atau kanan untuk melihat semua waktu.",
-    towardsKaaba: "Menghadap satu arah.",
-    qiblaIntro: "Dapatkan arah Kaabah berdasarkan lokasi semasa anda.",
+    towardsKaaba: "Kompas kiblat",
+    qiblaIntro:
+      "Aktifkan lokasi dan kompas untuk panduan mengikut putaran telefon.",
     qiblaHelp:
-      "Pegang telefon rata dan jauhkan daripada objek logam. Semak arah dengan kompas yang dipercayai jika bacaan tidak stabil.",
-    trueNorth: "mengikut arah jam dari utara benar",
+      "Bacaan sensor ialah anggaran. Semak dengan kompas yang dipercayai jika arah tidak stabil.",
+    trueNorth: "Tetap · dari utara benar",
+    qiblaFlatHint: "Pegang telefon mendatar, skrin menghadap ke atas.",
+    qiblaGuideTitle: "Kompas tidak bergerak?",
+    qiblaGuideSafari:
+      "Dalam Safari, tekan aktifkan dan benarkan lokasi serta sensor apabila diminta.",
+    qiblaGuideMotion:
+      "Letakkan telefon rata, kemudian putar seluruh telefon perlahan. Kompas akan bergerak apabila bacaan diterima.",
+    qiblaGuideInterference:
+      "Jauhkan telefon daripada magnet, sarung bermagnet dan objek logam. Semak kebenaran Safari jika izin pernah ditolak.",
+    qiblaPhoneTop: "Bahagian atas telefon",
+    qiblaRotateHint: "Halakan bahagian atas telefon ke hujung hijau.",
+    qiblaPlaceholder: "Bacaan belum tersedia",
+    qiblaPhoneHeading: "Hala telefon",
+    qiblaPhoneHeadingNote: "Bacaan sensor langsung",
+    qiblaBearing: "Arah Kaabah",
+    qiblaSensorAccuracy: "Ketepatan sensor",
+    qiblaAccuracyHelp:
+      "Ketepatan hanya dipaparkan jika dilaporkan oleh peranti.",
     dataFrom: "Waktu",
     locationFrom: "Lokasi",
     schedule: "Jadual",
@@ -287,11 +305,28 @@ const text = {
     retryNext: "Load tomorrow’s Fajr",
     loadingNext: "Loading tomorrow’s Fajr…",
     scrollTable: "Scroll the table horizontally to see every prayer time.",
-    towardsKaaba: "Towards the same direction.",
-    qiblaIntro: "Find the bearing to the Kaaba using your current location.",
+    towardsKaaba: "Qibla compass",
+    qiblaIntro:
+      "Enable location and compass access for guidance that follows your phone.",
     qiblaHelp:
-      "Hold your phone flat and away from metal objects. Check an established compass if readings are unstable.",
-    trueNorth: "clockwise from true north",
+      "Sensor readings are estimates. Check a trusted compass if the direction is unstable.",
+    trueNorth: "Fixed · from true north",
+    qiblaFlatHint: "Hold your phone flat with the screen facing up.",
+    qiblaGuideTitle: "Compass not moving?",
+    qiblaGuideSafari:
+      "In Safari, tap Enable and allow location and sensor access when prompted.",
+    qiblaGuideMotion:
+      "Hold the phone flat, then rotate the whole phone slowly. The compass moves when a reading is received.",
+    qiblaGuideInterference:
+      "Move away from magnets, magnetic cases and metal objects. Check Safari permissions if access was previously denied.",
+    qiblaPhoneTop: "Top of your phone",
+    qiblaRotateHint: "Point the top of your phone towards the green tip.",
+    qiblaPlaceholder: "No reading yet",
+    qiblaPhoneHeading: "Phone heading",
+    qiblaPhoneHeadingNote: "Live sensor reading",
+    qiblaBearing: "Qibla bearing",
+    qiblaSensorAccuracy: "Sensor accuracy",
+    qiblaAccuracyHelp: "Accuracy is shown only when reported by your device.",
     dataFrom: "Prayer times",
     locationFrom: "Location",
     schedule: "Schedule",

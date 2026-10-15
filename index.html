@@ -21,8 +21,8 @@
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Manrope:wght@400;500;600;650;700;750;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="style.css?v=2026-10-03-v1" />
-    <link rel="stylesheet" href="islamic-calendar.css?v=2026-10-03-v1" />
+    <link rel="stylesheet" href="style.css?v=2026-10-16-v1" />
+    <link rel="stylesheet" href="islamic-calendar.css?v=2026-10-16-v1" />
   </head>
   <body>
     <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -566,63 +566,128 @@
           <div class="qibla-layout">
             <div class="qibla-info">
               <p class="eyebrow" data-i18n="qibla">Arah kiblat</p>
-              <h2 id="qiblaTitle" data-i18n="towardsKaaba">
-                Menghadap satu arah.
-              </h2>
+              <h1 id="qiblaTitle" data-i18n="towardsKaaba">Kompas kiblat</h1>
               <p class="muted" data-i18n="qiblaIntro">
-                Dapatkan arah Kaabah berdasarkan lokasi semasa anda.
+                Aktifkan lokasi dan kompas untuk panduan mengikut putaran
+                telefon.
               </p>
-              <span id="qiblaIndicator" class="qibla-indicator" role="status"
-                >Tidak aktif</span
-              >
-              <p id="qiblaStatus" class="qibla-status"></p>
+              <div class="qibla-state-summary">
+                <span id="qiblaIndicator" class="qibla-indicator" role="status"
+                  >Tidak aktif</span
+                >
+                <p id="qiblaStatus" class="qibla-status"></p>
+              </div>
               <div class="qibla-controls">
                 <button id="compassBtn" class="primary">Aktifkan kompas</button
                 ><button id="qiblaStopBtn" class="secondary" hidden>
                   Hentikan kompas
                 </button>
               </div>
-              <p class="small muted qibla-help" data-i18n="qiblaHelp">
-                Pegang telefon rata dan jauhkan daripada objek logam. Semak arah
-                dengan kompas yang dipercayai jika bacaan tidak stabil.
+              <p class="qibla-flat-hint" data-i18n="qiblaFlatHint">
+                Pegang telefon mendatar, skrin menghadap ke atas.
               </p>
+              <details class="qibla-guide">
+                <summary>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="#i-compass" />
+                  </svg>
+                  <span data-i18n="qiblaGuideTitle"
+                    >Kompas tidak bergerak?</span
+                  >
+                  <svg class="icon" aria-hidden="true">
+                    <use href="#i-chevron" />
+                  </svg>
+                </summary>
+                <ol>
+                  <li data-i18n="qiblaGuideSafari">
+                    Dalam Safari, tekan aktifkan dan benarkan lokasi serta
+                    sensor apabila diminta.
+                  </li>
+                  <li data-i18n="qiblaGuideMotion">
+                    Letakkan telefon rata, kemudian putar seluruh telefon
+                    perlahan. Kompas akan bergerak apabila bacaan diterima.
+                  </li>
+                  <li data-i18n="qiblaGuideInterference">
+                    Jauhkan telefon daripada magnet, sarung bermagnet dan objek
+                    logam. Semak kebenaran Safari jika izin pernah ditolak.
+                  </li>
+                </ol>
+                <p class="qibla-help" data-i18n="qiblaHelp">
+                  Bacaan sensor ialah anggaran. Semak dengan kompas yang
+                  dipercayai jika arah tidak stabil.
+                </p>
+              </details>
             </div>
             <div class="compass-area">
-              <p class="compass-caption" data-i18n="realtimeQibla">
-                Panduan kompas masa nyata
-              </p>
-              <div class="compass-ring">
-                <div class="compass-inner"></div>
-                <div
-                  id="qiblaDirections"
-                  class="compass-directions"
-                  aria-hidden="true"
-                >
-                  <span class="direction north">N</span
-                  ><span class="direction east">E</span
-                  ><span class="direction south">S</span
-                  ><span class="direction west">W</span>
-                </div>
-                <div class="compass-needle" id="qiblaNeedle">
-                  <div class="needle-tip"></div>
-                  <div class="needle-tail"></div>
-                </div>
-                <div class="compass-center"></div>
-              </div>
-              <p class="angle" id="qiblaAngle">—</p>
-              <p class="small muted" data-i18n="trueNorth">
-                mengikut arah jam dari utara benar
-              </p>
               <p
                 id="qiblaAlignment"
                 class="qibla-alignment"
                 aria-live="off"
                 hidden
               ></p>
-              <div class="qibla-distance">
-                <span data-i18n="distanceKaaba">Jarak anggaran ke Kaabah</span
-                ><strong id="qiblaDistance">—</strong>
+              <div class="compass-visual">
+                <p class="compass-phone-top" data-i18n="qiblaPhoneTop">
+                  Bahagian atas telefon
+                </p>
+                <div class="compass-ring" aria-hidden="true">
+                  <span class="compass-top-marker"></span>
+                  <div class="compass-inner"></div>
+                  <div class="compass-placeholder">
+                    <svg class="icon"><use href="#i-compass" /></svg>
+                    <span data-i18n="qiblaPlaceholder"
+                      >Bacaan belum tersedia</span
+                    >
+                  </div>
+                  <div
+                    id="qiblaDirections"
+                    class="compass-directions"
+                    aria-hidden="true"
+                    hidden
+                  >
+                    <span class="direction north">N</span
+                    ><span class="direction east">E</span
+                    ><span class="direction south">S</span
+                    ><span class="direction west">W</span>
+                  </div>
+                  <div class="compass-needle" id="qiblaNeedle" hidden>
+                    <div class="needle-tip"></div>
+                    <div class="needle-tail"></div>
+                  </div>
+                  <div class="compass-center"></div>
+                </div>
               </div>
+              <p class="compass-rotate-hint" data-i18n="qiblaRotateHint">
+                Halakan bahagian atas telefon ke hujung hijau.
+              </p>
+              <div class="qibla-readouts">
+                <div class="qibla-heading-readout">
+                  <span data-i18n="qiblaPhoneHeading">Hala telefon</span>
+                  <strong id="qiblaHeading">—</strong>
+                  <small data-i18n="qiblaPhoneHeadingNote"
+                    >Bacaan sensor langsung</small
+                  >
+                </div>
+                <div>
+                  <span data-i18n="qiblaBearing">Arah Kaabah</span>
+                  <strong class="angle" id="qiblaAngle">—</strong>
+                  <small data-i18n="trueNorth">Tetap · dari utara benar</small>
+                </div>
+              </div>
+              <div class="qibla-sensor-meta">
+                <div class="qibla-accuracy">
+                  <span data-i18n="qiblaSensorAccuracy">Ketepatan sensor</span>
+                  <strong id="qiblaAccuracy">—</strong>
+                </div>
+                <div class="qibla-distance">
+                  <span data-i18n="distanceKaaba"
+                    >Jarak anggaran ke Kaabah</span
+                  >
+                  <strong id="qiblaDistance">—</strong>
+                </div>
+              </div>
+              <p class="qibla-accuracy-note" data-i18n="qiblaAccuracyHelp">
+                Ketepatan hanya dipaparkan jika dilaporkan oleh peranti.
+              </p>
             </div>
           </div>
         </section>
@@ -829,6 +894,6 @@
         <a href="https://www.e-solat.gov.my/">Buka JAKIM e-Solat</a>.
       </p></noscript
     >
-    <script type="module" src="script.js?v=2026-10-03-v1"></script>
+    <script type="module" src="script.js?v=2026-10-16-v1"></script>
   </body>
 </html>

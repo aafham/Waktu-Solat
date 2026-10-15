@@ -120,16 +120,19 @@ Julat penukaran ialah **19 Julai 622 hingga 1 Oktober 9999 Masihi**, bersamaan t
 
 ## Kiblat masa nyata
 
-Buka **Kiblat → Aktifkan kompas langsung**, kemudian benarkan akses lokasi dan sensor. Pegang telefon mendatar dan jauhkan daripada objek logam.
+Buka **Kiblat → Aktifkan kompas langsung**, kemudian benarkan akses lokasi dan sensor. Pada iPhone Safari, permintaan sensor dibuat terus daripada sentuhan butang sebelum menunggu GPS. Pegang telefon agak rata dengan bahagian atas skrin menghala ke hadapan, kemudian pusing perlahan. Panduan tambahan tersedia dalam panel kiblat.
 
 - Bearing ke Kaabah dikira daripada koordinat semasa, mengikut arah jam dari **utara benar**.
-- Bacaan orientasi mutlak yang sah menggerakkan anak panah ketika telefon diputar. Bacaan relatif sahaja tidak mengaktifkan kompas langsung.
-- Panduan kiri/kanan menunjukkan anggaran penjajaran; jarak ke Kaabah dikira pada peranti.
-- Bacaan WebKit yang menggunakan utara magnet dilabelkan dengan jelas. Penjajaran sensor ialah anggaran, sementara bearing angka berasaskan utara benar.
-- Perubahan lokasi dikemas kini sepanjang sesi kompas. Bacaan terlalu condong atau tidak boleh dipercayai tidak digunakan sebagai panduan langsung.
+- Anak panah dan tanda arah mengikuti bacaan sensor yang sah tanpa kelewatan animasi CSS. Bacaan relatif sahaja tidak mengaktifkan kompas langsung. Putaran melalui 359° → 0° tidak membuat anak panah berpusing satu bulatan penuh.
+- **Arah telefon** berubah ketika telefon diputar; **bearing kiblat** ialah arah ke Kaabah daripada lokasi semasa dan tidak berubah hanya kerana telefon diputar. Ketepatan sensor yang dilaporkan iPhone ditunjukkan secara berasingan.
+- Panduan kiri/kanan menunjukkan anggaran penjajaran. Jika bacaan iPhone mempunyai ketidakpastian melebihi 7°, kedudukan hampir sehala menggunakan petunjuk berjaga-jaga, bukan petunjuk hijau biasa. Jarak ke Kaabah dikira pada peranti.
+- [Bacaan WebKit](https://developer.apple.com/documentation/webkitjs/deviceorientationevent/1804777-webkitcompassheading) menggunakan utara magnet dan dilabelkan dengan jelas; bearing kiblat menggunakan utara benar. Tiada pembetulan deklinasi magnet digunakan, maka panduan sensor kekal anggaran.
+- Kedudukan skrin potret/landskap dan kecondongan biasa diambil kira. Apabila arah bahagian atas telefon hampir menegak atau [ketepatan sensor tidak sah](https://developer.apple.com/documentation/webkitjs/deviceorientationevent/1804769-webkitcompassaccuracy), anak panah disembunyikan sementara supaya tidak menunjukkan arah yang mengelirukan.
+- Menunggu lebih 8 saat tidak lagi mematikan pendengar sensor. Bacaan yang lambat atau terganggu boleh pulih sendiri apabila bacaan sah tiba, tanpa perlu menekan butang sekali lagi. Telefon yang tidak bergerak tidak dianggap gagal semata-mata kerana tiada peristiwa sensor baharu.
+- Perubahan lokasi dikemas kini sepanjang sesi kompas.
 - **Hentikan kompas**, keluar daripada paparan kiblat atau menyembunyikan aplikasi menghentikan sensor dan pemantauan lokasi.
 
-Jika sensor tiada, izin ditolak atau tiada bacaan mutlak diterima, aplikasi menunjukkan **arah tetap** dengan arahan menggunakan rujukan utara. Desktop tanpa sensor masih boleh melihat bearing dan jarak apabila lokasi tersedia.
+Jika sensor tiada atau izin ditolak, aplikasi menunjukkan **arah tetap** dengan arahan menggunakan rujukan utara. Jika izin telah diberikan tetapi bacaan belum sesuai, status kekal **menunggu/menstabilkan kompas** dan sensor terus mendengar selama paparan aktif. Desktop tanpa sensor masih boleh melihat bearing dan jarak apabila lokasi tersedia.
 
 GPS dan kompas memerlukan HTTPS atau `localhost`, sokongan peranti/pelayar serta izin pengguna. **Ujian telefon fizikal dan ketepatan sensor di lapangan belum dilakukan.** Ujian automatik menggunakan bacaan terkawal untuk menyemak pengiraan dan tindak balas aplikasi; ia tidak menggantikan kalibrasi atau pengesahan kompas sebenar.
 
@@ -162,13 +165,14 @@ Buka [localhost:8000](http://localhost:8000). Pada Windows, gunakan `py -m http.
 ```sh
 npm ci
 npm test
-npx playwright install chromium
+npx playwright install chromium webkit
 npm run test:e2e
+npm run test:webkit
 ```
 
 `npm test` menggunakan `node:test`. Playwright ialah dependency pembangunan untuk ujian pelayar; konfigurasi ujian memulakan dan menutup pelayan sendiri pada `127.0.0.1:4173`.
 
-Ujian pelayar meniru respons API dan bacaan sensor. **Koordinat simulasi tidak dihantar kepada perkhidmatan luar.** Semua permintaan luar ditiru atau disekat, menjadikan ujian konsisten tanpa bergantung pada API langsung.
+Ujian pelayar meniru respons API dan bacaan sensor. **Koordinat simulasi tidak dihantar kepada perkhidmatan luar.** Semua permintaan luar ditiru atau disekat, menjadikan ujian konsisten tanpa bergantung pada API langsung. `npm run test:webkit` menjalankan kes kompas iPhone dalam enjin WebKit dengan izin, lokasi dan sampel `webkitCompassHeading` terkawal; ini tidak sama dengan menguji sensor telefon fizikal.
 
 ## Struktur fail
 
@@ -219,9 +223,20 @@ Katalog zon disemak pada **23 September 2026**. Pemetaan daerah Kinta dibetulkan
 
 ## Deployment
 
-Hos sebagai laman statik di Vercel: preset **Other**, root `./`, tanpa arahan build. Push ke `main` mencetuskan production melalui integrasi GitHub Vercel. Workflow **Check application** menjalankan semakan sintaks, ujian modul dan ujian Chromium pada push/pull request.
+Hos sebagai laman statik di Vercel: preset **Other**, root `./`, tanpa arahan build. Push ke `main` mencetuskan production melalui integrasi GitHub Vercel. Workflow **Check application** menjalankan semakan sintaks, ujian modul, aliran Chromium dan kes kompas WebKit pada push/pull request.
 
-Apabila aset berubah, naikkan `CACHE_VERSION` dalam `service-worker.js` dan versi URL CSS/JavaScript dalam `index.html`. Versi shell semasa ialah **v22**, termasuk pembetulan jadual JAKIM dan pemilih bulan/tahun. Hanya cache lama berawalan `waktu-solat-` dipadamkan semasa pengaktifan; respons API diurus oleh modul data.
+Apabila aset berubah, naikkan `CACHE_VERSION` dalam `service-worker.js` dan versi URL CSS/JavaScript dalam `index.html`. Versi shell semasa ialah **v23**, termasuk pemulihan sensor Safari dan paparan kompas baharu. Hanya cache lama berawalan `waktu-solat-` dipadamkan semasa pengaktifan; respons API diurus oleh modul data.
+
+## Pengesahan versi 2.5
+
+Semakan kompas pada **16 Oktober 2026**:
+
+- **108 ujian modul lulus**, termasuk 24 ujian kiblat untuk pengiraan bearing, kecondongan, putaran potret/landskap, izin sensor, bacaan lewat, pemulihan dan penutupan sesi.
+- **47 ujian pelayar Chromium lulus** untuk aliran aplikasi, termasuk 6 kes kompas. Empat kes dengan kontrak sensor iPhone turut lulus dalam **enjin WebKit**.
+- Ujian mengesahkan bahawa bacaan sah selepas menunggu atau kalibrasi melebihi 8 saat mengaktifkan semula panduan tanpa klik tambahan. Bacaan relatif tidak menimpa bacaan mutlak yang sah.
+- Putaran melalui utara, kedudukan skrin moden/legacy dan geometri telefon mengiring diperiksa. Animasi CSS tidak melambatkan jarum atau penanda arah dalam mod langsung.
+- Paparan kompas pada **320px, 390px dan 1440px**, keadaan menunggu/langsung/pemulihan/arah tetap serta tema cerah/gelap diperiksa. Tiada limpahan mendatar atau pelanggaran aksesibiliti ditemui dalam keadaan yang diaudit; lima butang navigasi bawah kekal kelihatan pada telefon.
+- Ujian kompas menggunakan GPS dan sensor simulasi; ketepatan sensor pada iPhone fizikal masih belum disahkan.
 
 ## Pengesahan versi 2.4
 
@@ -243,4 +258,4 @@ Semakan 60 zon mengesahkan muatan jadual JAKIM sepanjang tahun 2026, bukan ketep
 - Peta masjid/surau berdekatan dengan maklumat sumber dan pautan navigasi.
 - Eksport jadual bulanan kepada PDF atau kalendar untuk perjalanan dan perkongsian keluarga.
 
-Cadangan ini belum termasuk dalam versi 2.4.
+Cadangan ini belum termasuk dalam versi 2.5.
